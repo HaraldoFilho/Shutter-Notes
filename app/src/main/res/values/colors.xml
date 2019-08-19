@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--Color pallete-->
+    <color name="colorPrimary">#1fc406</color>
+    <color name="colorPrimaryDark">#1a7c07</color>
+    <color name="colorAccent">#35dc43</color>
+    <color name="colorWhite">#ffffff</color>
+    <color name="colorBlack">#000000</color>
+    <color name="colorRed">#ff0000</color>
+    <color name="colorGreen">#00e100</color>
+    <color name="colorYellow">#f7b10f</color>
+
+    <!--Tile colors-->
+    <color name="colorTileBackground">#8CFC80</color>
+    <color name="colorTileSelected">#FF683B</color>
+
+    <!--Text colors-->
+    <color name="colorBlackText">#000000</color>
+    <color name="colorGreyText">#969696</color>
+    <color name="colorWhiteText">#ffffff</color>
+
+    <!--Background colors-->
+    <color name="colorBackgroundGreen">#00c853</color>
+    <color name="colorBackgroundRed">#fa0c0c</color>
+    <color name="colorBackgroundWhite">#ffffff</color>
+    <color name="colorBackgroundTags">#f7f7f7</color>
+    <color name="colorBackgroudSplash">#ffffff</color>
+
+    <color name="black_overlay">#66000000</color>
+
+</resources>

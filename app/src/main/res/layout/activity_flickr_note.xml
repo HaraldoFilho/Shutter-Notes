@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".FlickrNoteActivity">
+
+    <EditText
+        android:id="@+id/editTextFlickrNoteTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints=""
+        android:background="@null"
+        android:cursorVisible="true"
+        android:gravity="top|fill_horizontal|start"
+        android:text=""
+        android:hint="@string/text_hint_flickr_note_title"
+        android:inputType="text"
+        android:paddingLeft="@dimen/flickr_note_margin"
+        android:paddingTop="@dimen/flickr_note_margin"
+        android:paddingRight="@dimen/flickr_note_margin"
+        android:singleLine="true"
+        android:textSize="@dimen/flickr_note_title_text_size"
+        android:textStyle="bold"
+        tools:targetApi="o" />
+
+    <EditText
+        android:id="@+id/editTextFlickrNoteDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTextFlickrNoteTitle"
+        android:autofillHints=""
+        android:background="@null"
+        android:cursorVisible="true"
+        android:gravity="top|fill_horizontal|start"
+        android:text=""
+        android:hint="@string/text_hint_flickr_note_description"
+        android:inputType="textMultiLine"
+        android:padding="@dimen/flickr_note_margin"
+        android:singleLine="false"
+        android:textSize="@dimen/flickr_note_description_text_size"
+        tools:targetApi="o" />
+
+    <RelativeLayout
+        android:id="@+id/flickrTags"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorBackgroundTags"
+        android:layout_above="@id/mapFragmentFlickrNote"
+        android:layout_alignParentBottom="false"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tagsView"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/flickr_note_tags_box_height"
+            android:padding="@dimen/flickr_note_margin"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentBottom="false"
+            android:layout_toStartOf="@id/fabAddGearFlickr"
+            android:textSize="@dimen/flickr_note_tags_text_size"
+            android:textColor="@color/colorBlackText" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabAddGearFlickr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="false"
+            android:layout_alignParentTop="false"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="false"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="@dimen/fab_margin"
+            android:clickable="true"
+            android:focusable="true"
+            app:srcCompat="@drawable/ic_add_gear_white_24dp" />
+
+    </RelativeLayout>
+
+    <fragment
+        android:id="@+id/mapFragmentFlickrNote"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/flickr_note_map_height"
+        android:layout_above="@id/buttonsFlickrNotes"
+        android:layout_centerHorizontal="true"
+        android:clickable="false"
+        tools:context=".FlickrNoteActivity" />
+
+    <LinearLayout
+        android:id="@+id/buttonsFlickrNotes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="bottom"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/buttonFlickrNoteCancel"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/button_cancel"
+            android:textSize="@dimen/button_font_size" />
+
+        <Button
+            android:id="@+id/buttonFlickrNoteClear"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/button_clear"
+            android:textSize="@dimen/button_font_size" />
+
+        <Button
+            android:id="@+id/buttonFlickrNoteOk"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/button_show"
+            android:textSize="@dimen/button_font_size" />
+    </LinearLayout>
+
+
+</RelativeLayout>
