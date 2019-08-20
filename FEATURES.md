@@ -4,19 +4,21 @@
 - Fragments
 - Intents
 - Splash Screen
-- Array Lists
-- Array Strings
-- Dialogs
-- Progress Dialogs
-- Toasts
-- Buttons
-- Image Buttons
+- Navigation Drawer
+- Bottom Navigation View
 - Text View
 - Image View
 - List View
 - Grid View
 - Web View
 - Map Fragment
+- Dialogs
+- Progress Dialogs
+- Toasts
+- Buttons
+- Image Buttons
+- Array Lists
+- Array Strings
 - Network Location
 - Internet
 - Shared Preferences

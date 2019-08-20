@@ -17,6 +17,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
@@ -24,6 +25,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
+import com.apps.mohb.shutternotes.fragments.dialogs.FullscreenTipAlertFragment;
 import com.apps.mohb.shutternotes.notes.FlickrNote;
 import com.apps.mohb.shutternotes.notes.GearNote;
 import com.apps.mohb.shutternotes.notes.Notebook;
@@ -38,7 +40,8 @@ import java.util.Locale;
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class FullscreenNoteActivity extends AppCompatActivity {
+public class FullscreenNoteActivity extends AppCompatActivity
+		implements FullscreenTipAlertFragment.FullscreenTipDialogListener {
 	/**
 	 * Whether or not the system UI should be auto-hidden after
 	 * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -71,6 +74,7 @@ public class FullscreenNoteActivity extends AppCompatActivity {
 	private String finishTime = Constants.EMPTY;
 
 	private SharedPreferences settings;
+	private SharedPreferences instructionsFirstShow;
 
 
 	private final Runnable mHidePart2Runnable = new Runnable() {
@@ -186,6 +190,14 @@ public class FullscreenNoteActivity extends AppCompatActivity {
 				toggle();
 			}
 		});
+
+		instructionsFirstShow = this.getSharedPreferences(Constants.FULLSCREEN_INSTRUCTIONS, Constants.PRIVATE_MODE);
+
+		if (instructionsFirstShow.getBoolean(Constants.KEY_FIRST_SHOW, true)) {
+			FullscreenTipAlertFragment dialogInstructions = new FullscreenTipAlertFragment();
+			dialogInstructions.show(getSupportFragmentManager(), "FullscreenTipAlertFragment");
+		}
+
 
 	}
 
@@ -315,6 +327,11 @@ public class FullscreenNoteActivity extends AppCompatActivity {
 			e.printStackTrace();
 		}
 
+	}
+
+	@Override
+	public void onFullscreenTipDialogPositiveClick(DialogFragment dialog) {
+		instructionsFirstShow.edit().putBoolean(Constants.KEY_FIRST_SHOW, false).commit();
 	}
 
 }

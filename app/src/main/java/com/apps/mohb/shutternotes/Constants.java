@@ -25,6 +25,7 @@ public class Constants {
 	public static final String EDIT_GEAR_TEXT                    = "EditGearText";
 	public static final String FLICKR_ACCOUNT_WARNING            = "FlickrAccountWarning";
 	public static final String FLICKR_NOTE_WARNING               = "FlickrNoteWarning";
+	public static final String FULLSCREEN_INSTRUCTIONS           = "FullscreenInstructions";
 
 	// Lists Saved Preferences
 	public static final String SIMPLE_NOTES                      = "SimpleNotes";
