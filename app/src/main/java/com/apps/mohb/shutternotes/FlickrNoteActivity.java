@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrNoteActivity.java
- *  Last modified : 8/18/19 5:40 PM
+ *  Last modified : 8/25/19 6:33 PM
  *
  *  -----------------------------------------------------------
  */
@@ -208,7 +208,10 @@ public class FlickrNoteActivity extends AppCompatActivity
 		lastLongitude = bundle.getDouble(Constants.LONGITUDE);
 		LatLng currentLocation = new LatLng(lastLatitude, lastLongitude);
 		LatLng markerLocation = new LatLng(lastLatitude + markerOffset, lastLongitude);
-		googleMap.getUiSettings().setScrollGesturesEnabled(false);
+		googleMap.getUiSettings().setAllGesturesEnabled(false);
+		googleMap.getUiSettings().setZoomControlsEnabled(false);
+		googleMap.getUiSettings().setCompassEnabled(false);
+		googleMap.getUiSettings().setMapToolbarEnabled(false);
 		googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, zoomLevel));
 		Marker marker = googleMap.addMarker(new MarkerOptions().position(markerLocation));
 		marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_camera_red_36dp));
