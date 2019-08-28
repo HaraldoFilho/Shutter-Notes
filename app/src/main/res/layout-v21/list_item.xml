@@ -15,7 +15,7 @@
         android:layout_gravity="center"
         android:layout_margin="@dimen/item_margin"
         android:gravity="center"
-        android:textColor="@color/colorBlackText"
+        android:textColor="@color/colorWhiteText"
         android:textStyle="bold" />
 
 

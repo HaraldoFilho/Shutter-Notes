@@ -75,11 +75,9 @@ public class FlickrNotesListAdapter extends ArrayAdapter {
 		if (selected) {
 			convertView.findViewById(R.id.listItem).setBackground(
 					getContext().getResources().getDrawable(R.drawable.flickr_item_tile_selected));
-			txtTitle.setTextColor(getContext().getResources().getColor(R.color.colorWhiteText));
 		} else {
 			convertView.findViewById(R.id.listItem).setBackground(
 					getContext().getResources().getDrawable(R.drawable.flickr_item_tile));
-			txtTitle.setTextColor(getContext().getResources().getColor(R.color.colorBlackText));
 		}
 
 		return convertView;

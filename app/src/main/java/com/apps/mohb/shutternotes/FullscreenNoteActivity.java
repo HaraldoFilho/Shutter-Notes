@@ -68,7 +68,6 @@ public class FullscreenNoteActivity extends AppCompatActivity
 	private int callerActivity;
 	private TextView textView;
 
-	private String dateFormat;
 	private SimpleDateFormat date;
 	private String startTime = Constants.EMPTY;
 	private String finishTime = Constants.EMPTY;
@@ -180,8 +179,7 @@ public class FullscreenNoteActivity extends AppCompatActivity
 
 		state = Constants.STATE_COLOR_GREEN;
 
-		dateFormat = Constants.DATE_FORMAT;
-		date = new SimpleDateFormat(dateFormat, Locale.getDefault());
+		date = new SimpleDateFormat(Constants.DATE_FORMAT, Locale.getDefault());
 
 		// Set up the user interaction to manually show or hide the system UI.
 		mContentView.setOnClickListener(new View.OnClickListener() {
