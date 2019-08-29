@@ -1,3 +1,8 @@
+#### **0.1.4**
+- Fixed bug on reading the notes start time.
+- Changed green note background color on notes lists to a darker green to improve contrast with the white fonts.
+- Added debug logs to data when uploading data Flickr notes.
+
 #### **0.1.3**
 - Fixed date pattern.
 - Changed green note text color on notes lists from black to white.

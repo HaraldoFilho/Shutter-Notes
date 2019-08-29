@@ -19,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ListView;
 
 import com.apps.mohb.shutternotes.adapters.FlickrPhotosListAdapter;
@@ -164,7 +165,14 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
 								for (int i = 0; i < selectedNotes.size(); i++) {
 									FlickrNote note = selectedNotes.get(i);
 									String date = FlickrApi.getDateTaken(photoId);
+									Log.d(Constants.LOG_DEBUG_TAG, "Title: " + note.getTitle());
+									Log.d(Constants.LOG_DEBUG_TAG, "Description: " + note.getDescription());
+									Log.d(Constants.LOG_DEBUG_TAG, "Tags: " + note.getTags());
+									Log.d(Constants.LOG_DEBUG_TAG, "Start Time: " + note.getStartTime());
+									Log.d(Constants.LOG_DEBUG_TAG, "Finish Time: " + note.getFinishTime());
+									Log.d(Constants.LOG_DEBUG_TAG, "Photo Time: " + date);
 									if (note.isInTimeInterval(date)) {
+										Log.d(Constants.LOG_DEBUG_TAG, "Upload: " + note.getTitle());
 										uploadDataToPhoto(photoId, note);
 										updatedPhotos.add(FlickrApi.getFlickrInterface()
 												.getPhotosInterface().getPhoto(photoId));

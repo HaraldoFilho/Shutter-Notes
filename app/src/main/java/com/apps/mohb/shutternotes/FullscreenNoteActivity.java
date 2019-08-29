@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FullscreenNoteActivity.java
- *  Last modified : 8/17/19 12:08 PM
+ *  Last modified : 8/28/19 10:21 PM
  *
  *  -----------------------------------------------------------
  */
@@ -20,6 +20,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -178,8 +179,8 @@ public class FullscreenNoteActivity extends AppCompatActivity
 		}
 
 		state = Constants.STATE_COLOR_GREEN;
-
 		date = new SimpleDateFormat(Constants.DATE_FORMAT, Locale.getDefault());
+		startTime = date.format(new Date().getTime());
 
 		// Set up the user interaction to manually show or hide the system UI.
 		mContentView.setOnClickListener(new View.OnClickListener() {
@@ -219,7 +220,6 @@ public class FullscreenNoteActivity extends AppCompatActivity
 
 		if (mVisible) {
 			textView.setBackgroundColor(getResources().getColor(R.color.colorBackgroundGreen));
-			startTime = date.format(new Date().getTime());
 		} else {
 
 			switch (state) {
@@ -227,6 +227,8 @@ public class FullscreenNoteActivity extends AppCompatActivity
 				case Constants.STATE_COLOR_GREEN:
 					textView.setBackgroundColor(getResources().getColor(R.color.colorBackgroundRed));
 					finishTime = date.format(new Date().getTime());
+					Log.d(Constants.LOG_DEBUG_TAG, "Start time: " + startTime);
+					Log.d(Constants.LOG_DEBUG_TAG, "Finish time: " + finishTime);
 					state = Constants.STATE_COLOR_RED;
 					break;
 

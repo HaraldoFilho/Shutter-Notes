@@ -12,7 +12,7 @@
     <color name="colorYellow">#f7b10f</color>
 
     <!--Tile colors-->
-    <color name="colorTileBackground">#8CFC80</color>
+    <color name="colorTileBackground">#00D75A</color>
     <color name="colorTileSelected">#FF683B</color>
 
     <!--Text colors-->
