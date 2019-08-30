@@ -20,7 +20,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -227,8 +226,6 @@ public class FullscreenNoteActivity extends AppCompatActivity
 				case Constants.STATE_COLOR_GREEN:
 					textView.setBackgroundColor(getResources().getColor(R.color.colorBackgroundRed));
 					finishTime = date.format(new Date().getTime());
-					Log.d(Constants.LOG_DEBUG_TAG, "Start time: " + startTime);
-					Log.d(Constants.LOG_DEBUG_TAG, "Finish time: " + finishTime);
 					state = Constants.STATE_COLOR_RED;
 					break;
 

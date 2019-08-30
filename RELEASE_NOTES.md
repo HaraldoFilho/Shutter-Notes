@@ -1,3 +1,8 @@
+#### **0.1.5**
+- Due to incompatibility with older versions, the minimum version to run the app is now Android 7.0 (Nougat).
+- MinSDKVersion = 24.
+- Removed debug logs.
+
 #### **0.1.4**
 - Fixed bug on reading the notes start time.
 - Changed green note background color on notes lists to a darker green to improve contrast with the white fonts.
