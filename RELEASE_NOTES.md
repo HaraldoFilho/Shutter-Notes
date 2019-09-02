@@ -1,3 +1,6 @@
+#### **0.1.6**
+- Changed the simple click on full screen to a long click to avoid unintentional state changes. 
+
 #### **0.1.5**
 - Due to incompatibility with older versions, the minimum version to run the app is now Android 7.0 (Nougat).
 - MinSDKVersion = 24.

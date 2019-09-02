@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FullscreenNoteActivity.java
- *  Last modified : 8/28/19 10:21 PM
+ *  Last modified : 9/2/19 7:32 PM
  *
  *  -----------------------------------------------------------
  */
@@ -182,11 +182,9 @@ public class FullscreenNoteActivity extends AppCompatActivity
 		startTime = date.format(new Date().getTime());
 
 		// Set up the user interaction to manually show or hide the system UI.
-		mContentView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				toggle();
-			}
+		mContentView.setOnLongClickListener(view -> {
+			toggle();
+			return true;
 		});
 
 		instructionsFirstShow = this.getSharedPreferences(Constants.FULLSCREEN_INSTRUCTIONS, Constants.PRIVATE_MODE);
