@@ -1,3 +1,6 @@
+#### **0.1.7**
+- Now, when adding tags, the existing tags are kept.
+
 #### **0.1.6**
 - Changed the simple click on full screen to a long click to avoid unintentional state changes. 
 

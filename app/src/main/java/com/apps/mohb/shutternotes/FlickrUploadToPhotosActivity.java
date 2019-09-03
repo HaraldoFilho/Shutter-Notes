@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrUploadToPhotosActivity.java
- *  Last modified : 8/30/19 12:05 AM
+ *  Last modified : 9/3/19 8:58 AM
  *
  *  -----------------------------------------------------------
  */
@@ -236,9 +236,14 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
 			photosInterface.setMeta(photoId, note.getTitle(), note.getDescription());
 		}
 
-		if (settings.getBoolean(Constants.PREF_KEY_UPLOAD_TAGS, true)
-				&& (overwriteData || photosInterface.getPhoto(photoId).getTags() == null)) {
-			photosInterface.setTags(photoId, note.getTagsArray());
+		if (settings.getBoolean(Constants.PREF_KEY_UPLOAD_TAGS, true)) {
+			if (photosInterface.getPhoto(photoId).getTags() == null) {
+				photosInterface.setTags(photoId, note.getTagsArray());
+			} else if (overwriteData) {
+				String[] tagsOnPhoto = (String[]) photosInterface.getPhoto(photoId).getTags().toArray();
+				String[] tagsToAdd = note.getTagsArray();
+				photosInterface.setTags(photoId, FlickrApi.getNewTagsArray(tagsOnPhoto, tagsToAdd));
+			}
 		}
 
 		if (settings.getBoolean(Constants.PREF_KEY_UPLOAD_LOCATION, true)
@@ -246,7 +251,6 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
 			photosInterface.getGeoInterface().setLocation(photoId, note.getGeoData());
 		}
 	}
-
 
 	private void showProgressDialog() {
 		progressDialog = new ProgressDialog(this);

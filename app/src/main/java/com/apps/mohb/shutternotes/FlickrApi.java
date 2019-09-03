@@ -24,7 +24,6 @@ import com.flickr4java.flickr.auth.Auth;
 import com.flickr4java.flickr.auth.AuthInterface;
 import com.flickr4java.flickr.auth.Permission;
 import com.flickr4java.flickr.photos.Exif;
-
 import com.github.scribejava.core.model.OAuth1RequestToken;
 import com.github.scribejava.core.model.OAuth1Token;
 
@@ -206,6 +205,22 @@ public class FlickrApi {
 		}
 
 		return Constants.EMPTY;
+	}
+
+	public static String[] getNewTagsArray(String[] tagsOnPhoto, String[] tagsToAdd) {
+
+		String[] newTagsArray = new String[tagsOnPhoto.length + tagsToAdd.length];
+
+		for (int i = 0; i < newTagsArray.length; i++) {
+			if (i < tagsOnPhoto.length) {
+				newTagsArray[i] = tagsOnPhoto[i];
+			} else {
+				newTagsArray[i] = tagsToAdd[i - tagsOnPhoto.length];
+			}
+		}
+
+		return newTagsArray;
+
 	}
 
 }
