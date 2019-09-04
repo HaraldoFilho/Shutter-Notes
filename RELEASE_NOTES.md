@@ -1,3 +1,6 @@
+#### **0.1.8**
+- Fixed bug on tags overwrite.
+
 #### **0.1.7**
 - Now, when adding tags, the existing tags are kept.
 

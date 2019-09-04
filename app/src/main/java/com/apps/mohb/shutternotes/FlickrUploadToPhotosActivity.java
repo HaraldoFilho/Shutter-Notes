@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrUploadToPhotosActivity.java
- *  Last modified : 9/3/19 8:58 AM
+ *  Last modified : 9/3/19 11:55 PM
  *
  *  -----------------------------------------------------------
  */
@@ -237,9 +237,9 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
 		}
 
 		if (settings.getBoolean(Constants.PREF_KEY_UPLOAD_TAGS, true)) {
-			if (photosInterface.getPhoto(photoId).getTags() == null) {
+			if (photosInterface.getPhoto(photoId).getTags() == null || overwriteData) {
 				photosInterface.setTags(photoId, note.getTagsArray());
-			} else if (overwriteData) {
+			} else {
 				String[] tagsOnPhoto = (String[]) photosInterface.getPhoto(photoId).getTags().toArray();
 				String[] tagsToAdd = note.getTagsArray();
 				photosInterface.setTags(photoId, FlickrApi.getNewTagsArray(tagsOnPhoto, tagsToAdd));
