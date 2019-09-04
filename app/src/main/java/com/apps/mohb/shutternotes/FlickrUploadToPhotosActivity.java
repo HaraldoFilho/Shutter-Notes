@@ -240,7 +240,7 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
 			if (photosInterface.getPhoto(photoId).getTags() == null || overwriteData) {
 				photosInterface.setTags(photoId, note.getTagsArray());
 			} else {
-				String[] tagsOnPhoto = (String[]) photosInterface.getPhoto(photoId).getTags().toArray();
+				Object[] tagsOnPhoto = photosInterface.getPhoto(photoId).getTags().toArray();
 				String[] tagsToAdd = note.getTagsArray();
 				photosInterface.setTags(photoId, FlickrApi.getNewTagsArray(tagsOnPhoto, tagsToAdd));
 			}

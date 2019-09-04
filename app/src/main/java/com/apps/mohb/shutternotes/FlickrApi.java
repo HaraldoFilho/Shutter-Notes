@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrApi.java
- *  Last modified : 8/17/19 12:08 PM
+ *  Last modified : 9/4/19 10:12 AM
  *
  *  -----------------------------------------------------------
  */
@@ -207,13 +207,13 @@ public class FlickrApi {
 		return Constants.EMPTY;
 	}
 
-	public static String[] getNewTagsArray(String[] tagsOnPhoto, String[] tagsToAdd) {
+	public static String[] getNewTagsArray(Object[] tagsOnPhoto, String[] tagsToAdd) {
 
 		String[] newTagsArray = new String[tagsOnPhoto.length + tagsToAdd.length];
 
 		for (int i = 0; i < newTagsArray.length; i++) {
 			if (i < tagsOnPhoto.length) {
-				newTagsArray[i] = tagsOnPhoto[i];
+				newTagsArray[i] = tagsOnPhoto[i].toString();
 			} else {
 				newTagsArray[i] = tagsToAdd[i - tagsOnPhoto.length];
 			}

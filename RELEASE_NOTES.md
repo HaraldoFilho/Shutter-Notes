@@ -1,3 +1,6 @@
+#### **0.1.9**
+- Fixed bug causing app crashing.
+
 #### **0.1.8**
 - Fixed bug on tags overwrite.
 
