@@ -1,3 +1,6 @@
+#### **0.1.10**
+- Removed unnecessary characters on existing tags string.
+
 #### **0.1.9**
 - Fixed bug causing app crashing.
 
