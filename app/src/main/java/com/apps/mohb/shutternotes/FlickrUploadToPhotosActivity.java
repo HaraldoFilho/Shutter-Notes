@@ -229,6 +229,7 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
 	private void uploadDataToPhoto(String photoId, FlickrNote note) throws FlickrException {
 
 		Boolean overwriteData = settings.getBoolean(Constants.PREF_KEY_OVERWRITE_DATA, false);
+		String overwriteTags = settings.getString(Constants.PREF_KEY_OVERWRITE_TAGS, Constants.PREF_REPLACE_ALL);
 		RequestContext.getRequestContext().setAuth(auth);
 		PhotosInterface photosInterface = FlickrApi.getFlickrInterface().getPhotosInterface();
 
@@ -237,12 +238,28 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
 		}
 
 		if (settings.getBoolean(Constants.PREF_KEY_UPLOAD_TAGS, true)) {
-			if (photosInterface.getPhoto(photoId).getTags() == null || overwriteData) {
-				photosInterface.setTags(photoId, note.getTagsArray());
+
+			String[] tagsToAdd = note.getTagsArray();
+
+			if (photosInterface.getPhoto(photoId).getTags() == null) {
+				photosInterface.setTags(photoId, tagsToAdd);
+
 			} else {
-				Object[] tagsOnPhoto = photosInterface.getPhoto(photoId).getTags().toArray();
-				String[] tagsToAdd = note.getTagsArray();
-				photosInterface.setTags(photoId, FlickrApi.getNewTagsArray(tagsOnPhoto, tagsToAdd));
+
+				String[] tagsOnPhoto = FlickrApi.getTagsStringArray(photosInterface.getPhoto(photoId).getTags().toArray());
+
+				switch (overwriteTags) {
+
+					case Constants.PREF_REPLACE_ALL:
+						photosInterface.setTags(photoId, tagsToAdd);
+
+					case Constants.PREF_INSERT_BEGIN:
+						photosInterface.setTags(photoId, FlickrApi.getNewTagsArray(tagsToAdd, tagsOnPhoto));
+
+					case Constants.PREF_INSERT_END:
+						photosInterface.setTags(photoId, FlickrApi.getNewTagsArray(tagsOnPhoto, tagsToAdd));
+
+				}
 			}
 		}
 

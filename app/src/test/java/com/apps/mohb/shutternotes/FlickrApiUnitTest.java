@@ -14,6 +14,7 @@ package com.apps.mohb.shutternotes;
 
 import org.junit.Test;
 
+import static com.apps.mohb.shutternotes.FlickrApi.getTagsStringArray;
 import static com.apps.mohb.shutternotes.FlickrApi.getNewTagsArray;
 import static com.apps.mohb.shutternotes.FlickrApi.getNumOfPages;
 import static org.junit.Assert.assertArrayEquals;
@@ -36,6 +37,15 @@ public class FlickrApiUnitTest {
 
 	}
 
+	@Test
+	public void  getTagsStringArrayTest() {
+
+		String[] array1 = { "Elem1", "Elem2", "Elem3" };
+		String[] newArray = { "Elem1", "Elem2", "Elem3" };
+
+		assertArrayEquals(newArray, getTagsStringArray(array1));
+
+	}
 	@Test
 	public void  getNewTagsArrayTest() {
 

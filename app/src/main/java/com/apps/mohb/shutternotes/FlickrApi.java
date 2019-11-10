@@ -207,17 +207,29 @@ public class FlickrApi {
 		return Constants.EMPTY;
 	}
 
-	public static String[] getNewTagsArray(Object[] tagsOnPhoto, String[] tagsToAdd) {
+	public static String[] getTagsStringArray(Object[] tags) {
 
-		String[] newTagsArray = new String[tagsOnPhoto.length + tagsToAdd.length];
+		String[] tagsStringArray = new String[tags.length];
+
+		for (int i = 0; i < tags.length; i++) {
+			tagsStringArray[i] = tags[i].toString()
+					.replace("Tag [value=", Constants.EMPTY)
+					.replace(", count=0]", Constants.EMPTY);
+		}
+
+		return tagsStringArray;
+
+	}
+
+	public static String[] getNewTagsArray(String[] tagsArray1, String[] tagsArray2) {
+
+		String[] newTagsArray = new String[tagsArray1.length + tagsArray2.length];
 
 		for (int i = 0; i < newTagsArray.length; i++) {
-			if (i < tagsOnPhoto.length) {
-				newTagsArray[i] = tagsOnPhoto[i].toString()
-						.replace("Tag [value=", Constants.EMPTY)
-						.replace(", count=0]", Constants.EMPTY);
+			if (i < tagsArray1.length) {
+				newTagsArray[i] = tagsArray1[i];
 			} else {
-				newTagsArray[i] = tagsToAdd[i - tagsOnPhoto.length];
+				newTagsArray[i] = tagsArray2[i - tagsArray1.length];
 			}
 		}
 

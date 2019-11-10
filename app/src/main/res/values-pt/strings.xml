@@ -149,5 +149,7 @@
     <string name="dialog_warning_flickr_note_message">Antes de criar suas notas do Flickr, não esqueça de sincronizar os relógios da sua câmera e do seu smartphone</string>
     <string name="dialog_instruction_fullscreen_message">Tire uma foto da tela verde para marcar o início da sequência de fotos. Após terminar, toque por alguns segundos na tela para torná-la vermelha e tire uma foto para marcar o final da sequência. Por fim, toque por alguns segundos novamente na tela para sair.</string>
     <string name="dialog_instruction_title">Instruções</string>
+    <string name="pref_title_overwrite_tags">Sobrescrever tags</string>
+    <string name="pref_group_flickr_upload">UPLOAD</string>
 
 </resources>

@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : Constants.java
- *  Last modified : 8/28/19 9:11 PM
+ *  Last modified : 11/10/19 11:58 AM
  *
  *  -----------------------------------------------------------
  */
@@ -140,6 +140,11 @@ public class Constants {
 	public static final String PREF_SHOW_TITLE                   = "1";
 	public static final String PREF_SHOW_DESCRIPTION             = "2";
 	public static final String PREF_SHOW_TAGS                    = "3";
+
+	public static final String PREF_KEY_OVERWRITE_TAGS           = "OVERWRITE_TAGS";
+	public static final String PREF_REPLACE_ALL                  = "1";
+	public static final String PREF_INSERT_BEGIN                 = "2";
+	public static final String PREF_INSERT_END                   = "3";
 
 	public static final String PREF_KEY_MAP_ZOOM_LEVEL           = "MAP_ZOOM_LEVEL";
 	public static final String PREF_HIGH                         = "3";

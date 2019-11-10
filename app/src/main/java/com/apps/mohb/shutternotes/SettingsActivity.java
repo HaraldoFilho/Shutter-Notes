@@ -184,6 +184,7 @@ public class SettingsActivity extends AppCompatActivity implements
 			bindPreferenceSummaryToValue(findPreference(Constants.PREF_KEY_FONT_SIZE));
 			bindPreferenceSummaryToValue(findPreference(Constants.PREF_KEY_WHAT_SHOW));
 			bindPreferenceSummaryToValue(findPreference(Constants.PREF_KEY_MAP_ZOOM_LEVEL));
+			bindPreferenceSummaryToValue(findPreference(Constants.PREF_KEY_OVERWRITE_TAGS));
 
 		}
 

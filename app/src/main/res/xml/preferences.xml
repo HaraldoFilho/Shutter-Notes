@@ -41,6 +41,28 @@
             android:positiveButtonText="@null"
             android:title="@string/pref_title_map_zoom_level" />
 
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_group_flickr_upload"
+        android:key="@string/pref_group_flickr_upload_settings_key">
+
+    <!-- Archive notes -->
+        <CheckBoxPreference
+            android:key="@string/pref_key_archive_notes"
+            android:title="@string/pref_title_archive_notes"
+            android:summaryOn="@string/pref_archive_notes_summ_on"
+            android:summaryOff="@string/pref_archive_notes_summ_off"
+            android:defaultValue="@string/pref_def_archive_notes" />
+
+        <!-- Overwrite data -->
+        <CheckBoxPreference
+            android:key="@string/pref_key_overwrite_data"
+            android:title="@string/pref_title_overwrite_data"
+            android:summaryOn="@string/pref_overwrite_data_summ_on"
+            android:summaryOff="@string/pref_overwrite_data_summ_off"
+            android:defaultValue="@string/pref_def_overwrite_data" />
+
         <!-- Upload location -->
         <CheckBoxPreference
             android:key="@string/pref_key_upload_location"
@@ -57,21 +79,15 @@
             android:summaryOff="@string/pref_upload_tags_summ_off"
             android:defaultValue="@string/pref_def_upload_tags" />
 
-        <!-- Overwrite data -->
-        <CheckBoxPreference
-            android:key="@string/pref_key_overwrite_data"
-            android:title="@string/pref_title_overwrite_data"
-            android:summaryOn="@string/pref_overwrite_data_summ_on"
-            android:summaryOff="@string/pref_overwrite_data_summ_off"
-            android:defaultValue="@string/pref_def_overwrite_data" />
-
-        <!-- Archive notes -->
-        <CheckBoxPreference
-            android:key="@string/pref_key_archive_notes"
-            android:title="@string/pref_title_archive_notes"
-            android:summaryOn="@string/pref_archive_notes_summ_on"
-            android:summaryOff="@string/pref_archive_notes_summ_off"
-            android:defaultValue="@string/pref_def_archive_notes" />
+        <!-- Overwrite tags -->
+        <ListPreference
+            android:defaultValue="@string/pref_def_overwrite_tags"
+            android:entries="@array/pref_overwrite_tags_titles"
+            android:entryValues="@array/pref_overwrite_tags_entry_values"
+            android:key="@string/pref_key_overwrite_tags"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:title="@string/pref_title_overwrite_tags" />
 
     </PreferenceCategory>
 
