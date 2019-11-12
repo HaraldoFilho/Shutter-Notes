@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrUploadToPhotosActivity.java
- *  Last modified : 9/3/19 11:55 PM
+ *  Last modified : 11/12/19 2:32 PM
  *
  *  -----------------------------------------------------------
  */
@@ -230,29 +230,32 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
 
 		Boolean overwriteData = settings.getBoolean(Constants.PREF_KEY_OVERWRITE_DATA, false);
 		String overwriteTags = settings.getString(Constants.PREF_KEY_OVERWRITE_TAGS, Constants.PREF_REPLACE_ALL);
+
 		RequestContext.getRequestContext().setAuth(auth);
 		PhotosInterface photosInterface = FlickrApi.getFlickrInterface().getPhotosInterface();
 
+		// If overwrite data setting is on or there is no title in the photo
+		// upload title and description to photo
 		if (overwriteData || photosInterface.getPhoto(photoId).getTitle().isEmpty()) {
 			photosInterface.setMeta(photoId, note.getTitle(), note.getDescription());
 		}
 
-		if (settings.getBoolean(Constants.PREF_KEY_UPLOAD_TAGS, true)) {
+		// If upload tags setting is on and there are tags in the notes upload tags to photo
+		if ((settings.getBoolean(Constants.PREF_KEY_UPLOAD_TAGS, true)) && (note.getTagsArray().length != 0)) {
 
 			String[] tagsToAdd = note.getTagsArray();
+			String[] tagsOnPhoto = FlickrApi.getTagsStringArray(photosInterface.getPhoto(photoId).getTags().toArray());
 
-			if (photosInterface.getPhoto(photoId).getTags().isEmpty()) {
+			// Add note's tags if there are no tags on the photo
+			// or overwrite data setting is on and overwrite tags setting is replace all
+			if (tagsOnPhoto.length == 0 || (overwriteData && overwriteTags.equals(Constants.PREF_REPLACE_ALL))) {
 				photosInterface.setTags(photoId, tagsToAdd);
 
-			} else if (overwriteData) {
+			} else if (tagsOnPhoto.length > 0 && overwriteData) {
 
-				String[] tagsOnPhoto = FlickrApi.getTagsStringArray(photosInterface.getPhoto(photoId).getTags().toArray());
-
+				// If there are tags on photo and overwrite data is on
+				// add tags according to overwrite tags setting
 				switch (overwriteTags) {
-
-					case Constants.PREF_REPLACE_ALL:
-						photosInterface.setTags(photoId, tagsToAdd);
-						break;
 
 					case Constants.PREF_INSERT_BEGIN:
 						photosInterface.setTags(photoId, FlickrApi.getNewTagsArray(tagsToAdd, tagsOnPhoto));
@@ -266,6 +269,8 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
 			}
 		}
 
+		// Add location info to the photo if upload location setting is on
+		// and overwrite data is on or there is no location info on the photo
 		if (settings.getBoolean(Constants.PREF_KEY_UPLOAD_LOCATION, true)
 				&& (overwriteData || photosInterface.getPhoto(photoId).getGeoData() == null)) {
 			photosInterface.getGeoInterface().setLocation(photoId, note.getGeoData());

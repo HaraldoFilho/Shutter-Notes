@@ -1,3 +1,12 @@
+#### **0.1.13**
+- Fixed bug of crashing when trying to add tags before or after existing tags.
+
+#### **0.1.12**
+- Fixed bug on tags overwrite.
+
+#### **0.1.11**
+- Included options for overwrite tags.
+
 #### **0.1.10**
 - Removed unnecessary characters on existing tags string.
 
