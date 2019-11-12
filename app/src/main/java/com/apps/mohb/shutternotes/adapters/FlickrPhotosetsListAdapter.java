@@ -25,9 +25,7 @@ import android.widget.TextView;
 
 import com.apps.mohb.shutternotes.Constants;
 import com.apps.mohb.shutternotes.R;
-
 import com.flickr4java.flickr.photosets.Photoset;
-
 import com.squareup.picasso.Picasso;
 
 import java.util.Collection;
@@ -59,7 +57,7 @@ public class FlickrPhotosetsListAdapter extends ArrayAdapter {
 		String txtTitle = photoset.getTitle();
 
 		int size = photoset.getPhotoCount();
-		String txtSize = String.valueOf(size)
+		String txtSize = String.valueOf(size).concat(Constants.SPACE)
 				.concat(getContext().getResources().getString(R.string.text_photoset_size));
 		if (size == 1) {
 			txtSize = txtSize.replace("s", "");

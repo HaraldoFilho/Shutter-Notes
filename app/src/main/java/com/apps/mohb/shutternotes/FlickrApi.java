@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrApi.java
- *  Last modified : 9/5/19 9:08 AM
+ *  Last modified : 11/12/19 12:15 AM
  *
  *  -----------------------------------------------------------
  */
@@ -24,6 +24,8 @@ import com.flickr4java.flickr.auth.Auth;
 import com.flickr4java.flickr.auth.AuthInterface;
 import com.flickr4java.flickr.auth.Permission;
 import com.flickr4java.flickr.photos.Exif;
+import com.flickr4java.flickr.tags.TagRaw;
+import com.flickr4java.flickr.tags.TagsInterface;
 import com.github.scribejava.core.model.OAuth1RequestToken;
 import com.github.scribejava.core.model.OAuth1Token;
 
@@ -207,14 +209,29 @@ public class FlickrApi {
 		return Constants.EMPTY;
 	}
 
-	public static String[] getTagsStringArray(Object[] tags) {
+	public static String[] getTagsStringArray(Object[] tags) throws FlickrException {
+
+		TagsInterface tagsInterface = getFlickrInterface().getTagsInterface();
 
 		String[] tagsStringArray = new String[tags.length];
-
+		Collection<TagRaw> listUserRaw = tagsInterface.getListUserRaw();
 		for (int i = 0; i < tags.length; i++) {
-			tagsStringArray[i] = tags[i].toString()
+			String tag = tags[i].toString()
 					.replace("Tag [value=", Constants.EMPTY)
 					.replace(", count=0]", Constants.EMPTY);
+			Iterator iterator = listUserRaw.iterator();
+
+			while (iterator.hasNext()) {
+				TagRaw tagRaw = (TagRaw) iterator.next();
+				String tagString = String.valueOf(tagRaw.getRaw())
+						.replace(Constants.BRACKET_LEFT, Constants.QUOTE)
+						.replace(Constants.BRACKET_RIGHT, Constants.QUOTE);
+				String tagToCompare = tagString.toLowerCase().replaceAll(Constants.NON_ALPHA, Constants.EMPTY);
+
+				if (tag.equals(tagToCompare)) {
+					tagsStringArray[i] = tagString;
+				}
+			}
 		}
 
 		return tagsStringArray;
@@ -227,9 +244,9 @@ public class FlickrApi {
 
 		for (int i = 0; i < newTagsArray.length; i++) {
 			if (i < tagsArray1.length) {
-				newTagsArray[i] = tagsArray1[i];
+				newTagsArray[i] = Constants.QUOTE.concat(tagsArray1[i]).concat(Constants.QUOTE);
 			} else {
-				newTagsArray[i] = tagsArray2[i - tagsArray1.length];
+				newTagsArray[i] = Constants.QUOTE.concat(tagsArray2[i - tagsArray1.length]).concat(Constants.QUOTE);
 			}
 		}
 

@@ -241,10 +241,10 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
 
 			String[] tagsToAdd = note.getTagsArray();
 
-			if (photosInterface.getPhoto(photoId).getTags() == null) {
+			if (photosInterface.getPhoto(photoId).getTags().isEmpty()) {
 				photosInterface.setTags(photoId, tagsToAdd);
 
-			} else {
+			} else if (overwriteData) {
 
 				String[] tagsOnPhoto = FlickrApi.getTagsStringArray(photosInterface.getPhoto(photoId).getTags().toArray());
 
@@ -252,12 +252,15 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
 
 					case Constants.PREF_REPLACE_ALL:
 						photosInterface.setTags(photoId, tagsToAdd);
+						break;
 
 					case Constants.PREF_INSERT_BEGIN:
 						photosInterface.setTags(photoId, FlickrApi.getNewTagsArray(tagsToAdd, tagsOnPhoto));
+						break;
 
 					case Constants.PREF_INSERT_END:
 						photosInterface.setTags(photoId, FlickrApi.getNewTagsArray(tagsOnPhoto, tagsToAdd));
+						break;
 
 				}
 			}

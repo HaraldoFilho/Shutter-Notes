@@ -7,8 +7,8 @@
 
     <!--Application version-->
     <string name="version_name">version: </string>
-    <string name="version_number" translatable="false">0.1.11</string>
-    <string name="version_code" translatable="false">26</string>
+    <string name="version_number" translatable="false">0.1.12</string>
+    <string name="version_code" translatable="false">27</string>
 
     <!--Application information-->
     <string name="info_app_name" translatable="false">Shutter Notes</string>
@@ -112,7 +112,7 @@
     <string name="text_hint_flickr_note_title">Type here the title</string>
     <string name="text_hint_flickr_note_description">Write here the description</string>
     <string name="text_type_code">Type the code here</string>
-    <string name="text_photoset_size"> photos</string>
+    <string name="text_photoset_size">photos</string>
 
     <!--Dialogs-->
     <string name="dialog_view_title">Title</string>
