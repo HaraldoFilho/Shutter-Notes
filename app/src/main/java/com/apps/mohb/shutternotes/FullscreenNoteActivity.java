@@ -33,6 +33,7 @@ import com.apps.mohb.shutternotes.notes.SimpleNote;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -257,7 +258,7 @@ public class FullscreenNoteActivity extends AppCompatActivity
 							Bundle bundle = getIntent().getExtras();
 							String title = bundle.getString(Constants.FLICKR_TITLE);
 							String description = bundle.getString(Constants.FLICKR_DESCRIPTION);
-							String tags = bundle.getString(Constants.FLICKR_TAGS);
+							ArrayList<String> tags = bundle.getStringArrayList(Constants.FLICKR_TAGS);
 							double latitude = bundle.getDouble(Constants.LATITUDE);
 							double longitude = bundle.getDouble(Constants.LONGITUDE);
 							FlickrNote flickrNote = new FlickrNote(title, description, tags,

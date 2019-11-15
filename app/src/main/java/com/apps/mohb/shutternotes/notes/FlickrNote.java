@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrNote.java
- *  Last modified : 8/17/19 12:08 PM
+ *  Last modified : 11/15/19 1:47 PM
  *
  *  -----------------------------------------------------------
  */
@@ -13,27 +13,27 @@
 package com.apps.mohb.shutternotes.notes;
 
 import com.apps.mohb.shutternotes.Constants;
-
 import com.flickr4java.flickr.photos.GeoData;
 
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Locale;
-import java.util.StringTokenizer;
 
 
 public class FlickrNote extends Note {
 
 	private String description;
-	private String tags;
+	private ArrayList<String> tags;
 	private double latitude;
 	private double longitude;
 	private String startTime;
 	private String finishTime;
 	private boolean selected;
 
-	public FlickrNote(String title, String description, String tags,
+	public FlickrNote(String title, String description, ArrayList<String> tags,
 	                  double latitude, double longitude, String startTime, String finishTime) {
 		super.setText(title);
 		this.description = description;
@@ -61,11 +61,11 @@ public class FlickrNote extends Note {
 		this.description = description;
 	}
 
-	public String getTags() {
+	public ArrayList<String> getTags() {
 		return tags;
 	}
 
-	public void setTags(String tags) {
+	public void setTags(ArrayList<String> tags) {
 		this.tags = tags;
 	}
 
@@ -124,23 +124,25 @@ public class FlickrNote extends Note {
 			} else {
 				return false;
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			return false;
 		}
 
 	}
 
 	public String[] getTagsArray() {
-		StringTokenizer tokenizer = new StringTokenizer(tags, Constants.SPACE);
-		String[] tagsArray = new String[tokenizer.countTokens()];
+
+		String[] tagsArray = new String[tags.size()];
+		Iterator<String> iterator = tags.iterator();
 		int i = 0;
-		while (tokenizer.hasMoreElements()) {
-			String token = tokenizer.nextToken();
-			tagsArray[i] = token;
+
+		while (iterator.hasNext()) {
+			tagsArray[i] = iterator.next();
 			i++;
 		}
+
 		return tagsArray;
+
 	}
 
 	public GeoData getGeoData() {

@@ -209,27 +209,41 @@ public class FlickrApi {
 		return Constants.EMPTY;
 	}
 
-	public static String[] getTagsStringArray(Object[] tags) throws FlickrException {
+	public static String[] getPhotoTagsArray(Object[] tags) throws FlickrException {
 
 		TagsInterface tagsInterface = getFlickrInterface().getTagsInterface();
 
 		String[] tagsStringArray = new String[tags.length];
+
+		// Complete list of user's "raw" tags, including spaces, upper cases and non-alpha characters
 		Collection<TagRaw> listUserRaw = tagsInterface.getListUserRaw();
+
 		for (int i = 0; i < tags.length; i++) {
+
+			// The tag retrieved from the photo, with only lower-case alpha characters
 			String tag = tags[i].toString()
 					.replace("Tag [value=", Constants.EMPTY)
 					.replace(", count=0]", Constants.EMPTY);
-			Iterator iterator = listUserRaw.iterator();
 
+			Iterator iterator = listUserRaw.iterator();
 			while (iterator.hasNext()) {
 				TagRaw tagRaw = (TagRaw) iterator.next();
+
+				// Get tag's raw string
 				String tagString = String.valueOf(tagRaw.getRaw())
 						.replace(Constants.BRACKET_LEFT, Constants.QUOTE)
 						.replace(Constants.BRACKET_RIGHT, Constants.QUOTE);
+
+				//  If there is more than one tag, get only the first
+				if (tagString.contains(Constants.COMMA)) {
+					tagString = tagString.split(Constants.COMMA)[0].concat(Constants.QUOTE);
+				}
+
+				// The string to compare with the tag
 				String tagToCompare = tagString.toLowerCase().replaceAll(Constants.NON_ALPHA, Constants.EMPTY);
 
 				if (tag.equals(tagToCompare)) {
-					tagsStringArray[i] = tagString;
+					tagsStringArray[i] = tagString.replace(Constants.QUOTE, Constants.EMPTY);
 				}
 			}
 		}
@@ -238,19 +252,29 @@ public class FlickrApi {
 
 	}
 
-	public static String[] getNewTagsArray(String[] tagsArray1, String[] tagsArray2) {
+	public static String[] getNewPhotoTagsArray(String[] tagsArray1, String[] tagsArray2) {
 
 		String[] newTagsArray = new String[tagsArray1.length + tagsArray2.length];
 
 		for (int i = 0; i < newTagsArray.length; i++) {
 			if (i < tagsArray1.length) {
-				newTagsArray[i] = Constants.QUOTE.concat(tagsArray1[i]).concat(Constants.QUOTE);
+				newTagsArray[i] = Constants.DOUBLE_QUOTE.concat(tagsArray1[i]).concat(Constants.DOUBLE_QUOTE);
 			} else {
-				newTagsArray[i] = Constants.QUOTE.concat(tagsArray2[i - tagsArray1.length]).concat(Constants.QUOTE);
+				newTagsArray[i] = Constants.DOUBLE_QUOTE.concat(tagsArray2[i - tagsArray1.length]).concat(Constants.DOUBLE_QUOTE);
 			}
 		}
 
 		return newTagsArray;
+
+	}
+
+	public static String[] getNewPhotoTagsArray(String[] tagsArray) {
+
+		for (int i = 0; i < tagsArray.length; i++) {
+			tagsArray[i] = Constants.DOUBLE_QUOTE.concat(tagsArray[i]).concat(Constants.DOUBLE_QUOTE);
+		}
+
+		return tagsArray;
 
 	}
 

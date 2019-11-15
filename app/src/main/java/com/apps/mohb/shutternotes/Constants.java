@@ -119,10 +119,11 @@ public class Constants {
 	public static final String COMMA                             = ", ";
 	public static final String COLON                             = ": ";
 	public static final String QUOTE                             = "\"";
+	public static final String DOUBLE_QUOTE                      = "\"\"";
 	public static final String BRACKET_LEFT                      = "[";
 	public static final String BRACKET_RIGHT                     = "]";
 	public static final String NEW_LINE                          = "\n";
-	public static final String NON_ALPHA                         = "[^A-Za-z0-9]";
+	public static final String NON_ALPHA                         = "[^\\x30-\\x39\\x41-\\x5A\\x61-\\x7A\\x80-\\xFF]";
 
 	// Settings
 	public static final String PREF_KEY_FONT_SIZE                = "FONT_SIZE";

@@ -271,12 +271,31 @@ public class SavedState {
 		writer.endArray();
 	}
 
+	// create a json string of a list of tags
+	public String writeTagsJsonString(ArrayList<String> tags) throws IOException {
+		StringWriter stringWriter = new StringWriter();
+		JsonWriter jsonWriter = new JsonWriter(stringWriter);
+		jsonWriter.setIndent(Constants.SPACE);
+		writeTagsArrayList(jsonWriter, tags);
+		jsonWriter.close();
+		return stringWriter.toString();
+	}
+
+	// write all flickr notes to json string
+	public void writeTagsArrayList(JsonWriter writer, ArrayList<String> tags) throws IOException {
+		writer.beginArray();
+		for (String tag : tags) {
+			writer.value(tag);
+		}
+		writer.endArray();
+	}
+
 	// write a flickr note to json string
 	public void writeFlickrNote(JsonWriter writer, FlickrNote flickrNote) throws IOException {
 		writer.beginObject();
 		writer.name(Constants.JSON_TITLE).value(flickrNote.getTitle());
 		writer.name(Constants.JSON_DESCRIPTION).value(flickrNote.getDescription());
-		writer.name(Constants.JSON_TAGS).value(flickrNote.getTags());
+		writer.name(Constants.JSON_TAGS).value(writeTagsJsonString(flickrNote.getTags()));
 		writer.name(Constants.JSON_LATITUDE).value(flickrNote.getLatitude());
 		writer.name(Constants.JSON_LONGITUDE).value(flickrNote.getLongitude());
 		writer.name(Constants.JSON_START_TIME).value(flickrNote.getStartTime());
@@ -306,11 +325,32 @@ public class SavedState {
 		return flickrNotes;
 	}
 
+	// read a json string containing a list of flickr notes
+	public ArrayList<String> readTagsJsonString(String jsonString) throws IOException {
+		JsonReader jsonReader = new JsonReader(new StringReader(jsonString));
+		try {
+			return readTagsArrayList(jsonReader);
+		} finally {
+			jsonReader.close();
+		}
+	}
+
+	// read a list of flickr notes from a json string
+	public ArrayList<String> readTagsArrayList(JsonReader jsonReader) throws IOException {
+		ArrayList<String> tags = new ArrayList<>();
+		jsonReader.beginArray();
+		while (jsonReader.hasNext()) {
+			tags.add(jsonReader.nextString());
+		}
+		jsonReader.endArray();
+		return tags;
+	}
+
 	// read a flickr note from a json string
 	public FlickrNote readFlickrNote(JsonReader jsonReader) throws IOException {
 		String title = Constants.EMPTY;
 		String description = Constants.EMPTY;
-		String tags = Constants.EMPTY;
+		ArrayList<String> tags = new ArrayList<>();
 		Double latitude = Constants.DEFAULT_LATITUDE;
 		Double longitude = Constants.DEFAULT_LONGITUDE;
 		String noteStartTime = Constants.EMPTY;
@@ -328,7 +368,7 @@ public class SavedState {
 					description = jsonReader.nextString();
 					break;
 				case Constants.JSON_TAGS:
-					tags = jsonReader.nextString();
+					tags = readTagsJsonString(jsonReader.nextString());
 					break;
 				case Constants.JSON_LATITUDE:
 					latitude = jsonReader.nextDouble();

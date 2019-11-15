@@ -36,6 +36,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 
 public class FlickrNoteActivity extends AppCompatActivity
@@ -108,7 +109,7 @@ public class FlickrNoteActivity extends AppCompatActivity
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			String tags = gearList.getFlickrTags();
+			ArrayList<String> tags = gearList.getFlickrTags();
 			String textGearList = gearList.getGearListText();
 
 			if (textTitle.equals(Constants.EMPTY)) {
@@ -120,7 +121,7 @@ public class FlickrNoteActivity extends AppCompatActivity
 				Bundle bundle = new Bundle();
 				bundle.putString(Constants.FLICKR_TITLE, textTitle);
 				bundle.putString(Constants.FLICKR_DESCRIPTION, textDescription);
-				bundle.putString(Constants.FLICKR_TAGS, tags);
+				bundle.putStringArrayList(Constants.FLICKR_TAGS, tags);
 				bundle.putDouble(Constants.LATITUDE, lastLatitude);
 				bundle.putDouble(Constants.LONGITUDE, lastLongitude);
 
@@ -171,8 +172,8 @@ public class FlickrNoteActivity extends AppCompatActivity
 			}
 		}
 
-		String tags = gearList.getFlickrTags().replace(
-				Constants.QUOTE, Constants.SPACE + Constants.SPACE).trim();
+		String tags = gearList.getGearListText().replace(Constants.NEW_LINE,
+				Constants.SPACE + Constants.SPACE + Constants.SPACE);
 
 		if (!tags.equals(Constants.EMPTY)) {
 			textTags.setText(tags);

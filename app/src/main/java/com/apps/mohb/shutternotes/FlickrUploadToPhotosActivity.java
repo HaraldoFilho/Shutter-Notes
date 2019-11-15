@@ -244,25 +244,32 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
 		if ((settings.getBoolean(Constants.PREF_KEY_UPLOAD_TAGS, true)) && (note.getTagsArray().length != 0)) {
 
 			String[] tagsToAdd = note.getTagsArray();
-			String[] tagsOnPhoto = FlickrApi.getTagsStringArray(photosInterface.getPhoto(photoId).getTags().toArray());
+			String[] tagsOnPhoto = FlickrApi.getPhotoTagsArray(photosInterface.getPhoto(photoId).getTags().toArray());
 
 			// Add note's tags if there are no tags on the photo
 			// or overwrite data setting is on and overwrite tags setting is replace all
-			if (tagsOnPhoto.length == 0 || (overwriteData && overwriteTags.equals(Constants.PREF_REPLACE_ALL))) {
-				photosInterface.setTags(photoId, tagsToAdd);
+			if (tagsOnPhoto.length == 0) {
+				photosInterface.setTags(photoId, FlickrApi.getNewPhotoTagsArray(tagsToAdd));
 
-			} else if (tagsOnPhoto.length > 0 && overwriteData) {
+			} else if (overwriteData) {
 
 				// If there are tags on photo and overwrite data is on
 				// add tags according to overwrite tags setting
 				switch (overwriteTags) {
 
+					case Constants.PREF_REPLACE_ALL:
+						FlickrApi.getNewPhotoTagsArray(tagsToAdd);
+						photosInterface.setTags(photoId, FlickrApi.getNewPhotoTagsArray(tagsToAdd));
+						break;
+
 					case Constants.PREF_INSERT_BEGIN:
-						photosInterface.setTags(photoId, FlickrApi.getNewTagsArray(tagsToAdd, tagsOnPhoto));
+						FlickrApi.getNewPhotoTagsArray(tagsToAdd, tagsOnPhoto);
+						photosInterface.setTags(photoId, FlickrApi.getNewPhotoTagsArray(tagsToAdd, tagsOnPhoto));
 						break;
 
 					case Constants.PREF_INSERT_END:
-						photosInterface.setTags(photoId, FlickrApi.getNewTagsArray(tagsOnPhoto, tagsToAdd));
+						FlickrApi.getNewPhotoTagsArray(tagsOnPhoto, tagsToAdd);
+						photosInterface.setTags(photoId, FlickrApi.getNewPhotoTagsArray(tagsOnPhoto, tagsToAdd));
 						break;
 
 				}

@@ -92,11 +92,11 @@ public class GearList {
 
 	}
 
-	public String getFlickrTags() {
-		String tags = Constants.EMPTY;
+	public ArrayList<String> getFlickrTags() {
+		ArrayList<String> tags = new ArrayList<>();
 		for (int i = 0; i < list.size(); i++) {
 			if (list.get(i).isSelected()) {
-				tags = tags.concat(Constants.QUOTE + list.get(i).getGearItem() + Constants.QUOTE + Constants.SPACE);
+				tags.add(get(i).getGearItem());
 			}
 		}
 		return tags;
