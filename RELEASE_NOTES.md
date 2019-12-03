@@ -1,3 +1,6 @@
+#### **0.1.15**
+- Fixed crashes when opening a Flickr note on Android 9.0 (API 28) and higher.
+
 #### **0.1.14**
 - Fixed crashes on tags overwrite.
 
