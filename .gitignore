@@ -11,5 +11,6 @@
 /build
 /app/debug/*
 /app/release/*
+/app/bundle/release/*
 /captures
 .externalNativeBuild
