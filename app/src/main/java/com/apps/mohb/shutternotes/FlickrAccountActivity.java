@@ -5,31 +5,31 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrAccountActivity.java
- *  Last modified : 8/17/19 11:12 PM
+ *  Last modified : 12/4/19 10:47 PM
  *
  *  -----------------------------------------------------------
  */
 
 package com.apps.mohb.shutternotes;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.apps.mohb.shutternotes.fragments.dialogs.FlickrAccountTipAlertFragment;
 import com.apps.mohb.shutternotes.views.Toasts;
 import com.flickr4java.flickr.auth.Auth;
 
 
-public class FlickrAccountActivity extends AppCompatActivity
-		implements FlickrAccountTipAlertFragment.FlickrAccountTipDialogListener {
+public class FlickrAccountActivity extends AppCompatActivity {
 
 	private WebView flickrWebView;
 	private TextView codeTextView;
@@ -39,6 +39,8 @@ public class FlickrAccountActivity extends AppCompatActivity
 	private String tokenKey;
 
 	private SharedPreferences warningFirstShow;
+
+	private Handler handlerForJavascriptInterface;
 
 
 	@Override
@@ -53,19 +55,21 @@ public class FlickrAccountActivity extends AppCompatActivity
 		flickrWebView = findViewById(R.id.webViewFlickrAuth);
 		configureWebView(flickrWebView);
 
+		handlerForJavascriptInterface = new Handler();
+
 		codeTextView = findViewById(R.id.inputTextFlickrAuth);
 		codeTextView.setOnFocusChangeListener((view, b) -> {
 			codeTextView.setHint(Constants.EMPTY);
 			connectButton.setClickable(true);
 			connectButton.setText(R.string.button_connect);
-			connectButton.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.colorGreen));
+			connectButton.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.colorGreen, null));
 		});
 
 		connectButton = findViewById(R.id.authButtonFlickrAuth);
 		connectButton.setClickable(false);
 		connectButton.setOnClickListener(view -> {
 			int textSize = codeTextView.getText().length();
-			if (textSize >= 9 && textSize <= 11) {
+			if (textSize >= Constants.TOKEN_KEY_SIZE - 2 && textSize <= Constants.TOKEN_KEY_SIZE) {
 				tokenKey = codeTextView.getText().toString();
 				flickrApi.setTokenKey(tokenKey);
 				new getAccessToken().execute();
@@ -75,13 +79,6 @@ public class FlickrAccountActivity extends AppCompatActivity
 				Toasts.showTypeCode();
 			}
 		});
-
-		warningFirstShow = this.getSharedPreferences(Constants.FLICKR_ACCOUNT_WARNING, Constants.PRIVATE_MODE);
-
-		if(warningFirstShow.getBoolean(Constants.KEY_FIRST_SHOW, true)) {
-			FlickrAccountTipAlertFragment dialogWarning = new FlickrAccountTipAlertFragment();
-			dialogWarning.show(getSupportFragmentManager(), "FlickrAccountTipAlertFragment");
-		}
 
 		if (!flickrApi.getToken().isEmpty() && !flickrApi.getTokenSecret().isEmpty()) {
 			new checkToken().execute();
@@ -100,20 +97,14 @@ public class FlickrAccountActivity extends AppCompatActivity
 		Toasts.cancelWrongCode();
 	}
 
-	private class WebBrowser extends WebViewClient {
-		@Override
-		public boolean shouldOverrideUrlLoading(WebView view, String url) {
-			view.loadUrl(url);
-			return true;
-		}
-	}
-
 	private class getRequestToken extends FlickrApi.getRequestToken {
 
 		@Override
 		protected void onPostExecute(Object o) {
 			super.onPostExecute(o);
-			flickrWebView.loadUrl(FlickrApi.getAuthorizationUrl());
+			String authorizationUrl = FlickrApi.getAuthorizationUrl();
+			Log.d(Constants.LOG_DEBUG_TAG, authorizationUrl);
+			flickrWebView.loadUrl(authorizationUrl);
 			connectButton.setClickable(true);
 			connectButton.setText(R.string.button_connect);
 		}
@@ -127,7 +118,7 @@ public class FlickrAccountActivity extends AppCompatActivity
 			super.onPreExecute();
 			connectButton.setClickable(false);
 			connectButton.setText(R.string.button_connecting);
-			connectButton.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.colorYellow));
+			connectButton.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.colorYellow, null));
 		}
 
 		@Override
@@ -139,7 +130,7 @@ public class FlickrAccountActivity extends AppCompatActivity
 				Toasts.showWrongCode();
 				connectButton.setClickable(true);
 				connectButton.setText(R.string.button_connect);
-				connectButton.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.colorGreen));
+				connectButton.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.colorGreen, null));
 			} else {
 				new checkToken().execute();
 			}
@@ -162,13 +153,13 @@ public class FlickrAccountActivity extends AppCompatActivity
 					Toasts.showWrongCode();
 					connectButton.setClickable(true);
 					connectButton.setText(R.string.button_connect);
-					connectButton.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.colorGreen));
+					connectButton.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.colorGreen, null));
 				}
 				FlickrApi.clearTokens();
 				new getRequestToken().execute();
 			} else {
 				String user = auth.getUser().getId();
-				Log.d(Constants.LOG_DEBUG_TAG, user);
+				Log.i(Constants.LOG_INFO_TAG, "User id: " + user);
 				Toasts.createAccountConnected();
 				Toasts.showAccountConnected();
 				setContentView(R.layout.activity_flickr_account_connected);
@@ -180,16 +171,53 @@ public class FlickrAccountActivity extends AppCompatActivity
 
 	}
 
-	@Override
-	public void onFlickrAccountTipDialogPositiveClick(DialogFragment dialog) {
-		warningFirstShow.edit().putBoolean(Constants.KEY_FIRST_SHOW, false).commit();
+	// Insert token key in text field and execute get access token
+	private void insertTokenKey(String key) {
+		codeTextView.setText(key);
+		flickrApi.setTokenKey(key);
+		new getAccessToken().execute();
+
 	}
 
+	// Below this point it was used code from the folloeing page:
+	// http://technoranch.blogspot.com/2014/08/how-to-get-html-content-from-android-webview.html
+
 	private void configureWebView(WebView webView) {
-		webView.setWebViewClient(new WebBrowser());
+		// Sets a customized web view client capable of extract html content from a javascript page
+		webView.setWebViewClient(new WebViewClient() {
+			@Override
+			public void onPageFinished(WebView view, String url) {
+				// Javascript code to extract html content from Flickr pages
+				// The token key is in the 8th (index 7) span element
+				webView.loadUrl("javascript:window.HtmlViewer.getTokenKey" +
+						"(document.getElementsByTagName('span')[7].innerHTML);");
+			}
+		});
 		webView.getSettings().setLoadsImagesAutomatically(true);
 		webView.getSettings().setJavaScriptEnabled(true);
+		webView.getSettings().setDomStorageEnabled(true);
 		webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+		webView.addJavascriptInterface(new MyJavaScriptInterface(this), "HtmlViewer");
+	}
+
+	class MyJavaScriptInterface {
+		private Context context;
+
+		MyJavaScriptInterface(Context context) {
+			this.context = context;
+		}
+
+		@JavascriptInterface
+		public void getTokenKey(String code) {
+			handlerForJavascriptInterface.post(new Runnable() {
+				@Override
+				public void run() {
+					if (code.length() == Constants.TOKEN_KEY_SIZE && code.contains(Constants.DASH)) {
+						insertTokenKey(code);
+					}
+				}
+			});
+		}
 	}
 
 }

@@ -1,3 +1,7 @@
+#### **0.1.16**
+- Improvements on user interface.
+- Fixed bug.
+
 #### **0.1.15**
 - Fixed crashes when opening a Flickr note on Android 9.0 (API 28) and higher.
 

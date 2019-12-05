@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : Constants.java
- *  Last modified : 11/10/19 11:58 AM
+ *  Last modified : 12/4/19 9:17 PM
  *
  *  -----------------------------------------------------------
  */
@@ -108,6 +108,7 @@ public class Constants {
 	public static final String FLICKR_ACCOUNT                    = "FlickrAccount";
 	public static final String TOKEN                             = "Token";
 	public static final String TOKEN_SECRET                      = "TokenSecret";
+	public static final int    TOKEN_KEY_SIZE                    = 11;
 	public static final String FLICKR_URL                        = "https://flickr.com/people/";
 	public static final String PHOTOSET_ID                       = "PhotosetId";
 	public static final String PHOTOSET_SIZE                     = "PhotosetSize";
@@ -118,6 +119,7 @@ public class Constants {
 	public static final String SPACE                             = " ";
 	public static final String COMMA                             = ", ";
 	public static final String COLON                             = ": ";
+	public static final String DASH                              = "-";
 	public static final String QUOTE                             = "\"";
 	public static final String DOUBLE_QUOTE                      = "\"\"";
 	public static final String BRACKET_LEFT                      = "[";

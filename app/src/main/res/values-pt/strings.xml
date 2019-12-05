@@ -144,7 +144,6 @@
     <string name="dialog_progress_upload_data">Adicionando dados às fotos…</string>
     <string name="toast_no_photos_updated">Nenhuma foto foi atualizada</string>
     <string name="dialog_warning_button_ok">Ok, entendi</string>
-    <string name="dialog_warning_flickr_account_message">Ao logar na sua conta do Flickr desmarque a opção \"Lembre-se de endereço de e-mail\", do contrário, você não conseguirá entrar</string>
     <string name="dialog_warning_title">Aviso importante!</string>
     <string name="dialog_warning_flickr_note_message">Antes de criar suas notas do Flickr, não esqueça de sincronizar os relógios da sua câmera e do seu smartphone</string>
     <string name="dialog_instruction_fullscreen_message">Tire uma foto da tela verde para marcar o início da sequência de fotos. Após terminar, toque por alguns segundos na tela para torná-la vermelha e tire uma foto para marcar o final da sequência. Por fim, toque por alguns segundos novamente na tela para sair.</string>

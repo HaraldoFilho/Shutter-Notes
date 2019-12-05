@@ -7,8 +7,8 @@
 
     <!--Application version-->
     <string name="version_name">version: </string>
-    <string name="version_number" translatable="false">0.1.15</string>
-    <string name="version_code" translatable="false">30</string>
+    <string name="version_number" translatable="false">0.1.16</string>
+    <string name="version_code" translatable="false">31</string>
 
     <!--Application information-->
     <string name="info_app_name" translatable="false">Shutter Notes</string>
@@ -123,7 +123,6 @@
     <string name="dialog_progress_photosets">Loading photosets…</string>
     <string name="dialog_warning_title">Important warning!</string>
     <string name="dialog_instruction_title">Instructions</string>
-    <string name="dialog_warning_flickr_account_message">When signing in to your Flickr account uncheck the option \"Remember email address\", otherwise you won\'t be able to sign in</string>
     <string name="dialog_warning_flickr_note_message">Before create your Flickr notes, do not forget to synchronize your camera and smartphone clocks</string>
     <string name="dialog_instruction_fullscreen_message">Take a picture of the green screen to mark the start of the photo sequence. After finish, long click the screen to turn it red and take a picture to mark the end of the sequence. Finally, long click the screen again to exit.</string>
     <string name="dialog_warning_button_ok">Ok, I understand</string>

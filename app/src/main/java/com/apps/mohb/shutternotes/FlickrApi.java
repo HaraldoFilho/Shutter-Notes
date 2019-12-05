@@ -167,7 +167,8 @@ public class FlickrApi {
 
 			try {
 				auth = authInterface.checkToken(token, tokenSecret);
-				Log.i(Constants.LOG_INFO_TAG, "User: " + auth.getUser().getUsername());
+				Log.i(Constants.LOG_INFO_TAG, "Account connected!");
+				Log.i(Constants.LOG_INFO_TAG, "User name: " + auth.getUser().getUsername());
 			} catch (FlickrException e) {
 				auth = null;
 			}
