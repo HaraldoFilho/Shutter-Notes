@@ -171,6 +171,10 @@ public class FlickrApi {
 				Log.i(Constants.LOG_INFO_TAG, "User name: " + auth.getUser().getUsername());
 			} catch (FlickrException e) {
 				auth = null;
+				requestToken = null;
+				accessToken = null;
+				token = Constants.EMPTY;
+				tokenSecret = Constants.EMPTY;
 			}
 			return null;
 

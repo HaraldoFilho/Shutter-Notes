@@ -1,3 +1,6 @@
+#### **0.1.17**
+- Fixed bugs.
+
 #### **0.1.16**
 - Improvements on user interface.
 - Fixed bug.

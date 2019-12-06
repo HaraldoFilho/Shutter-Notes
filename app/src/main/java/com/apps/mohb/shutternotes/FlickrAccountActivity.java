@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrAccountActivity.java
- *  Last modified : 12/4/19 10:47 PM
+ *  Last modified : 12/5/19 10:44 PM
  *
  *  -----------------------------------------------------------
  */
@@ -13,7 +13,6 @@
 package com.apps.mohb.shutternotes;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -37,8 +36,6 @@ public class FlickrAccountActivity extends AppCompatActivity {
 
 	private FlickrApi flickrApi;
 	private String tokenKey;
-
-	private SharedPreferences warningFirstShow;
 
 	private Handler handlerForJavascriptInterface;
 
@@ -158,14 +155,14 @@ public class FlickrAccountActivity extends AppCompatActivity {
 				FlickrApi.clearTokens();
 				new getRequestToken().execute();
 			} else {
-				String user = auth.getUser().getId();
-				Log.i(Constants.LOG_INFO_TAG, "User id: " + user);
+				String userId = auth.getUser().getId();
+				Log.i(Constants.LOG_INFO_TAG, "User id: " + userId);
 				Toasts.createAccountConnected();
 				Toasts.showAccountConnected();
 				setContentView(R.layout.activity_flickr_account_connected);
 				flickrWebView = findViewById(R.id.webViewFlickrProfile);
 				configureWebView(flickrWebView);
-				flickrWebView.loadUrl(Constants.FLICKR_URL + user);
+				flickrWebView.loadUrl(Constants.FLICKR_URL + userId);
 			}
 		}
 
@@ -179,7 +176,7 @@ public class FlickrAccountActivity extends AppCompatActivity {
 
 	}
 
-	// Below this point it was used code from the folloeing page:
+	// Below this point it was used code from the following page:
 	// http://technoranch.blogspot.com/2014/08/how-to-get-html-content-from-android-webview.html
 
 	private void configureWebView(WebView webView) {
@@ -188,10 +185,14 @@ public class FlickrAccountActivity extends AppCompatActivity {
 			@Override
 			public void onPageFinished(WebView view, String url) {
 				// Javascript code to extract html content from Flickr pages
-				// The token key is in the 8th (index 7) span element
-				webView.loadUrl("javascript:window.HtmlViewer.getTokenKey" +
+				// If user is PRO, the token key is in the 7th (index 6) span element
+				view.loadUrl("javascript:window.HtmlViewer.getTokenKey" +
+						"(document.getElementsByTagName('span')[6].innerHTML);");
+				// If user is NOT PRO, the token key is in the 8th (index 7) span element
+				view.loadUrl("javascript:window.HtmlViewer.getTokenKey" +
 						"(document.getElementsByTagName('span')[7].innerHTML);");
 			}
+
 		});
 		webView.getSettings().setLoadsImagesAutomatically(true);
 		webView.getSettings().setJavaScriptEnabled(true);
