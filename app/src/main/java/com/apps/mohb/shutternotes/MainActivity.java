@@ -167,6 +167,11 @@ public class MainActivity extends AppCompatActivity
 				intent = new Intent(this, FlickrAccountActivity.class);
 				break;
 
+			// Clock
+			case R.id.nav_clock:
+				intent = new Intent(this, ClockActivity.class);
+				break;
+
 			// Settings
 			case R.id.nav_settings:
 				intent = new Intent(this, SettingsActivity.class);

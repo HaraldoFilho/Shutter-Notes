@@ -115,7 +115,7 @@
     <string name="pref_title_what_show">Em tela cheia mostrar</string>
     <string name="pref_title_upload_location">Localização</string>
     <string name="pref_title_upload_tags">Tags</string>
-    <string name="pref_upload_location_summ_off">Nao fazer upload para o Flickr</string>
+    <string name="pref_upload_location_summ_off">Não fazer upload para o Flickr</string>
     <string name="pref_upload_location_summ_on">Fazer upload para o Flickr</string>
     <string name="pref_upload_tags_summ_off">Não fazer upload para o Flickr</string>
     <string name="pref_upload_tags_summ_on">Fazer upload para o Flickr</string>
@@ -150,5 +150,9 @@
     <string name="dialog_instruction_title">Instruções</string>
     <string name="pref_title_overwrite_tags">Sobrescrever tags</string>
     <string name="pref_group_flickr_upload">UPLOAD</string>
+    <string name="nav_menu_clock">Relógio</string>
+    <string name="activity_title_clock">Relógio</string>
+    <string name="text_syncronize_clock">SINCRONIZE O RELÓGIO DA SUA CÂMERA</string>
+    <string name="action_sync_clock">Sincronizar relógio</string>
 
 </resources>

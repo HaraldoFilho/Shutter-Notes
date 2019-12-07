@@ -22,6 +22,7 @@
 
     <!--Background colors-->
     <color name="colorBackgroundGreen">#00c853</color>
+    <color name="colorBackgroundDarkGreen">#1a7c07</color>
     <color name="colorBackgroundRed">#fa0c0c</color>
     <color name="colorBackgroundWhite">#ffffff</color>
     <color name="colorBackgroundTags">#f7f7f7</color>

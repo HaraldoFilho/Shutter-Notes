@@ -11,20 +11,15 @@
      location permissions for the 'MyLocation' functionality.
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
-    <!-- Needed to Android 5.0 (API level 21) or higher. -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- Needed to Android 5.0 (API level 21) or higher. -->
     <uses-feature android:name="android.hardware.location.network" />
-
     <!--
          The Maps API requires the additional following permissions to be set
          in the AndroidManifest.xml to ensure a correct behavior
     -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-
-    <!-- Necessary to connect to Flickr account -->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- Necessary to connect to Flickr account -->
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
 
     <application
@@ -37,8 +32,7 @@
 
         <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-        <!-- Google Maps-based APIs Key -->
+            android:value="@integer/google_play_services_version" /> <!-- Google Maps-based APIs Key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
@@ -52,6 +46,7 @@
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -94,8 +89,7 @@
             android:label="@string/activity_title_flickr_upload"
             android:parentActivityName=".FlickrPhotosetsListActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".FlickrPhotoActivity" />
+        <activity android:name=".FlickrPhotoActivity" />
         <activity
             android:name=".ArchiveActivity"
             android:label="@string/activity_title_archive"
@@ -108,10 +102,16 @@
             android:theme="@style/FullscreenTheme" />
         <activity
             android:name=".FlickrAccountActivity"
-            android:label="@string/activity_title_flickr_connect" />
+            android:label="@string/activity_title_flickr_connect"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ClockActivity"
+            android:label="@string/activity_title_clock"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/activity_title_settings" />
+            android:label="@string/activity_title_settings"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".HelpActivity"
             android:label="@string/activity_title_help"
@@ -125,7 +125,6 @@
             android:label="@string/action_feedback"
             android:parentActivityName=".AboutActivity"
             android:screenOrientation="portrait" />
-
     </application>
 
 </manifest>

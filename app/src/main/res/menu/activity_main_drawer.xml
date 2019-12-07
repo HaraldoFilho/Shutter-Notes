@@ -34,6 +34,10 @@
                 android:icon="@drawable/ic_nav_account_black_18dp"
                 android:title="@string/nav_menu_account" />
             <item
+                android:id="@+id/nav_clock"
+                android:icon="@drawable/ic_nav_clock_black_18dp"
+                android:title="@string/nav_menu_clock" />
+            <item
                 android:id="@+id/nav_settings"
                 android:icon="@drawable/ic_nav_settings_black_18dp"
                 android:title="@string/nav_menu_settings" />

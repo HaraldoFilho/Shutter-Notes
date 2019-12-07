@@ -19,10 +19,15 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.apps.mohb.shutternotes.fragments.dialogs.DeleteAllAlertFragment;
+import com.apps.mohb.shutternotes.fragments.dialogs.EditGearListDialogFragment;
 import com.apps.mohb.shutternotes.fragments.dialogs.FlickrNoteTipAlertFragment;
 import com.apps.mohb.shutternotes.notes.GearList;
 import com.apps.mohb.shutternotes.views.Toasts;
@@ -53,6 +58,9 @@ public class FlickrNoteActivity extends AppCompatActivity
 
 	private SharedPreferences settings;
 	private SharedPreferences warningFirstShow;
+
+	private AdapterView.AdapterContextMenuInfo menuInfo;
+	private MenuItem menuSyncClock;
 
 
 	@Override
@@ -152,6 +160,35 @@ public class FlickrNoteActivity extends AppCompatActivity
 		}
 
 	}
+
+	// OPTIONS MENU
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.flickr_note, menu);
+		menuSyncClock = menu.findItem(R.id.action_sync_clock);
+		menuSyncClock.setEnabled(true);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+
+		int id = item.getItemId();
+
+		switch (id) {
+
+			// Syncronize clock
+			case R.id.action_sync_clock: {
+				Intent intent = new Intent(this, ClockActivity.class);
+				startActivity(intent);
+				break;
+			}
+		}
+
+		return super.onOptionsItemSelected(item);
+	}
+
 
 	@Override
 	protected void onResume() {

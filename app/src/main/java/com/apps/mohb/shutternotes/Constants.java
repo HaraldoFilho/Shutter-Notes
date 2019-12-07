@@ -75,6 +75,8 @@ public class Constants {
 	public static final String LONGITUDE                         = "LONGITUDE";
 	public static final double DEFAULT_LATITUDE                  = 0;
 	public static final double DEFAULT_LONGITUDE                 = 0;
+	public static final int    MS_PER_HOUR                       = 3600000;
+	public static final String UTC                               = "   UTC ";
 
 	// Lists
 	public static final int    LIST_ADAPTER_RESOURCE_ID          = 0;

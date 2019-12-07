@@ -12,7 +12,6 @@
         android:layout_marginLeft="@dimen/dialog_text_margin"
         android:layout_marginTop="@dimen/dialog_margin"
         android:layout_marginRight="@dimen/dialog_text_margin"
-        android:hint="@string/text_hint_empty"
         android:importantForAutofill="no"
         android:inputType="text"
         android:textSize="@dimen/edit_text_size"
