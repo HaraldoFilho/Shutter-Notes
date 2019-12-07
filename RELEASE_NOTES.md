@@ -1,3 +1,6 @@
+#### **0.1.18**
+- Added a clock to synchronize camera time.
+
 #### **0.1.17**
 - Fixed bugs.
 
