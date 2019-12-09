@@ -36,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -61,7 +62,6 @@ public class FullscreenNoteActivity extends AppCompatActivity
 	 */
 	private static final int UI_ANIMATION_DELAY = 300;
 	private final Handler mHideHandler = new Handler();
-	private View mContentView;
 	private int state;
 
 	private Notebook notebook;
@@ -73,7 +73,6 @@ public class FullscreenNoteActivity extends AppCompatActivity
 	private String startTime = Constants.EMPTY;
 	private String finishTime = Constants.EMPTY;
 
-	private SharedPreferences settings;
 	private SharedPreferences instructionsFirstShow;
 
 
@@ -86,7 +85,7 @@ public class FullscreenNoteActivity extends AppCompatActivity
 			// Note that some of these constants are new as of API 16 (Jelly Bean)
 			// and API 19 (KitKat). It is safe to use them, as they are inlined
 			// at compile-time and do nothing on earlier devices.
-			mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+			textView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
 					| View.SYSTEM_UI_FLAG_FULLSCREEN
 					| View.SYSTEM_UI_FLAG_LAYOUT_STABLE
 					| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
@@ -106,12 +105,8 @@ public class FullscreenNoteActivity extends AppCompatActivity
 		}
 	};
 	private boolean mVisible;
-	private final Runnable mHideRunnable = new Runnable() {
-		@Override
-		public void run() {
-			hide();
-		}
-	};
+	private final Runnable mHideRunnable = () -> hide();
+
 	/**
 	 * Touch listener to use for in-layout UI controls to delay hiding the
 	 * system UI. This is to prevent the jarring behavior of controls going away
@@ -131,7 +126,7 @@ public class FullscreenNoteActivity extends AppCompatActivity
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		settings = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 
 		setContentView(R.layout.activity_fullscreen_note);
 
@@ -146,23 +141,23 @@ public class FullscreenNoteActivity extends AppCompatActivity
 		}
 
 		mVisible = true;
-		mContentView = findViewById(R.id.textFullscreen);
 
-		callerActivity = getIntent().getExtras().getInt(Constants.KEY_CALLER_ACTIVITY);
+		callerActivity = Objects.requireNonNull(getIntent().getExtras()).getInt(Constants.KEY_CALLER_ACTIVITY);
 
 		textView = findViewById(R.id.textFullscreen);
+
 		if (callerActivity == Constants.ACTIVITY_GEAR_NOTE) {
-			textView.setLineSpacing(0, (float) 1.25);
+			textView.setLineSpacing(0, (float) Constants.FULL_SCREEN_TEXT_LINE_SPACING);
 		}
 
 		text = getIntent().getExtras().getString(Constants.KEY_FULL_SCREEN_TEXT);
 
-		textView.setText(text.trim());
-		textView.setBackgroundColor(getResources().getColor(R.color.colorBackgroundGreen));
+		textView.setText(Objects.requireNonNull(text).trim());
+		textView.setBackgroundColor(getResources().getColor(R.color.colorBackgroundGreen, null));
 
 		String prefKey = settings.getString(Constants.PREF_KEY_FONT_SIZE, Constants.PREF_FONT_SIZE_MEDIUM);
 
-		switch (prefKey) {
+		switch (Objects.requireNonNull(prefKey)) {
 
 			case Constants.PREF_FONT_SIZE_SMALL:
 				textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, Constants.FONT_SIZE_SMALL_LARGE);
@@ -183,7 +178,7 @@ public class FullscreenNoteActivity extends AppCompatActivity
 		startTime = date.format(new Date().getTime());
 
 		// Set up the user interaction to manually show or hide the system UI.
-		mContentView.setOnLongClickListener(view -> {
+		textView.setOnLongClickListener(view -> {
 			toggle();
 			return true;
 		});
@@ -256,14 +251,16 @@ public class FullscreenNoteActivity extends AppCompatActivity
 
 						case Constants.ACTIVITY_FLICKR_NOTE:
 							Bundle bundle = getIntent().getExtras();
-							String title = bundle.getString(Constants.FLICKR_TITLE);
-							String description = bundle.getString(Constants.FLICKR_DESCRIPTION);
-							ArrayList<String> tags = bundle.getStringArrayList(Constants.FLICKR_TAGS);
-							double latitude = bundle.getDouble(Constants.LATITUDE);
-							double longitude = bundle.getDouble(Constants.LONGITUDE);
-							FlickrNote flickrNote = new FlickrNote(title, description, tags,
-									latitude, longitude, startTime, finishTime);
-							notebook.addNote(flickrNote);
+							if (bundle != null) {
+								String title = bundle.getString(Constants.FLICKR_TITLE);
+								String description = bundle.getString(Constants.FLICKR_DESCRIPTION);
+								ArrayList<String> tags = bundle.getStringArrayList(Constants.FLICKR_TAGS);
+								double latitude = bundle.getDouble(Constants.LATITUDE);
+								double longitude = bundle.getDouble(Constants.LONGITUDE);
+								FlickrNote flickrNote = new FlickrNote(title, description, tags,
+										latitude, longitude, startTime, finishTime);
+								notebook.addNote(flickrNote);
+							}
 							break;
 
 					}
@@ -295,7 +292,7 @@ public class FullscreenNoteActivity extends AppCompatActivity
 	@SuppressLint("InlinedApi")
 	private void show() {
 		// Show the system bar
-		mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+		textView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
 				| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
 		mVisible = true;
 
@@ -327,7 +324,7 @@ public class FullscreenNoteActivity extends AppCompatActivity
 
 	@Override
 	public void onFullscreenTipDialogPositiveClick(DialogFragment dialog) {
-		instructionsFirstShow.edit().putBoolean(Constants.KEY_FIRST_SHOW, false).commit();
+		instructionsFirstShow.edit().putBoolean(Constants.KEY_FIRST_SHOW, false).apply();
 	}
 
 }

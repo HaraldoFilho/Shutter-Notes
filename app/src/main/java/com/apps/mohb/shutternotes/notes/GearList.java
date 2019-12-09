@@ -88,7 +88,6 @@ public class GearList {
 			}
 		}
 		list.add(Constants.LIST_HEAD, gear);
-		return;
 
 	}
 
@@ -122,28 +121,22 @@ public class GearList {
 
 	public String getEditedGearItemText(Context context) {
 		gearTextEdit = context.getSharedPreferences(Constants.EDIT_GEAR_TEXT, Constants.PRIVATE_MODE);
-		String editedText = gearTextEdit.getString(Constants.GEAR_EDITED_TEXT, Constants.EMPTY);
-		return editedText;
+		return gearTextEdit.getString(Constants.GEAR_EDITED_TEXT, Constants.EMPTY);
 	}
 
 	public void setEditedGearItemText(Context context, String textString) {
 		gearTextEdit = context.getSharedPreferences(Constants.EDIT_GEAR_TEXT, Constants.PRIVATE_MODE);
-		SharedPreferences.Editor editor = gearTextEdit.edit();
-		editor.putString(Constants.GEAR_EDITED_TEXT, textString);
-		editor.commit();
+		gearTextEdit.edit().putString(Constants.GEAR_EDITED_TEXT, textString).apply();
 	}
 
 	public int getEditedGearItemPosition(Context context) {
 		gearTextEdit = context.getSharedPreferences(Constants.EDIT_GEAR_TEXT, Constants.PRIVATE_MODE);
-		int itemPosition = gearTextEdit.getInt(Constants.GEAR_ITEM_POSITION, Constants.NULL_POSITION);
-		return itemPosition;
+		return gearTextEdit.getInt(Constants.GEAR_ITEM_POSITION, Constants.NULL_POSITION);
 	}
 
 	public void setEditedGearItemPosition(Context context, int itemPosition) {
 		gearTextEdit = context.getSharedPreferences(Constants.EDIT_GEAR_TEXT, Constants.PRIVATE_MODE);
-		SharedPreferences.Editor editor = gearTextEdit.edit();
-		editor.putInt(Constants.GEAR_ITEM_POSITION, itemPosition);
-		editor.commit();
+		gearTextEdit.edit().putInt(Constants.GEAR_ITEM_POSITION, itemPosition).apply();
 	}
 
 }

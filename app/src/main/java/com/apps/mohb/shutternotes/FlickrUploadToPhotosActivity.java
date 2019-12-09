@@ -5,13 +5,14 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrUploadToPhotosActivity.java
- *  Last modified : 11/12/19 2:32 PM
+ *  Last modified : 12/8/19 11:18 AM
  *
  *  -----------------------------------------------------------
  */
 
 package com.apps.mohb.shutternotes;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -37,9 +38,10 @@ import com.flickr4java.flickr.photosets.Photoset;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Objects;
 
 
+@SuppressWarnings("unchecked")
 public class FlickrUploadToPhotosActivity extends AppCompatActivity {
 
 	private Collection<Photo> updatedPhotos;
@@ -74,8 +76,10 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
 		settings = PreferenceManager.getDefaultSharedPreferences(this);
 
 		Bundle bundle = getIntent().getExtras();
-		selectedSetId = bundle.getString(Constants.PHOTOSET_ID);
-		selectedSetSize = bundle.getInt(Constants.PHOTOSET_SIZE);
+		if (bundle != null) {
+			selectedSetId = bundle.getString(Constants.PHOTOSET_ID);
+			selectedSetSize = bundle.getInt(Constants.PHOTOSET_SIZE);
+		}
 		updatedPhotos = new ArrayList<>();
 
 		if (notebook == null) {
@@ -118,11 +122,12 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
 
 		showProgressDialog();
 
-		new checkToken().execute();
+		new CheckToken().execute();
 
 	}
 
-	private class checkToken extends FlickrApi.checkToken {
+	@SuppressLint("StaticFieldLeak")
+	private class CheckToken extends FlickrApi.CheckToken {
 
 		@Override
 		protected void onPostExecute(Object o) {
@@ -133,13 +138,14 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
 				Intent intent = new Intent(getApplicationContext(), FlickrAccountActivity.class);
 				startActivity(intent);
 			} else {
-				new uploadData().execute();
+				new UploadData().execute();
 			}
 
 		}
 	}
 
-	private class uploadData extends AsyncTask {
+	@SuppressLint("StaticFieldLeak")
+	private class UploadData extends AsyncTask {
 
 		protected Object doInBackground(Object[] objects) {
 
@@ -148,26 +154,24 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
 				String user = auth.getUser().getId();
 				RequestContext.getRequestContext().setAuth(auth);
 				Collection<Photoset> photosets = flickr.getPhotosetsInterface().getList(user).getPhotosets();
-				Iterator<Photoset> photosetIterator = photosets.iterator();
-				while (photosetIterator.hasNext()) {
-					Photoset photoset = photosetIterator.next();
+				for (Photoset photoset : photosets) {
 					if (photoset.getId().equals(selectedSetId)) {
 						int progress = 0;
 						int pages = FlickrApi.getNumOfPages(selectedSetSize, Constants.PHOTOSET_PER_PAGE);
 						for (int page = 1; page <= pages; page++) {
 							Collection<Photo> photos = flickr.getPhotosetsInterface()
 									.getPhotos(selectedSetId, Constants.PHOTOSET_PER_PAGE, page);
-							Iterator<Photo> photoIterator = photos.iterator();
-							while (photoIterator.hasNext()) {
-								Photo photo = photoIterator.next();
+							for (Photo photo : photos) {
 								String photoId = photo.getId();
 								for (int i = 0; i < selectedNotes.size(); i++) {
 									FlickrNote note = selectedNotes.get(i);
 									String date = FlickrApi.getDateTaken(photoId);
 									if (note.isInTimeInterval(date)) {
-										uploadDataToPhoto(photoId, note);
-										updatedPhotos.add(FlickrApi.getFlickrInterface()
-												.getPhotosInterface().getPhoto(photoId));
+										if (uploadDataToPhoto(photoId, note)) {
+											// If photo was updated, added it to list
+											updatedPhotos.add(FlickrApi.getFlickrInterface()
+													.getPhotosInterface().getPhoto(photoId));
+										}
 									}
 								}
 								progress++;
@@ -226,18 +230,21 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
 
 	}
 
-	private void uploadDataToPhoto(String photoId, FlickrNote note) throws FlickrException {
+	private boolean uploadDataToPhoto(String photoId, FlickrNote note) throws FlickrException {
 
-		Boolean overwriteData = settings.getBoolean(Constants.PREF_KEY_OVERWRITE_DATA, false);
+		boolean overwriteData = settings.getBoolean(Constants.PREF_KEY_OVERWRITE_DATA, false);
 		String overwriteTags = settings.getString(Constants.PREF_KEY_OVERWRITE_TAGS, Constants.PREF_REPLACE_ALL);
 
 		RequestContext.getRequestContext().setAuth(auth);
 		PhotosInterface photosInterface = FlickrApi.getFlickrInterface().getPhotosInterface();
 
+		boolean wasUpdated = false;
+
 		// If overwrite data setting is on or there is no title in the photo
 		// upload title and description to photo
 		if (overwriteData || photosInterface.getPhoto(photoId).getTitle().isEmpty()) {
 			photosInterface.setMeta(photoId, note.getTitle(), note.getDescription());
+			wasUpdated = true;
 		}
 
 		// If upload tags setting is on and there are tags in the notes upload tags to photo
@@ -255,7 +262,7 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
 
 				// If there are tags on photo and overwrite data is on
 				// add tags according to overwrite tags setting
-				switch (overwriteTags) {
+				switch (Objects.requireNonNull(overwriteTags)) {
 
 					case Constants.PREF_REPLACE_ALL:
 						FlickrApi.getNewPhotoTagsArray(tagsToAdd);
@@ -274,6 +281,9 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
 
 				}
 			}
+
+			wasUpdated = true;
+
 		}
 
 		// Add location info to the photo if upload location setting is on
@@ -281,7 +291,11 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
 		if (settings.getBoolean(Constants.PREF_KEY_UPLOAD_LOCATION, true)
 				&& (overwriteData || photosInterface.getPhoto(photoId).getGeoData() == null)) {
 			photosInterface.getGeoInterface().setLocation(photoId, note.getGeoData());
+			wasUpdated = true;
 		}
+
+		return wasUpdated;
+
 	}
 
 	private void showProgressDialog() {

@@ -53,7 +53,9 @@ public class Archive {
 		return simpleNotes;
 	}
 
-	public void addNote(SimpleNote note) { simpleNotes.add(Constants.LIST_HEAD, note); }
+	public void addNote(SimpleNote note) {
+		simpleNotes.add(Constants.LIST_HEAD, note);
+	}
 
 	public void removeSimpleNote(int position) {
 		simpleNotes.remove(position);

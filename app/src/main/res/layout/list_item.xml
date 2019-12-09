@@ -5,14 +5,14 @@
     android:id="@+id/listItem"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/item_height"
+    android:layout_height="match_parent"
+    android:gravity="center"
     android:background="@color/colorTileBackground" >
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
         android:layout_margin="@dimen/item_margin"
         android:gravity="center"
         android:textColor="@color/colorWhiteText"

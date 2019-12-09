@@ -12,42 +12,34 @@
 
 package com.apps.mohb.shutternotes;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
+
+import java.util.Objects;
 
 
 public class FlickrPhotoActivity extends AppCompatActivity {
-
-	private WebView flickrWebView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_flickr_photo);
-		getSupportActionBar().hide();
+		Objects.requireNonNull(getSupportActionBar()).hide();
 
 		String url = getIntent().getStringExtra(Constants.KEY_URL);
 
-		flickrWebView = findViewById(R.id.webViewFlickrPhoto);
+		WebView flickrWebView = findViewById(R.id.webViewFlickrPhoto);
 		configureWebView(flickrWebView);
 		flickrWebView.loadUrl(url);
 
 	}
 
-	private class WebBrowser extends WebViewClient {
-		@Override
-		public boolean shouldOverrideUrlLoading(WebView view, String url) {
-			view.loadUrl(url);
-			return true;
-		}
-	}
-
+	@SuppressLint("SetJavaScriptEnabled")
 	private void configureWebView(WebView webView) {
-		webView.setWebViewClient(new WebBrowser());
 		webView.getSettings().setLoadsImagesAutomatically(true);
 		webView.getSettings().setJavaScriptEnabled(true);
 		webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);

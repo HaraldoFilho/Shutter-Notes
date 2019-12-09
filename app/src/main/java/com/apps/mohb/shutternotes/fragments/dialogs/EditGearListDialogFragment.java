@@ -17,6 +17,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,7 @@ import com.apps.mohb.shutternotes.R;
 import com.apps.mohb.shutternotes.notes.GearList;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class EditGearListDialogFragment extends DialogFragment {
 
@@ -40,6 +42,7 @@ public class EditGearListDialogFragment extends DialogFragment {
 	private GearList gearList;
 	private EditText text;
 
+	@NonNull
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 
@@ -51,11 +54,11 @@ public class EditGearListDialogFragment extends DialogFragment {
 			e.printStackTrace();
 		}
 
-		final LayoutInflater inflater = getActivity().getLayoutInflater();
+		final LayoutInflater inflater = Objects.requireNonNull(getActivity()).getLayoutInflater();
 		View view = inflater.inflate(R.layout.fragment_edit_gear_list_dialog, null);
 
 		text = view.findViewById(R.id.txtEditGear);
-		final String editedText = gearList.getEditedGearItemText(getContext());
+		final String editedText = gearList.getEditedGearItemText(Objects.requireNonNull(getContext()));
 		final int itemPosition = gearList.getEditedGearItemPosition(getContext());
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -74,7 +77,7 @@ public class EditGearListDialogFragment extends DialogFragment {
 					if (editedText.isEmpty()) {
 						gearList.add(textString);
 					} else if (itemPosition != Constants.NULL_POSITION) {
-						gearList.setEditedGearItemText(getContext(), textString);
+						gearList.setEditedGearItemText(Objects.requireNonNull(getContext()), textString);
 						gearList.setEditedGearItemPosition(getContext(), itemPosition);
 					}
 					try {

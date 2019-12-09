@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.regex.Pattern;
 
 
+@SuppressWarnings("WeakerAccess")
 public class FlickrApi {
 
 	private static Flickr flickr;
@@ -43,7 +44,6 @@ public class FlickrApi {
 	private static AuthInterface authInterface;
 	private static Auth auth;
 
-	private static String apiKey;
 	private static String apiSecret;
 	private static String token;
 	private static String tokenKey;
@@ -58,13 +58,13 @@ public class FlickrApi {
 
 	public FlickrApi(Context context) {
 
-		apiKey = context.getResources().getString(R.string.flickr_key);
+		String apiKey = context.getResources().getString(R.string.flickr_key);
 		apiSecret = context.getResources().getString(R.string.flickr_secret);
 		flickr = new Flickr(apiKey, apiSecret, new REST());
 		authInterface = flickr.getAuthInterface();
 
 		flickrAccount = context.getSharedPreferences(Constants.FLICKR_ACCOUNT, Constants.PRIVATE_MODE);
-		flickrAccountEditor = flickrAccount.edit();
+
 		token = flickrAccount.getString(Constants.TOKEN, Constants.EMPTY);
 		tokenSecret = flickrAccount.getString(Constants.TOKEN_SECRET, Constants.EMPTY);
 
@@ -73,8 +73,10 @@ public class FlickrApi {
 	}
 
 	public static void clearTokens() {
+		flickrAccountEditor = flickrAccount.edit();
 		flickrAccountEditor.putString(Constants.TOKEN, Constants.EMPTY);
 		flickrAccountEditor.putString(Constants.TOKEN_SECRET, Constants.EMPTY);
+		flickrAccountEditor.apply();
 	}
 
 	public static Flickr getFlickrInterface() {
@@ -89,8 +91,8 @@ public class FlickrApi {
 		return token;
 	}
 
-	public void setTokenKey(String tokenKey) {
-		this.tokenKey = tokenKey;
+	public void setTokenKey(String key) {
+		tokenKey = key;
 	}
 
 	public String getTokenSecret() {
@@ -105,7 +107,7 @@ public class FlickrApi {
 		return tokenFailed;
 	}
 
-	public static class getRequestToken extends AsyncTask {
+	public static class GetRequestToken extends AsyncTask {
 
 		protected Object doInBackground(Object[] objects) {
 
@@ -123,7 +125,7 @@ public class FlickrApi {
 
 	}
 
-	public static class getAccessToken extends AsyncTask {
+	public static class GetAccessToken extends AsyncTask {
 
 		@Override
 		protected void onPreExecute() {
@@ -146,8 +148,10 @@ public class FlickrApi {
 					Log.i(Constants.LOG_INFO_TAG, "Token: " + token);
 					Log.i(Constants.LOG_INFO_TAG, "Token Secret: " + tokenSecret);
 
-					flickrAccountEditor.putString(Constants.TOKEN, token).commit();
-					flickrAccountEditor.putString(Constants.TOKEN_SECRET, tokenSecret).commit();
+					flickrAccountEditor = flickrAccount.edit();
+					flickrAccountEditor.putString(Constants.TOKEN, token);
+					flickrAccountEditor.putString(Constants.TOKEN_SECRET, tokenSecret);
+					flickrAccountEditor.apply();
 
 				} catch (RuntimeException e) {
 					tokenFailed = true;
@@ -159,7 +163,7 @@ public class FlickrApi {
 
 	}
 
-	public static class checkToken extends AsyncTask {
+	public static class CheckToken extends AsyncTask {
 
 		protected Object doInBackground(Object[] objects) {
 
@@ -230,10 +234,7 @@ public class FlickrApi {
 					.replace("Tag [value=", Constants.EMPTY)
 					.replace(", count=0]", Constants.EMPTY);
 
-			Iterator iterator = listUserRaw.iterator();
-			while (iterator.hasNext()) {
-				TagRaw tagRaw = (TagRaw) iterator.next();
-
+			for (TagRaw tagRaw : listUserRaw) {
 				// Get tag's raw string
 				String tagString = String.valueOf(tagRaw.getRaw())
 						.replace(Constants.BRACKET_LEFT, Constants.QUOTE)

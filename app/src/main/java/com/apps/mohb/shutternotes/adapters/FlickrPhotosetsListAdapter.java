@@ -30,11 +30,13 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 
 public class FlickrPhotosetsListAdapter extends ArrayAdapter {
 
 
+	@SuppressWarnings("unchecked")
 	public FlickrPhotosetsListAdapter(@NonNull Context context, Collection<Photoset> photosetsList) {
 		super(context, Constants.LIST_ADAPTER_RESOURCE_ID, (List) photosetsList);
 	}
@@ -52,7 +54,7 @@ public class FlickrPhotosetsListAdapter extends ArrayAdapter {
 		TextView sizeView = convertView.findViewById(R.id.textPhotosetSize);
 
 		Photoset photoset = (Photoset) getItem(position);
-		String imgCoverPhotoUrl = photoset.getPrimaryPhoto().getSquareLargeUrl();
+		String imgCoverPhotoUrl = Objects.requireNonNull(photoset).getPrimaryPhoto().getSquareLargeUrl();
 
 		String txtTitle = photoset.getTitle();
 

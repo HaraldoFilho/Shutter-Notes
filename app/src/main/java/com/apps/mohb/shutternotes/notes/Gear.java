@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : Gear.java
- *  Last modified : 8/17/19 12:08 PM
+ *  Last modified : 12/8/19 1:55 PM
  *
  *  -----------------------------------------------------------
  */
@@ -13,6 +13,7 @@
 package com.apps.mohb.shutternotes.notes;
 
 
+@SuppressWarnings("WeakerAccess")
 public class Gear {
 
 	private String gearItem;

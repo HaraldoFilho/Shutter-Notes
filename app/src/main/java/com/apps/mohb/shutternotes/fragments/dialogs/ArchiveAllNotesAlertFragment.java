@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : ArchiveAllNotesAlertFragment.java
- *  Last modified : 8/17/19 12:08 PM
+ *  Last modified : 12/8/19 1:55 PM
  *
  *  -----------------------------------------------------------
  */
@@ -16,6 +16,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
 import com.apps.mohb.shutternotes.R;
@@ -32,6 +33,7 @@ public class ArchiveAllNotesAlertFragment extends DialogFragment {
 	private ArchiveAllNotesAlertDialogListener mListener;
 
 
+	@NonNull
 	@Override
 	public AlertDialog onCreateDialog(Bundle savedInstanceState) {
 

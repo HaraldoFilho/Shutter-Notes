@@ -1,4 +1,8 @@
-#### **0.1.18**
+#### **0.2.1**
+- Improvements on user interface.
+- Fixed bugs.
+
+#### **0.2.0**
 - Added a clock to synchronize camera time.
 
 #### **0.1.17**

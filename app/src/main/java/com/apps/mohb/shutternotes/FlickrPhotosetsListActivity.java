@@ -12,6 +12,7 @@
 
 package com.apps.mohb.shutternotes;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -29,12 +30,12 @@ import com.flickr4java.flickr.photosets.Photoset;
 import java.util.Collection;
 
 
+@SuppressWarnings("unchecked")
 public class FlickrPhotosetsListActivity extends AppCompatActivity implements
 		ConfirmUploadAlertFragment.ConfirmUploadAlertDialogListener {
 
 	private Collection<Photoset> photosets;
 	private ListView photosetsListView;
-	private FlickrPhotosetsListAdapter adapter;
 
 	private String selectedSetId;
 	private int selectedSetSize;
@@ -69,7 +70,7 @@ public class FlickrPhotosetsListActivity extends AppCompatActivity implements
 		progressDialog.setCancelable(false);
 		progressDialog.show();
 
-		new checkToken().execute();
+		new CheckToken().execute();
 
 	}
 
@@ -92,7 +93,8 @@ public class FlickrPhotosetsListActivity extends AppCompatActivity implements
 		dialog.dismiss();
 	}
 
-	private class checkToken extends FlickrApi.checkToken {
+	@SuppressLint("StaticFieldLeak")
+	private class CheckToken extends FlickrApi.CheckToken {
 
 		@Override
 		protected void onPostExecute(Object o) {
@@ -103,13 +105,14 @@ public class FlickrPhotosetsListActivity extends AppCompatActivity implements
 				Intent intent = new Intent(getApplicationContext(), FlickrAccountActivity.class);
 				startActivity(intent);
 			} else {
-				new getPhotosets().execute();
+				new GetPhotosets().execute();
 			}
 
 		}
 	}
 
-	private class getPhotosets extends AsyncTask {
+	@SuppressLint("StaticFieldLeak")
+	private class GetPhotosets extends AsyncTask {
 
 		protected Object doInBackground(Object[] objects) {
 
@@ -128,7 +131,7 @@ public class FlickrPhotosetsListActivity extends AppCompatActivity implements
 		protected void onPostExecute(Object o) {
 			super.onPostExecute(o);
 			progressDialog.cancel();
-			adapter = new FlickrPhotosetsListAdapter(getApplicationContext(), photosets);
+			FlickrPhotosetsListAdapter adapter = new FlickrPhotosetsListAdapter(getApplicationContext(), photosets);
 			photosetsListView.setAdapter(adapter);
 		}
 	}

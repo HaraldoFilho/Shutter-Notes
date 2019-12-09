@@ -5,19 +5,19 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : ArchiveActivity.java
- *  Last modified : 8/17/19 11:08 PM
+ *  Last modified : 12/8/19 10:59 PM
  *
  *  -----------------------------------------------------------
  */
 
 package com.apps.mohb.shutternotes;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -55,16 +55,10 @@ public class ArchiveActivity extends AppCompatActivity implements
 	private SimpleNotesListAdapter simpleNotesAdapter;
 	private GearNotesListAdapter gearNotesAdapter;
 	private FlickrNotesListAdapter flickrNotesAdapter;
-	private View listHeader;
-	private View listFooter;
-
-	private ArrayList<SimpleNote> simpleNotesList;
-	private ArrayList<GearNote> gearNotesList;
-	private ArrayList<FlickrNote> flickrNotesList;
 
 	private AdapterView.AdapterContextMenuInfo menuInfo;
-	private MenuItem menuItemDeleteAll;
-	private MenuItem menuItemRestoreAll;
+
+	private int listItemHeight;
 
 
 	private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -96,19 +90,16 @@ public class ArchiveActivity extends AppCompatActivity implements
 
 		// Create list header and footer, that will insert spaces on top and bottom of the
 		// list to make material design effect elevation and shadow
-		listHeader = getLayoutInflater().inflate(R.layout.list_header, notesListGridView);
-		listFooter = getLayoutInflater().inflate(R.layout.archive_footer, notesListGridView);
+		View listHeader = getLayoutInflater().inflate(R.layout.list_header, notesListGridView);
+		View listFooter = getLayoutInflater().inflate(R.layout.archive_footer, notesListGridView);
 
 		notesListGridView = findViewById(R.id.archivedNotesList);
 		registerForContextMenu(notesListGridView);
 
-		// Insert header and footer if version is Lollipop (5.x) or higher
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			notesListGridView.addHeaderView(listHeader);
-			notesListGridView.addFooterView(listFooter);
-			listHeader.setClickable(false);
-			listFooter.setClickable(false);
-		}
+		notesListGridView.addHeaderView(listHeader);
+		notesListGridView.addFooterView(listFooter);
+		listHeader.setClickable(false);
+		listFooter.setClickable(false);
 
 		if (archive == null) {
 			archive = new Archive();
@@ -117,6 +108,10 @@ public class ArchiveActivity extends AppCompatActivity implements
 		if (notebook == null) {
 			notebook = new Notebook();
 		}
+
+		DisplayMetrics metrics = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(metrics);
+		listItemHeight = (int) (metrics.heightPixels / Constants.LIST_ITEM_HEIGHT_FACTOR);
 
 	}
 
@@ -136,15 +131,15 @@ public class ArchiveActivity extends AppCompatActivity implements
 			e.printStackTrace();
 		}
 
-		simpleNotesList = archive.getSimpleNotes();
-		simpleNotesAdapter = new SimpleNotesListAdapter(getApplicationContext(), simpleNotesList);
+		ArrayList<SimpleNote> simpleNotesList = archive.getSimpleNotes();
+		simpleNotesAdapter = new SimpleNotesListAdapter(getApplicationContext(), simpleNotesList, listItemHeight);
 		notesListGridView.setAdapter(simpleNotesAdapter);
 
-		gearNotesList = archive.getGearNotes();
-		gearNotesAdapter = new GearNotesListAdapter(getApplicationContext(), gearNotesList);
+		ArrayList<GearNote> gearNotesList = archive.getGearNotes();
+		gearNotesAdapter = new GearNotesListAdapter(getApplicationContext(), gearNotesList, listItemHeight);
 
-		flickrNotesList = archive.getFlickrNotes();
-		flickrNotesAdapter = new FlickrNotesListAdapter(getApplicationContext(), flickrNotesList);
+		ArrayList<FlickrNote> flickrNotesList = archive.getFlickrNotes();
+		flickrNotesAdapter = new FlickrNotesListAdapter(getApplicationContext(), flickrNotesList, listItemHeight);
 
 	}
 
@@ -187,8 +182,8 @@ public class ArchiveActivity extends AppCompatActivity implements
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.options_archive, menu);
-		menuItemDeleteAll = menu.findItem(R.id.action_delete_all);
-		menuItemRestoreAll = menu.findItem(R.id.action_archive_all);
+		MenuItem menuItemDeleteAll = menu.findItem(R.id.action_delete_all);
+		MenuItem menuItemRestoreAll = menu.findItem(R.id.action_archive_all);
 		menuItemRestoreAll.setTitle(R.string.action_restore_all);
 		menuItemRestoreAll.setIcon(R.drawable.ic_unarchive_white_24dp);
 		menuItemDeleteAll.setEnabled(true);
@@ -205,7 +200,7 @@ public class ArchiveActivity extends AppCompatActivity implements
 
 			// Delete all notes
 			case R.id.action_delete_all: {
-				if (!isCurrentListEmpty()) {
+				if (isCurrentListNotEmpty()) {
 					DialogFragment dialog = new DeleteAllNotesAlertFragment();
 					dialog.show(getSupportFragmentManager(), "DeleteAllNotesAlertFragment");
 				}
@@ -214,7 +209,7 @@ public class ArchiveActivity extends AppCompatActivity implements
 
 			// Restore all notes
 			case R.id.action_archive_all: {
-				if (!isCurrentListEmpty()) {
+				if (isCurrentListNotEmpty()) {
 					DialogFragment dialog = new RestoreAllNotesAlertFragment();
 					dialog.show(getSupportFragmentManager(), "RestoreAllNotesAlertFragment");
 				}
@@ -410,31 +405,31 @@ public class ArchiveActivity extends AppCompatActivity implements
 	/*
 		 Set the correct menu item status
 	 */
-	private boolean isCurrentListEmpty() {
+	private boolean isCurrentListNotEmpty() {
 
 		switch (botNavView.getSelectedItemId()) {
 
 			case R.id.bot_nav_simple:
 				if (archive.getSimpleNotes().isEmpty()) {
-					return true;
+					return false;
 				}
 				break;
 
 			case R.id.bot_nav_gear:
 				if (archive.getGearNotes().isEmpty()) {
-					return true;
+					return false;
 				}
 				break;
 
 			case R.id.bot_nav_flickr:
 				if (archive.getFlickrNotes().isEmpty()) {
-					return true;
+					return false;
 				}
 				break;
 
 		}
 
-		return false;
+		return true;
 
 	}
 
@@ -442,10 +437,7 @@ public class ArchiveActivity extends AppCompatActivity implements
 		 List item position correction due to header
 	*/
 	private int getCorrectPosition(int position) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			position = position - Constants.LIST_HEADER_POSITION;
-		}
-		return position;
+		return position - Constants.LIST_HEADER_POSITION;
 	}
 
 }

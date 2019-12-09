@@ -25,17 +25,18 @@ import android.widget.TextView;
 
 import com.apps.mohb.shutternotes.Constants;
 import com.apps.mohb.shutternotes.R;
-
 import com.flickr4java.flickr.photos.Photo;
 import com.squareup.picasso.Picasso;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 
 public class FlickrPhotosListAdapter extends ArrayAdapter {
 
 
+	@SuppressWarnings("unchecked")
 	public FlickrPhotosListAdapter(@NonNull Context context, Collection<Photo> photosList) {
 		super(context, Constants.LIST_ADAPTER_RESOURCE_ID, (List) photosList);
 	}
@@ -53,7 +54,7 @@ public class FlickrPhotosListAdapter extends ArrayAdapter {
 		TextView descriptionView = convertView.findViewById(R.id.textPhotoDescription);
 
 		Photo photo = (Photo) getItem(position);
-		String imgPhotoUrl = photo.getSquareLargeUrl();
+		String imgPhotoUrl = Objects.requireNonNull(photo).getSquareLargeUrl();
 
 		String txtTitle = photo.getTitle();
 		String txtDescription = photo.getDescription();

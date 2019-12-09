@@ -14,8 +14,8 @@ package com.apps.mohb.shutternotes.fragments.dialogs;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
 import com.apps.mohb.shutternotes.R;
@@ -30,6 +30,7 @@ public class FlickrNoteTipAlertFragment extends DialogFragment {
 	private FlickrNoteTipDialogListener mListener;
 
 
+	@NonNull
 	@Override
 	public AlertDialog onCreateDialog(Bundle savedInstanceState) {
 

@@ -21,13 +21,10 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.apps.mohb.shutternotes.fragments.dialogs.DeleteAllAlertFragment;
-import com.apps.mohb.shutternotes.fragments.dialogs.EditGearListDialogFragment;
 import com.apps.mohb.shutternotes.fragments.dialogs.FlickrNoteTipAlertFragment;
 import com.apps.mohb.shutternotes.notes.GearList;
 import com.apps.mohb.shutternotes.views.Toasts;
@@ -42,6 +39,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class FlickrNoteActivity extends AppCompatActivity
@@ -50,7 +48,6 @@ public class FlickrNoteActivity extends AppCompatActivity
 	private EditText editTextTitle;
 	private EditText editTextDescription;
 	private TextView textTags;
-	private FloatingActionButton fabAddTags;
 	private GearList gearList;
 
 	private double lastLatitude;
@@ -58,9 +55,6 @@ public class FlickrNoteActivity extends AppCompatActivity
 
 	private SharedPreferences settings;
 	private SharedPreferences warningFirstShow;
-
-	private AdapterView.AdapterContextMenuInfo menuInfo;
-	private MenuItem menuSyncClock;
 
 
 	@Override
@@ -73,7 +67,7 @@ public class FlickrNoteActivity extends AppCompatActivity
 		editTextTitle = findViewById(R.id.editTextFlickrNoteTitle);
 		editTextDescription = findViewById(R.id.editTextFlickrNoteDescription);
 		textTags = findViewById(R.id.tagsView);
-		fabAddTags = findViewById(R.id.fabAddGearFlickr);
+		FloatingActionButton fabAddTags = findViewById(R.id.fabAddGearFlickr);
 
 		Button buttonCancel = findViewById(R.id.buttonFlickrNoteCancel);
 		Button buttonClear = findViewById(R.id.buttonFlickrNoteClear);
@@ -82,7 +76,9 @@ public class FlickrNoteActivity extends AppCompatActivity
 		// create map
 		SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
 				.findFragmentById(R.id.mapFragmentFlickrNote);
-		mapFragment.getMapAsync(this);
+		if (mapFragment != null) {
+			mapFragment.getMapAsync(this);
+		}
 
 		fabAddTags.setOnClickListener(view -> {
 			Intent intent = new Intent(getApplicationContext(), GearNoteActivity.class);
@@ -136,15 +132,21 @@ public class FlickrNoteActivity extends AppCompatActivity
 				String textToShow = textTitle;
 				String prefKey = settings.getString(Constants.PREF_KEY_WHAT_SHOW, Constants.PREF_SHOW_TITLE);
 
-				if (prefKey.equals(Constants.PREF_SHOW_DESCRIPTION)) {
-					textToShow = textDescription;
+				switch (Objects.requireNonNull(prefKey)) {
+
+					case Constants.PREF_SHOW_DESCRIPTION:
+						textToShow = textDescription;
+						break;
+
+					case Constants.PREF_SHOW_TAGS:
+						textToShow = textGearList;
+						break;
 				}
-				if (prefKey.equals(Constants.PREF_SHOW_TAGS)) {
-					textToShow = textGearList;
-				}
+
 				if (textToShow.equals(Constants.EMPTY) || textToShow.equals(Constants.SPACE)) {
 					textToShow = textTitle;
 				}
+
 				bundle.putString(Constants.KEY_FULL_SCREEN_TEXT, textToShow);
 				bundle.putInt(Constants.KEY_CALLER_ACTIVITY, Constants.ACTIVITY_FLICKR_NOTE);
 				intent.putExtras(bundle);
@@ -166,7 +168,7 @@ public class FlickrNoteActivity extends AppCompatActivity
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.flickr_note, menu);
-		menuSyncClock = menu.findItem(R.id.action_sync_clock);
+		MenuItem menuSyncClock = menu.findItem(R.id.action_sync_clock);
 		menuSyncClock.setEnabled(true);
 		return true;
 	}
@@ -178,7 +180,7 @@ public class FlickrNoteActivity extends AppCompatActivity
 
 		switch (id) {
 
-			// Syncronize clock
+			// Synchronize clock
 			case R.id.action_sync_clock: {
 				Intent intent = new Intent(this, ClockActivity.class);
 				startActivity(intent);
@@ -228,22 +230,33 @@ public class FlickrNoteActivity extends AppCompatActivity
 		int zoomLevel = Constants.MAP_NONE_ZOOM_LEVEL;
 		double markerOffset = Constants.MARKER_NZ_Y_OFFSET;
 
-		if (prefKey.equals(Constants.PREF_HIGH)) {
-			zoomLevel = Constants.MAP_HIGH_ZOOM_LEVEL;
-			markerOffset = Constants.MARKER_HZ_Y_OFFSET;
-		}
-		if (prefKey.equals(Constants.PREF_MID)) {
-			zoomLevel = Constants.MAP_MID_ZOOM_LEVEL;
-			markerOffset = Constants.MARKER_MZ_Y_OFFSET;
-		}
-		if (prefKey.equals(Constants.PREF_LOW)) {
-			zoomLevel = Constants.MAP_LOW_ZOOM_LEVEL;
-			markerOffset = Constants.MARKER_LZ_Y_OFFSET;
+		switch (Objects.requireNonNull(prefKey)) {
+
+			case Constants.PREF_HIGH:
+				zoomLevel = Constants.MAP_HIGH_ZOOM_LEVEL;
+				markerOffset = Constants.MARKER_HZ_Y_OFFSET;
+				break;
+
+			case Constants.PREF_MID:
+				zoomLevel = Constants.MAP_MID_ZOOM_LEVEL;
+				markerOffset = Constants.MARKER_MZ_Y_OFFSET;
+				break;
+
+			case Constants.PREF_LOW:
+				zoomLevel = Constants.MAP_LOW_ZOOM_LEVEL;
+				markerOffset = Constants.MARKER_LZ_Y_OFFSET;
+				break;
 		}
 
 		Bundle bundle = getIntent().getExtras();
-		lastLatitude = bundle.getDouble(Constants.LATITUDE);
-		lastLongitude = bundle.getDouble(Constants.LONGITUDE);
+		if (bundle != null) {
+			lastLatitude = bundle.getDouble(Constants.LATITUDE);
+			lastLongitude = bundle.getDouble(Constants.LONGITUDE);
+		} else {
+			lastLatitude = 0.0;
+			lastLongitude = 0.0;
+		}
+
 		LatLng currentLocation = new LatLng(lastLatitude, lastLongitude);
 		LatLng markerLocation = new LatLng(lastLatitude + markerOffset, lastLongitude);
 		googleMap.getUiSettings().setAllGesturesEnabled(false);
@@ -276,7 +289,7 @@ public class FlickrNoteActivity extends AppCompatActivity
 
 	@Override
 	public void onFlickrNoteTipDialogPositiveClick(DialogFragment dialog) {
-		warningFirstShow.edit().putBoolean(Constants.KEY_FIRST_SHOW, false).commit();
+		warningFirstShow.edit().putBoolean(Constants.KEY_FIRST_SHOW, false).apply();
 	}
 
 }

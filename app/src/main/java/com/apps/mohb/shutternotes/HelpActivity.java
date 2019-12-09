@@ -38,7 +38,6 @@ public class HelpActivity extends AppCompatActivity {
 		// create webView that will show help page
 		webView = new WebView(this);
 		setContentView(webView);
-		webView.getSettings().setJavaScriptEnabled(true);
 		webView.setWebViewClient(new WebViewClient());
 
 		Toasts.setContext(this);
@@ -79,15 +78,12 @@ public class HelpActivity extends AppCompatActivity {
 
 		int id = item.getItemId();
 
-		switch (id) {
+		if (id == R.id.action_send_question) {
 
-			// Send question
-			case R.id.action_send_question:
-				String[] address = new String[Constants.QUESTION_ARRAY_SIZE];
-				address[Constants.LIST_HEAD] = getString(R.string.info_feedback_email);
-				composeEmail(address, getString(R.string.action_question) + " " + getString(R.string.action_about_application)
-						+ " " + getString(R.string.info_app_name));
-				break;
+			String[] address = new String[Constants.QUESTION_ARRAY_SIZE];
+			address[Constants.LIST_HEAD] = getString(R.string.info_feedback_email);
+			composeEmail(address, getString(R.string.action_question) + " " + getString(R.string.action_about_application)
+					+ " " + getString(R.string.info_app_name));
 		}
 
 		return super.onOptionsItemSelected(item);

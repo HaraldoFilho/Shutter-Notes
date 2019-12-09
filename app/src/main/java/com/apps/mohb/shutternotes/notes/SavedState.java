@@ -23,18 +23,18 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Objects;
 
 
+@SuppressWarnings("WeakerAccess")
 public class SavedState {
 
 	private SharedPreferences savedState;
-	private SharedPreferences.Editor editor;
 	private String dataType;
 
 	public SavedState(Context context, String dataType) {
 		this.dataType = dataType;
 		savedState = context.getSharedPreferences(this.dataType, Constants.PRIVATE_MODE);
-		editor = savedState.edit();
 	}
 
 	// ### SIMPLE NOTES ###
@@ -42,15 +42,14 @@ public class SavedState {
 	// save simple notes list on memory through a json string
 	public void setSimpleNotesState(ArrayList<SimpleNote> notes) throws IOException {
 		String jsonSimpleNotes = writeSimpleNotesJsonString(notes);
-		editor.putString(Constants.SIMPLE_NOTES, jsonSimpleNotes);
-		editor.commit();
+		savedState.edit().putString(Constants.SIMPLE_NOTES, jsonSimpleNotes).apply();
 	}
 
 	// get simple notes list from memory through a json string
 	// if list was not saved yet creates a new array list
 	public ArrayList<SimpleNote> getSimpleNotesState() throws IOException {
 		String jsonSimpleNotes = savedState.getString(Constants.SIMPLE_NOTES, Constants.EMPTY);
-		if (jsonSimpleNotes.equals(Constants.EMPTY)) {
+		if (Objects.requireNonNull(jsonSimpleNotes).equals(Constants.EMPTY)) {
 			return new ArrayList<>();
 		} else {
 			return readSimpleNotesJsonString(jsonSimpleNotes);
@@ -59,8 +58,7 @@ public class SavedState {
 
 	// get a json string of simple notes list from memory
 	public String getSimpleNotesJsonState() {
-		String jsonSimpleNotes = savedState.getString(Constants.SIMPLE_NOTES, Constants.EMPTY);
-		return jsonSimpleNotes;
+		return savedState.getString(Constants.SIMPLE_NOTES, Constants.EMPTY);
 	}
 
 
@@ -92,11 +90,8 @@ public class SavedState {
 
 	// read a json string containing a list of simple notes
 	public ArrayList<SimpleNote> readSimpleNotesJsonString(String jsonString) throws IOException {
-		JsonReader jsonReader = new JsonReader(new StringReader(jsonString));
-		try {
+		try (JsonReader jsonReader = new JsonReader(new StringReader(jsonString))) {
 			return readSimpleNotesArrayList(jsonReader);
-		} finally {
-			jsonReader.close();
 		}
 	}
 
@@ -117,19 +112,15 @@ public class SavedState {
 
 		jsonReader.beginObject();
 		while (jsonReader.hasNext()) {
-			String name = jsonReader.nextName();
-			switch (name) {
-				case Constants.JSON_TEXT:
-					noteText = jsonReader.nextString();
-					break;
-				default:
-					jsonReader.skipValue();
+			if (Constants.JSON_TEXT.equals(jsonReader.nextName())) {
+				noteText = jsonReader.nextString();
+			} else {
+				jsonReader.skipValue();
 			}
 
 		}
 		jsonReader.endObject();
-		SimpleNote simpleNote = new SimpleNote(noteText);
-		return simpleNote;
+		return new SimpleNote(noteText);
 	}
 
 	// ### GEAR NOTES ###
@@ -137,15 +128,14 @@ public class SavedState {
 	// save gear notes list on memory through a json string
 	public void setGearNotesState(ArrayList<GearNote> notes) throws IOException {
 		String jsonGearNotes = writeGearNotesJsonString(notes);
-		editor.putString(Constants.GEAR_NOTES, jsonGearNotes);
-		editor.commit();
+		savedState.edit().putString(Constants.GEAR_NOTES, jsonGearNotes).apply();
 	}
 
 	// get gear notes list from memory through a json string
 	// if list was not saved yet creates a new array list
 	public ArrayList<GearNote> getGearNotesState() throws IOException {
 		String jsonGearNotes = savedState.getString(Constants.GEAR_NOTES, Constants.EMPTY);
-		if (jsonGearNotes.equals(Constants.EMPTY)) {
+		if (Objects.requireNonNull(jsonGearNotes).equals(Constants.EMPTY)) {
 			return new ArrayList<>();
 		} else {
 			return readGearNotesJsonString(jsonGearNotes);
@@ -154,8 +144,7 @@ public class SavedState {
 
 	// get a json string of gear notes list from memory
 	public String getGearNotesJsonState() {
-		String jsonGearNotes = savedState.getString(Constants.GEAR_NOTES, Constants.EMPTY);
-		return jsonGearNotes;
+		return savedState.getString(Constants.GEAR_NOTES, Constants.EMPTY);
 	}
 
 	// create a json string of a list of gear note items
@@ -186,11 +175,8 @@ public class SavedState {
 
 	// read a json string containing a list of gear notes
 	public ArrayList<GearNote> readGearNotesJsonString(String jsonString) throws IOException {
-		JsonReader jsonReader = new JsonReader(new StringReader(jsonString));
-		try {
+		try (JsonReader jsonReader = new JsonReader(new StringReader(jsonString))) {
 			return readGearNotesArrayList(jsonReader);
-		} finally {
-			jsonReader.close();
 		}
 	}
 
@@ -212,18 +198,15 @@ public class SavedState {
 		jsonReader.beginObject();
 		while (jsonReader.hasNext()) {
 			String name = jsonReader.nextName();
-			switch (name) {
-				case Constants.JSON_TEXT:
-					gearList = jsonReader.nextString();
-					break;
-				default:
-					jsonReader.skipValue();
+			if (Constants.JSON_TEXT.equals(name)) {
+				gearList = jsonReader.nextString();
+			} else {
+				jsonReader.skipValue();
 			}
 
 		}
 		jsonReader.endObject();
-		GearNote gearNote = new GearNote(gearList);
-		return gearNote;
+		return new GearNote(gearList);
 	}
 
 	// ### FLICKR NOTES ###
@@ -231,15 +214,14 @@ public class SavedState {
 	// save flickr notes list on memory through a json string
 	public void setFlickrNotesState(ArrayList<FlickrNote> notes) throws IOException {
 		String jsonFlickrNotes = writeFlickrNotesJsonString(notes);
-		editor.putString(Constants.FLICKR_NOTES, jsonFlickrNotes);
-		editor.commit();
+		savedState.edit().putString(Constants.FLICKR_NOTES, jsonFlickrNotes).apply();
 	}
 
 	// get flickr notes list from memory through a json string
 	// if list was not saved yet creates a new array list
 	public ArrayList<FlickrNote> getFlickrNotesState() throws IOException {
 		String jsonFlickrNotes = savedState.getString(Constants.FLICKR_NOTES, Constants.EMPTY);
-		if (jsonFlickrNotes.equals(Constants.EMPTY)) {
+		if (Objects.requireNonNull(jsonFlickrNotes).equals(Constants.EMPTY)) {
 			return new ArrayList<>();
 		} else {
 			return readFlickrNotesJsonString(jsonFlickrNotes);
@@ -248,8 +230,7 @@ public class SavedState {
 
 	// get a json string of flickr notes list from memory
 	public String getFlickrNotesJsonState() {
-		String jsonFlickrNotes = savedState.getString(Constants.FLICKR_NOTES, Constants.EMPTY);
-		return jsonFlickrNotes;
+		return savedState.getString(Constants.FLICKR_NOTES, Constants.EMPTY);
 	}
 
 	// create a json string of a list of flickr note items
@@ -306,11 +287,8 @@ public class SavedState {
 
 	// read a json string containing a list of flickr notes
 	public ArrayList<FlickrNote> readFlickrNotesJsonString(String jsonString) throws IOException {
-		JsonReader jsonReader = new JsonReader(new StringReader(jsonString));
-		try {
+		try (JsonReader jsonReader = new JsonReader(new StringReader(jsonString))) {
 			return readFlickrNotesArrayList(jsonReader);
-		} finally {
-			jsonReader.close();
 		}
 	}
 
@@ -327,11 +305,8 @@ public class SavedState {
 
 	// read a json string containing a list of flickr notes
 	public ArrayList<String> readTagsJsonString(String jsonString) throws IOException {
-		JsonReader jsonReader = new JsonReader(new StringReader(jsonString));
-		try {
+		try (JsonReader jsonReader = new JsonReader(new StringReader(jsonString))) {
 			return readTagsArrayList(jsonReader);
-		} finally {
-			jsonReader.close();
 		}
 	}
 
@@ -351,8 +326,8 @@ public class SavedState {
 		String title = Constants.EMPTY;
 		String description = Constants.EMPTY;
 		ArrayList<String> tags = new ArrayList<>();
-		Double latitude = Constants.DEFAULT_LATITUDE;
-		Double longitude = Constants.DEFAULT_LONGITUDE;
+		double latitude = Constants.DEFAULT_LATITUDE;
+		double longitude = Constants.DEFAULT_LONGITUDE;
 		String noteStartTime = Constants.EMPTY;
 		String noteFinishTime = Constants.EMPTY;
 		boolean noteSelected = false;
@@ -401,15 +376,14 @@ public class SavedState {
 	// save gear list on memory through a json string
 	public void setGearListState(ArrayList<Gear> gear) throws IOException {
 		String jsonGearNotes = writeGearListJsonString(gear);
-		editor.putString(Constants.GEAR_LIST, jsonGearNotes);
-		editor.commit();
+		savedState.edit().putString(Constants.GEAR_LIST, jsonGearNotes).apply();
 	}
 
 	// get gears list from memory through a json string
 	// if list was not saved yet creates a new array list
 	public ArrayList<Gear> getGearListState() throws IOException {
 		String jsonGearList = savedState.getString(Constants.GEAR_LIST, Constants.EMPTY);
-		if (jsonGearList.equals(Constants.EMPTY)) {
+		if (Objects.requireNonNull(jsonGearList).equals(Constants.EMPTY)) {
 			return new ArrayList<>();
 		} else {
 			return readGearListJsonString(jsonGearList);
@@ -418,8 +392,7 @@ public class SavedState {
 
 	// get a json string of gear list from memory
 	public String getGearListJsonState() {
-		String jsonGearNotes = savedState.getString(Constants.GEAR_LIST, Constants.EMPTY);
-		return jsonGearNotes;
+		return savedState.getString(Constants.GEAR_LIST, Constants.EMPTY);
 	}
 
 	// create a json string of a list of gear items
@@ -458,11 +431,8 @@ public class SavedState {
 
 	// read a json string containing a list of gear
 	public ArrayList<Gear> readGearListJsonString(String jsonString) throws IOException {
-		JsonReader jsonReader = new JsonReader(new StringReader(jsonString));
-		try {
+		try (JsonReader jsonReader = new JsonReader(new StringReader(jsonString))) {
 			return readGearArrayList(jsonReader);
-		} finally {
-			jsonReader.close();
 		}
 	}
 
@@ -498,8 +468,7 @@ public class SavedState {
 
 		}
 		jsonReader.endObject();
-		Gear gearItem = new Gear(gear, selected);
-		return gearItem;
+		return new Gear(gear, selected);
 	}
 
 

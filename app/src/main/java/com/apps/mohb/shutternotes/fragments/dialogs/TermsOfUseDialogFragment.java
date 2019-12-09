@@ -16,6 +16,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,13 +24,16 @@ import android.widget.TextView;
 
 import com.apps.mohb.shutternotes.R;
 
+import java.util.Objects;
+
 
 public class TermsOfUseDialogFragment extends DialogFragment {
 
+	@NonNull
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-		LayoutInflater layoutInflater = getActivity().getLayoutInflater();
+		LayoutInflater layoutInflater = Objects.requireNonNull(getActivity()).getLayoutInflater();
 		View view = layoutInflater.inflate(R.layout.fragment_about_dialog, null);
 
 		TextView textViewTitle = (TextView) view.findViewById(R.id.txtTitle);

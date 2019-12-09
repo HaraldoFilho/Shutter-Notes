@@ -12,7 +12,7 @@
 
 package com.apps.mohb.shutternotes;
 
-import android.content.Context;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -27,7 +27,10 @@ import android.widget.TextView;
 import com.apps.mohb.shutternotes.views.Toasts;
 import com.flickr4java.flickr.auth.Auth;
 
+import java.util.Objects;
 
+
+@SuppressWarnings("unchecked")
 public class FlickrAccountActivity extends AppCompatActivity {
 
 	private WebView flickrWebView;
@@ -45,7 +48,7 @@ public class FlickrAccountActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_flickr_account_authorize);
-		getSupportActionBar().hide();
+		Objects.requireNonNull(getSupportActionBar()).hide();
 
 		flickrApi = new FlickrApi(getApplicationContext());
 
@@ -66,10 +69,10 @@ public class FlickrAccountActivity extends AppCompatActivity {
 		connectButton.setClickable(false);
 		connectButton.setOnClickListener(view -> {
 			int textSize = codeTextView.getText().length();
-			if (textSize >= Constants.TOKEN_KEY_SIZE - 2 && textSize <= Constants.TOKEN_KEY_SIZE) {
+			if (textSize >= Constants.TOKEN_KEY_SIZE_MIN && textSize <= Constants.TOKEN_KEY_SIZE_MAX) {
 				tokenKey = codeTextView.getText().toString();
 				flickrApi.setTokenKey(tokenKey);
-				new getAccessToken().execute();
+				new GetAccessToken().execute();
 			} else {
 				Toasts.setContext(getApplicationContext());
 				Toasts.createTypeCode();
@@ -78,9 +81,9 @@ public class FlickrAccountActivity extends AppCompatActivity {
 		});
 
 		if (!flickrApi.getToken().isEmpty() && !flickrApi.getTokenSecret().isEmpty()) {
-			new checkToken().execute();
+			new CheckToken().execute();
 		} else {
-			new getRequestToken().execute();
+			new GetRequestToken().execute();
 		}
 
 
@@ -94,7 +97,8 @@ public class FlickrAccountActivity extends AppCompatActivity {
 		Toasts.cancelWrongCode();
 	}
 
-	private class getRequestToken extends FlickrApi.getRequestToken {
+	@SuppressLint("StaticFieldLeak")
+	private class GetRequestToken extends FlickrApi.GetRequestToken {
 
 		@Override
 		protected void onPostExecute(Object o) {
@@ -108,7 +112,8 @@ public class FlickrAccountActivity extends AppCompatActivity {
 
 	}
 
-	private class getAccessToken extends FlickrApi.getAccessToken {
+	@SuppressLint("StaticFieldLeak")
+	private class GetAccessToken extends FlickrApi.GetAccessToken {
 
 		@Override
 		protected void onPreExecute() {
@@ -129,13 +134,14 @@ public class FlickrAccountActivity extends AppCompatActivity {
 				connectButton.setText(R.string.button_connect);
 				connectButton.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.colorGreen, null));
 			} else {
-				new checkToken().execute();
+				new CheckToken().execute();
 			}
 		}
 
 	}
 
-	private class checkToken extends FlickrApi.checkToken {
+	@SuppressLint("StaticFieldLeak")
+	private class CheckToken extends FlickrApi.CheckToken {
 
 		@Override
 		protected void onPostExecute(Object o) {
@@ -153,7 +159,7 @@ public class FlickrAccountActivity extends AppCompatActivity {
 					connectButton.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.colorGreen, null));
 				}
 				FlickrApi.clearTokens();
-				new getRequestToken().execute();
+				new GetRequestToken().execute();
 			} else {
 				String userId = auth.getUser().getId();
 				Log.i(Constants.LOG_INFO_TAG, "User id: " + userId);
@@ -172,13 +178,14 @@ public class FlickrAccountActivity extends AppCompatActivity {
 	private void insertTokenKey(String key) {
 		codeTextView.setText(key);
 		flickrApi.setTokenKey(key);
-		new getAccessToken().execute();
+		new GetAccessToken().execute();
 
 	}
 
 	// Below this point it was used code from the following page:
 	// http://technoranch.blogspot.com/2014/08/how-to-get-html-content-from-android-webview.html
 
+	@SuppressLint("SetJavaScriptEnabled")
 	private void configureWebView(WebView webView) {
 		// Sets a customized web view client capable of extract html content from a javascript page
 		webView.setWebViewClient(new WebViewClient() {
@@ -198,24 +205,16 @@ public class FlickrAccountActivity extends AppCompatActivity {
 		webView.getSettings().setJavaScriptEnabled(true);
 		webView.getSettings().setDomStorageEnabled(true);
 		webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
-		webView.addJavascriptInterface(new MyJavaScriptInterface(this), "HtmlViewer");
+		webView.addJavascriptInterface(new AuthJavaScriptInterface(), "HtmlViewer");
 	}
 
-	class MyJavaScriptInterface {
-		private Context context;
-
-		MyJavaScriptInterface(Context context) {
-			this.context = context;
-		}
+	class AuthJavaScriptInterface {
 
 		@JavascriptInterface
 		public void getTokenKey(String code) {
-			handlerForJavascriptInterface.post(new Runnable() {
-				@Override
-				public void run() {
-					if (code.length() == Constants.TOKEN_KEY_SIZE && code.contains(Constants.DASH)) {
-						insertTokenKey(code);
-					}
+			handlerForJavascriptInterface.post(() -> {
+				if (code.length() == Constants.TOKEN_KEY_SIZE_MAX && code.contains(Constants.DASH)) {
+					insertTokenKey(code);
 				}
 			});
 		}

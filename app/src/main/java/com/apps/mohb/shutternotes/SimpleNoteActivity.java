@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : SimpleNoteActivity.java
- *  Last modified : 8/17/19 12:08 PM
+ *  Last modified : 8/18/19 5:36 PM
  *
  *  -----------------------------------------------------------
  */

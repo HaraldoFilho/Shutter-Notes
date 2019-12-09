@@ -27,36 +27,40 @@ import android.widget.TextView;
 import com.apps.mohb.shutternotes.Constants;
 import com.apps.mohb.shutternotes.R;
 import com.apps.mohb.shutternotes.notes.GearNote;
-import com.apps.mohb.shutternotes.notes.Note;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class GearNotesListAdapter extends ArrayAdapter {
 
+	private int itemHeight;
 
-	public GearNotesListAdapter(@NonNull Context context, ArrayList<GearNote> notesList) {
+	public GearNotesListAdapter(@NonNull Context context, ArrayList<GearNote> notesList, int itemHeight) {
 		super(context, Constants.LIST_ADAPTER_RESOURCE_ID, notesList);
+		this.itemHeight = itemHeight;
 	}
 
 	@NonNull
 	@Override
 	public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-		Note note = (GearNote) getItem(position);
+		GearNote note = (GearNote) getItem(position);
 
 		if (convertView == null) {
 			convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item, parent, false);
 		}
 
+		convertView.setMinimumHeight(itemHeight);
+
 		TextView txtNote = convertView.findViewById(R.id.textView);
 
-		txtNote.setText(((GearNote) note).getGearList());
+		txtNote.setText(note.getGearList());
 
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
 		String prefKey = settings.getString(Constants.PREF_KEY_FONT_SIZE, Constants.PREF_FONT_SIZE_MEDIUM);
 
-		switch (prefKey) {
+		switch (Objects.requireNonNull(prefKey)) {
 
 			case Constants.PREF_FONT_SIZE_SMALL:
 				txtNote.setTextSize(TypedValue.COMPLEX_UNIT_SP, Constants.FONT_SIZE_SMALL_SMALL);

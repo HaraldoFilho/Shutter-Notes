@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrNotesListAdapter.java
- *  Last modified : 8/17/19 12:08 PM
+ *  Last modified : 12/8/19 5:30 PM
  *
  *  -----------------------------------------------------------
  */
@@ -27,36 +27,47 @@ import android.widget.TextView;
 import com.apps.mohb.shutternotes.Constants;
 import com.apps.mohb.shutternotes.R;
 import com.apps.mohb.shutternotes.notes.FlickrNote;
-import com.apps.mohb.shutternotes.notes.Note;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class FlickrNotesListAdapter extends ArrayAdapter {
 
+	private int itemHeight;
 
-	public FlickrNotesListAdapter(@NonNull Context context, ArrayList<FlickrNote> notesList) {
+	@SuppressWarnings("unchecked")
+	public FlickrNotesListAdapter(@NonNull Context context, ArrayList<FlickrNote> notesList, int itemHeight) {
 		super(context, Constants.LIST_ADAPTER_RESOURCE_ID, notesList);
+		this.itemHeight = itemHeight;
 	}
 
 	@NonNull
 	@Override
 	public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-		Note note = (FlickrNote) getItem(position);
-		boolean selected = ((FlickrNote) note).isSelected();
+		FlickrNote note = (FlickrNote) getItem(position);
+		boolean selected = Objects.requireNonNull(note).isSelected();
 
 		if (convertView == null) {
 			convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item, parent, false);
 		}
 
+		convertView.setMinimumHeight(itemHeight);
+
+		if (selected) {
+			convertView.setBackground(getContext().getResources().getDrawable(R.drawable.flickr_item_tile_selected, null));
+		} else {
+			convertView.setBackground(getContext().getResources().getDrawable(R.drawable.flickr_item_tile, null));
+		}
+
 		TextView txtTitle = convertView.findViewById(R.id.textView);
-		txtTitle.setText(((FlickrNote) note).getTitle());
+		txtTitle.setText(note.getTitle());
 
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
 		String prefKey = settings.getString(Constants.PREF_KEY_FONT_SIZE, Constants.PREF_FONT_SIZE_MEDIUM);
 
-		switch (prefKey) {
+		switch (Objects.requireNonNull(prefKey)) {
 
 			case Constants.PREF_FONT_SIZE_SMALL:
 				txtTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, Constants.FONT_SIZE_SMALL_SMALL);
@@ -70,14 +81,6 @@ public class FlickrNotesListAdapter extends ArrayAdapter {
 				txtTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, Constants.FONT_SIZE_LARGE_SMALL);
 				break;
 
-		}
-
-		if (selected) {
-			convertView.findViewById(R.id.listItem).setBackground(
-					getContext().getResources().getDrawable(R.drawable.flickr_item_tile_selected));
-		} else {
-			convertView.findViewById(R.id.listItem).setBackground(
-					getContext().getResources().getDrawable(R.drawable.flickr_item_tile));
 		}
 
 		return convertView;

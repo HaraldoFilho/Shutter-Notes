@@ -29,11 +29,13 @@ import com.apps.mohb.shutternotes.R;
 import com.apps.mohb.shutternotes.notes.Gear;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class GearNoteAdapter extends ArrayAdapter {
 
 
+	@SuppressWarnings("unchecked")
 	public GearNoteAdapter(@NonNull Context context, ArrayList<Gear> note) {
 		super(context, Constants.LIST_ADAPTER_RESOURCE_ID, note);
 	}
@@ -49,12 +51,12 @@ public class GearNoteAdapter extends ArrayAdapter {
 		}
 
 		TextView txtItem = convertView.findViewById(R.id.gearView);
-		txtItem.setText(item.getGearItem());
+		txtItem.setText(Objects.requireNonNull(item).getGearItem());
 
 		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getContext());
 		String prefKey = settings.getString(Constants.PREF_KEY_FONT_SIZE, Constants.PREF_FONT_SIZE_MEDIUM);
 
-		switch (prefKey) {
+		switch (Objects.requireNonNull(prefKey)) {
 
 			case Constants.PREF_FONT_SIZE_SMALL:
 				txtItem.setTextSize(TypedValue.COMPLEX_UNIT_SP, Constants.FONT_SIZE_SMALL_MEDIUM);
@@ -71,9 +73,9 @@ public class GearNoteAdapter extends ArrayAdapter {
 		}
 
 		if (item.isSelected()) {
-			txtItem.setTextColor(getContext().getResources().getColor(R.color.colorBlackText));
+			txtItem.setTextColor(getContext().getResources().getColor(R.color.colorBlackText, null));
 		} else {
-			txtItem.setTextColor(getContext().getResources().getColor(R.color.colorGreyText));
+			txtItem.setTextColor(getContext().getResources().getColor(R.color.colorGreyText, null));
 		}
 
 		return convertView;

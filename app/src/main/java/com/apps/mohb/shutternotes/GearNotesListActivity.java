@@ -13,10 +13,10 @@
 package com.apps.mohb.shutternotes;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -46,13 +46,11 @@ public class GearNotesListActivity extends AppCompatActivity implements
 	private Notebook notebook;
 	private Archive archive;
 	private GridViewWithHeaderAndFooter notesListGridView;
-	private GearNotesListAdapter notesAdapter;
-	private View listHeader;
-	private View listFooter;
 
 	private AdapterView.AdapterContextMenuInfo menuInfo;
 	private MenuItem menuItemArchiveAll;
 
+	private int listItemHeight;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -61,19 +59,16 @@ public class GearNotesListActivity extends AppCompatActivity implements
 
 		// Create list header and footer, that will insert spaces on top and bottom of the
 		// list to make material design effect elevation and shadow
-		listHeader = getLayoutInflater().inflate(R.layout.list_header, notesListGridView);
-		listFooter = getLayoutInflater().inflate(R.layout.list_footer, notesListGridView);
+		View listHeader = getLayoutInflater().inflate(R.layout.list_header, notesListGridView);
+		View listFooter = getLayoutInflater().inflate(R.layout.list_footer, notesListGridView);
 
 		notesListGridView = findViewById(R.id.gearNotesList);
 		registerForContextMenu(notesListGridView);
 
-		// Insert header and footer if version is Lollipop (5.x) or higher
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			notesListGridView.addHeaderView(listHeader);
-			notesListGridView.addFooterView(listFooter);
-			listHeader.setClickable(false);
-			listFooter.setClickable(false);
-		}
+		notesListGridView.addHeaderView(listHeader);
+		notesListGridView.addFooterView(listFooter);
+		listHeader.setClickable(false);
+		listFooter.setClickable(false);
 
 		if (notebook == null) {
 			notebook = new Notebook();
@@ -95,6 +90,10 @@ public class GearNotesListActivity extends AppCompatActivity implements
 			}
 		});
 
+		DisplayMetrics metrics = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(metrics);
+		listItemHeight = (int) (metrics.heightPixels / Constants.LIST_ITEM_HEIGHT_FACTOR);
+
 	}
 
 	@Override
@@ -114,7 +113,7 @@ public class GearNotesListActivity extends AppCompatActivity implements
 		}
 
 		ArrayList<GearNote> gearNotesList = notebook.getGearNotes();
-		notesAdapter = new GearNotesListAdapter(getApplicationContext(), gearNotesList);
+		GearNotesListAdapter notesAdapter = new GearNotesListAdapter(getApplicationContext(), gearNotesList, listItemHeight);
 		notesListGridView.setAdapter(notesAdapter);
 
 	}
@@ -254,10 +253,7 @@ public class GearNotesListActivity extends AppCompatActivity implements
 	// CLASS METHODS
 
 	private int getCorrectPosition(int position) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			position = position - Constants.LIST_HEADER_POSITION;
-		}
-		return position;
+		return position - Constants.LIST_HEADER_POSITION;
 	}
 
 }

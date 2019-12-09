@@ -34,6 +34,7 @@ import com.apps.mohb.shutternotes.notes.GearList;
 import com.apps.mohb.shutternotes.views.Toasts;
 
 import java.io.IOException;
+import java.util.Objects;
 
 
 public class GearNoteActivity extends AppCompatActivity
@@ -46,7 +47,6 @@ public class GearNoteActivity extends AppCompatActivity
 	private GearNoteAdapter gearNoteAdapter;
 
 	private AdapterView.AdapterContextMenuInfo menuInfo;
-	private MenuItem menuAddGear;
 
 
 	private int callerActivity;
@@ -77,7 +77,7 @@ public class GearNoteActivity extends AppCompatActivity
 		// menu shown when a list item is long clicked
 		registerForContextMenu(gearListView);
 
-		callerActivity = getIntent().getExtras().getInt(Constants.KEY_CALLER_ACTIVITY);
+		callerActivity = Objects.requireNonNull(getIntent().getExtras()).getInt(Constants.KEY_CALLER_ACTIVITY);
 
 		try {
 			switch (callerActivity) {
@@ -85,7 +85,7 @@ public class GearNoteActivity extends AppCompatActivity
 					gearList.loadState(getApplicationContext(), Constants.GEAR_LIST_SAVED_STATE);
 					break;
 				case Constants.ACTIVITY_FLICKR_NOTE:
-					getSupportActionBar().setTitle(R.string.activity_title_add_tags);
+					Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.activity_title_add_tags);
 					buttonOK.setText(R.string.button_ok);
 					gearList.loadState(getApplicationContext(), Constants.GEAR_LIST_SELECTED_STATE);
 					if (gearList.getList().isEmpty()) {
@@ -189,7 +189,7 @@ public class GearNoteActivity extends AppCompatActivity
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.gear_note, menu);
-		menuAddGear = menu.findItem(R.id.action_add_gear);
+		MenuItem menuAddGear = menu.findItem(R.id.action_add_gear);
 		menuAddGear.setEnabled(true);
 		return true;
 	}

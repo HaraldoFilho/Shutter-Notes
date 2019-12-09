@@ -32,7 +32,6 @@ public class FeedbackActivity extends AppCompatActivity {
 		// create webView that will show help page
 		webView = new WebView(this);
 		setContentView(webView);
-		webView.getSettings().setJavaScriptEnabled(true);
 		webView.setWebViewClient(new WebViewClient());
 
 	}

@@ -1,32 +1,33 @@
 package com.apps.mohb.shutternotes;
 
+import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
 
-import static android.os.SystemClock.sleep;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 import java.util.SimpleTimeZone;
+
+import static android.os.SystemClock.sleep;
 
 
 public class ClockActivity extends AppCompatActivity {
 
-	TextView timeTextview;
-	TextView dateTextView;
-	Date currentTime;
-	Boolean stopClock;
+	private TextView timeTextview;
+	private TextView dateTextView;
+	private Boolean stopClock;
 
 
 	@Override
 	protected void onCreate(Bundle readdInstanceState) {
 		super.onCreate(readdInstanceState);
 		setContentView(R.layout.activity_clock);
-		getSupportActionBar().hide();
+		Objects.requireNonNull(getSupportActionBar()).hide();
 
 		timeTextview = findViewById(R.id.textTime);
 		dateTextView = findViewById(R.id.textDate);
@@ -46,6 +47,7 @@ public class ClockActivity extends AppCompatActivity {
 		stopClock = true;
 	}
 
+	@SuppressLint("StaticFieldLeak")
 	private class Clock extends AsyncTask {
 
 		@Override
@@ -67,11 +69,11 @@ public class ClockActivity extends AppCompatActivity {
 		}
 	}
 
-	private void updateClock () {
-		currentTime = Calendar.getInstance().getTime();
+	private void updateClock() {
+		Date currentTime = Calendar.getInstance().getTime();
 		String timeText = SimpleDateFormat.getTimeInstance().format(currentTime);
 		String date = SimpleDateFormat.getDateInstance().format(currentTime);
-		String timeZone = String.valueOf(SimpleTimeZone.getDefault().getRawOffset()/Constants.MS_PER_HOUR);
+		String timeZone = String.valueOf(SimpleTimeZone.getDefault().getRawOffset() / Constants.MS_PER_HOUR);
 		String dateText = date + Constants.UTC + timeZone;
 
 		runOnUiThread(() -> {
@@ -83,6 +85,7 @@ public class ClockActivity extends AppCompatActivity {
 			sleep(100);
 			updateClock();
 		}
+
 	}
 
 }

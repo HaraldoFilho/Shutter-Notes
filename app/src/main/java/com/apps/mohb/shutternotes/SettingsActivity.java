@@ -196,11 +196,11 @@ public class SettingsActivity extends AppCompatActivity implements
 	@Override // Yes
 	public void onAlertDialogPositiveClick(DialogFragment dialog) {
 		// Clear settings on memory
-		PreferenceManager.getDefaultSharedPreferences(this).edit().clear().commit();
+		PreferenceManager.getDefaultSharedPreferences(this).edit().clear().apply();
 		// Set defaults on memory
 		PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 		// Update settings screen with the default values
-		getFragmentManager().beginTransaction().detach(settingsFragment);
+		getFragmentManager().beginTransaction().detach(settingsFragment).commit();
 		settingsFragment = new GeneralPreferenceFragment();
 		getFragmentManager().beginTransaction()
 				.replace(android.R.id.content, settingsFragment)
