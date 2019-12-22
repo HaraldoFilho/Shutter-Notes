@@ -23,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.apps.mohb.shutternotes.fragments.dialogs.FullscreenTipAlertFragment;
@@ -43,288 +44,279 @@ import java.util.Objects;
  * status bar and navigation/system bar) with user interaction.
  */
 public class FullscreenNoteActivity extends AppCompatActivity
-		implements FullscreenTipAlertFragment.FullscreenTipDialogListener {
-	/**
-	 * Whether or not the system UI should be auto-hidden after
-	 * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
-	 */
-	private static final boolean AUTO_HIDE = true;
+        implements FullscreenTipAlertFragment.FullscreenTipDialogListener {
+    /**
+     * Whether or not the system UI should be auto-hidden after
+     * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
+     */
+    private static final boolean AUTO_HIDE = true;
 
-	/**
-	 * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
-	 * user interaction before hiding the system UI.
-	 */
-	private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
+    /**
+     * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
+     * user interaction before hiding the system UI.
+     */
+    private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
 
-	/**
-	 * Some older devices needs a small delay between UI widget updates
-	 * and a change of the status and navigation bar.
-	 */
-	private static final int UI_ANIMATION_DELAY = 300;
-	private final Handler mHideHandler = new Handler();
-	private int state;
+    /**
+     * Some older devices needs a small delay between UI widget updates
+     * and a change of the status and navigation bar.
+     */
+    private static final int UI_ANIMATION_DELAY = 300;
+    private final Handler mHideHandler = new Handler();
+    private int state;
 
-	private Notebook notebook;
-	private String text;
-	private int callerActivity;
-	private TextView textView;
+    private Notebook notebook;
+    private String text;
+    private int callerActivity;
+    private TextView textView;
 
-	private SimpleDateFormat date;
-	private String startTime = Constants.EMPTY;
-	private String finishTime = Constants.EMPTY;
+    private SimpleDateFormat date;
+    private String startTime = Constants.EMPTY;
+    private String finishTime = Constants.EMPTY;
 
-	private SharedPreferences instructionsFirstShow;
-
-
-	private final Runnable mHidePart2Runnable = new Runnable() {
-		@SuppressLint("InlinedApi")
-		@Override
-		public void run() {
-			// Delayed removal of status and navigation bar
-
-			// Note that some of these constants are new as of API 16 (Jelly Bean)
-			// and API 19 (KitKat). It is safe to use them, as they are inlined
-			// at compile-time and do nothing on earlier devices.
-			textView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-					| View.SYSTEM_UI_FLAG_FULLSCREEN
-					| View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-					| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-					| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-					| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-		}
-	};
-	private View mControlsView;
-	private final Runnable mShowPart2Runnable = new Runnable() {
-		@Override
-		public void run() {
-			// Delayed display of UI elements
-			ActionBar actionBar = getSupportActionBar();
-			if (actionBar != null) {
-				actionBar.show();
-			}
-		}
-	};
-	private boolean mVisible;
-	private final Runnable mHideRunnable = () -> hide();
-
-	/**
-	 * Touch listener to use for in-layout UI controls to delay hiding the
-	 * system UI. This is to prevent the jarring behavior of controls going away
-	 * while interacting with activity UI.
-	 */
-	private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
-		@Override
-		public boolean onTouch(View view, MotionEvent motionEvent) {
-			if (AUTO_HIDE) {
-				delayedHide(AUTO_HIDE_DELAY_MILLIS);
-			}
-			return false;
-		}
-	};
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
-
-		setContentView(R.layout.activity_fullscreen_note);
-
-		if (notebook == null) {
-			notebook = new Notebook();
-		}
-
-		try {
-			notebook.loadState(getApplicationContext());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		mVisible = true;
-
-		callerActivity = Objects.requireNonNull(getIntent().getExtras()).getInt(Constants.KEY_CALLER_ACTIVITY);
-
-		textView = findViewById(R.id.textFullscreen);
-
-		if (callerActivity == Constants.ACTIVITY_GEAR_NOTE) {
-			textView.setLineSpacing(0, (float) Constants.FULL_SCREEN_TEXT_LINE_SPACING);
-		}
-
-		text = getIntent().getExtras().getString(Constants.KEY_FULL_SCREEN_TEXT);
-
-		textView.setText(Objects.requireNonNull(text).trim());
-		textView.setBackgroundColor(getResources().getColor(R.color.colorBackgroundGreen, null));
-
-		String prefKey = settings.getString(Constants.PREF_KEY_FONT_SIZE, Constants.PREF_FONT_SIZE_MEDIUM);
-
-		switch (Objects.requireNonNull(prefKey)) {
-
-			case Constants.PREF_FONT_SIZE_SMALL:
-				textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, Constants.FONT_SIZE_SMALL_LARGE);
-				break;
-
-			case Constants.PREF_FONT_SIZE_MEDIUM:
-				textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, Constants.FONT_SIZE_MEDIUM_LARGE);
-				break;
-
-			case Constants.PREF_FONT_SIZE_LARGE:
-				textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, Constants.FONT_SIZE_LARGE_LARGE);
-				break;
-
-		}
-
-		state = Constants.STATE_COLOR_GREEN;
-		date = new SimpleDateFormat(Constants.DATE_FORMAT, Locale.getDefault());
-		startTime = date.format(new Date().getTime());
-
-		// Set up the user interaction to manually show or hide the system UI.
-		textView.setOnLongClickListener(view -> {
-			toggle();
-			return true;
-		});
-
-		instructionsFirstShow = this.getSharedPreferences(Constants.FULLSCREEN_INSTRUCTIONS, Constants.PRIVATE_MODE);
-
-		if (instructionsFirstShow.getBoolean(Constants.KEY_FIRST_SHOW, true)) {
-			FullscreenTipAlertFragment dialogInstructions = new FullscreenTipAlertFragment();
-			dialogInstructions.show(getSupportFragmentManager(), "FullscreenTipAlertFragment");
-		}
+    private SharedPreferences instructionsFirstShow;
 
 
-	}
+    private final Runnable mHidePart2Runnable = new Runnable() {
+        @SuppressLint("InlinedApi")
+        @Override
+        public void run() {
+            // Delayed removal of status and navigation bar
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		hide();
-	}
+            // Note that some of these constants are new as of API 16 (Jelly Bean)
+            // and API 19 (KitKat). It is safe to use them, as they are inlined
+            // at compile-time and do nothing on earlier devices.
+            textView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+        }
+    };
 
-	@Override
-	protected void onPostCreate(Bundle savedInstanceState) {
-		super.onPostCreate(savedInstanceState);
+    private final Runnable mShowPart2Runnable = new Runnable() {
+        @Override
+        public void run() {
+            // Delayed display of UI elements
+            ActionBar actionBar = getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.show();
+            }
+        }
+    };
 
-		// Trigger the initial hide() shortly after the activity has been
-		// created, to briefly hint to the user that UI controls
-		// are available.
-		delayedHide(100);
-	}
+    private boolean mVisible;
+    private final Runnable mHideRunnable = () -> hide();
 
-	private void toggle() {
+    /**
+     * Touch listener to use for in-layout UI controls to delay hiding the
+     * system UI. This is to prevent the jarring behavior of controls going away
+     * while interacting with activity UI.
+     */
+    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            if (AUTO_HIDE) {
+                delayedHide(AUTO_HIDE_DELAY_MILLIS);
+            }
+            return false;
+        }
+    };
 
-		if (mVisible) {
-			textView.setBackgroundColor(getResources().getColor(R.color.colorBackgroundGreen));
-		} else {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-			switch (state) {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
 
-				case Constants.STATE_COLOR_GREEN:
-					textView.setBackgroundColor(getResources().getColor(R.color.colorBackgroundRed));
-					finishTime = date.format(new Date().getTime());
-					state = Constants.STATE_COLOR_RED;
-					break;
+        setContentView(R.layout.activity_fullscreen_note);
 
-				case Constants.STATE_COLOR_RED:
+        if (notebook == null) {
+            notebook = new Notebook();
+        }
 
-					String lastNote = Constants.EMPTY;
+        try {
+            notebook.loadState(getApplicationContext());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-					switch (callerActivity) {
+        mVisible = true;
 
-						case Constants.ACTIVITY_SIMPLE_NOTE:
-							SimpleNote simpleNote = new SimpleNote(text);
-							if (!notebook.getSimpleNotes().isEmpty()) {
-								lastNote = notebook.getSimpleNotes().get(Constants.LIST_HEAD).getText();
-							}
-							if (!simpleNote.getText().equals(lastNote)) {
-								notebook.addNote(simpleNote);
-							}
-							break;
+        callerActivity = Objects.requireNonNull(getIntent().getExtras()).getInt(Constants.KEY_CALLER_ACTIVITY);
 
-						case Constants.ACTIVITY_GEAR_NOTE:
-							GearNote gearNote = new GearNote(text);
-							if (!notebook.getGearNotes().isEmpty()) {
-								lastNote = notebook.getGearNotes().get(Constants.LIST_HEAD).getGearList();
-							}
-							if (!gearNote.getGearList().equals(lastNote)) {
-								notebook.addNote(gearNote);
-							}
-							break;
+        textView = findViewById(R.id.textFullscreen);
 
-						case Constants.ACTIVITY_FLICKR_NOTE:
-							Bundle bundle = getIntent().getExtras();
-							if (bundle != null) {
-								String title = bundle.getString(Constants.FLICKR_TITLE);
-								String description = bundle.getString(Constants.FLICKR_DESCRIPTION);
-								ArrayList<String> tags = bundle.getStringArrayList(Constants.FLICKR_TAGS);
-								double latitude = bundle.getDouble(Constants.LATITUDE);
-								double longitude = bundle.getDouble(Constants.LONGITUDE);
-								FlickrNote flickrNote = new FlickrNote(title, description, tags,
-										latitude, longitude, startTime, finishTime);
-								notebook.addNote(flickrNote);
-							}
-							break;
+        if (callerActivity == Constants.ACTIVITY_GEAR_NOTE) {
+            textView.setLineSpacing(0, (float) Constants.FULL_SCREEN_TEXT_LINE_SPACING);
+        }
 
-					}
-					// go back when red screen is touched
-					super.onBackPressed();
-					break;
-			}
-		}
-	}
+        text = getIntent().getExtras().getString(Constants.KEY_FULL_SCREEN_TEXT);
 
-	@Override
-	public void onBackPressed() {
-		// do not go back when back button is pressed
-	}
+        textView.setText(Objects.requireNonNull(text).trim());
+        textView.setBackgroundColor(getResources().getColor(R.color.colorBackgroundGreen, null));
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        getWindow().setStatusBarColor(getResources().getColor(R.color.colorBackgroundGreen, null));
 
-	private void hide() {
-		// Hide UI first
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			actionBar.hide();
-		}
-		mVisible = false;
+        String prefKey = settings.getString(Constants.PREF_KEY_FONT_SIZE, Constants.PREF_FONT_SIZE_MEDIUM);
 
-		// Schedule a runnable to remove the status and navigation bar after a delay
-		mHideHandler.removeCallbacks(mShowPart2Runnable);
-		mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY);
-	}
+        switch (Objects.requireNonNull(prefKey)) {
 
-	@SuppressLint("InlinedApi")
-	private void show() {
-		// Show the system bar
-		textView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-				| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-		mVisible = true;
+            case Constants.PREF_FONT_SIZE_SMALL:
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, Constants.FONT_SIZE_SMALL_LARGE);
+                break;
 
-		// Schedule a runnable to display UI elements after a delay
-		mHideHandler.removeCallbacks(mHidePart2Runnable);
-		mHideHandler.postDelayed(mShowPart2Runnable, UI_ANIMATION_DELAY);
-	}
+            case Constants.PREF_FONT_SIZE_MEDIUM:
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, Constants.FONT_SIZE_MEDIUM_LARGE);
+                break;
 
-	/**
-	 * Schedules a call to hide() in delay milliseconds, canceling any
-	 * previously scheduled calls.
-	 */
-	private void delayedHide(int delayMillis) {
-		mHideHandler.removeCallbacks(mHideRunnable);
-		mHideHandler.postDelayed(mHideRunnable, delayMillis);
-	}
+            case Constants.PREF_FONT_SIZE_LARGE:
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, Constants.FONT_SIZE_LARGE_LARGE);
+                break;
 
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
+        }
 
-		try {
-			notebook.saveState(getApplicationContext());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+        state = Constants.STATE_COLOR_GREEN;
+        date = new SimpleDateFormat(Constants.DATE_FORMAT, Locale.getDefault());
+        startTime = date.format(new Date().getTime());
 
-	}
+        // Set up the user interaction to manually show or hide the system UI.
+        textView.setOnLongClickListener(view -> {
+            toggle();
+            return true;
+        });
 
-	@Override
-	public void onFullscreenTipDialogPositiveClick(DialogFragment dialog) {
-		instructionsFirstShow.edit().putBoolean(Constants.KEY_FIRST_SHOW, false).apply();
-	}
+        instructionsFirstShow = this.getSharedPreferences(Constants.FULLSCREEN_INSTRUCTIONS, Constants.PRIVATE_MODE);
+
+        if (instructionsFirstShow.getBoolean(Constants.KEY_FIRST_SHOW, true)) {
+            FullscreenTipAlertFragment dialogInstructions = new FullscreenTipAlertFragment();
+            dialogInstructions.show(getSupportFragmentManager(), "FullscreenTipAlertFragment");
+        }
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        hide();
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+
+        // Trigger the initial hide() shortly after the activity has been
+        // created, to briefly hint to the user that UI controls
+        // are available.
+        delayedHide(100);
+    }
+
+    private void toggle() {
+
+        if (mVisible) {
+            textView.setBackgroundColor(getResources().getColor(R.color.colorBackgroundGreen, null));
+        } else {
+
+            switch (state) {
+
+                case Constants.STATE_COLOR_GREEN:
+                    textView.setBackgroundColor(getResources().getColor(R.color.colorBackgroundRed, null));
+                    getWindow().setStatusBarColor(getResources().getColor(R.color.colorBackgroundRed, null));
+                    finishTime = date.format(new Date().getTime());
+                    state = Constants.STATE_COLOR_RED;
+                    break;
+
+                case Constants.STATE_COLOR_RED:
+
+                    String lastNote = Constants.EMPTY;
+
+                    switch (callerActivity) {
+
+                        case Constants.ACTIVITY_SIMPLE_NOTE:
+                            SimpleNote simpleNote = new SimpleNote(text);
+                            if (!notebook.getSimpleNotes().isEmpty()) {
+                                lastNote = notebook.getSimpleNotes().get(Constants.LIST_HEAD).getText();
+                            }
+                            if (!simpleNote.getText().equals(lastNote)) {
+                                notebook.addNote(simpleNote);
+                            }
+                            break;
+
+                        case Constants.ACTIVITY_GEAR_NOTE:
+                            GearNote gearNote = new GearNote(text);
+                            if (!notebook.getGearNotes().isEmpty()) {
+                                lastNote = notebook.getGearNotes().get(Constants.LIST_HEAD).getGearList();
+                            }
+                            if (!gearNote.getGearList().equals(lastNote)) {
+                                notebook.addNote(gearNote);
+                            }
+                            break;
+
+                        case Constants.ACTIVITY_FLICKR_NOTE:
+                            Bundle bundle = getIntent().getExtras();
+                            if (bundle != null) {
+                                String title = bundle.getString(Constants.FLICKR_TITLE);
+                                String description = bundle.getString(Constants.FLICKR_DESCRIPTION);
+                                ArrayList<String> tags = bundle.getStringArrayList(Constants.FLICKR_TAGS);
+                                double latitude = bundle.getDouble(Constants.LATITUDE);
+                                double longitude = bundle.getDouble(Constants.LONGITUDE);
+                                FlickrNote flickrNote = new FlickrNote(title, description, tags,
+                                        latitude, longitude, startTime, finishTime);
+                                notebook.addNote(flickrNote);
+                            }
+                            break;
+
+                    }
+                    // go back when red screen is touched
+                    super.onBackPressed();
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        // do not go back when back button is pressed
+    }
+
+    private void hide() {
+        // Hide UI first
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.hide();
+        }
+        mVisible = false;
+
+        // Schedule a runnable to remove the status and navigation bar after a delay
+        mHideHandler.removeCallbacks(mShowPart2Runnable);
+        mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY);
+    }
+
+    /**
+     * Schedules a call to hide() in delay milliseconds, canceling any
+     * previously scheduled calls.
+     */
+    private void delayedHide(int delayMillis) {
+        mHideHandler.removeCallbacks(mHideRunnable);
+        mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        try {
+            notebook.saveState(getApplicationContext());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void onFullscreenTipDialogPositiveClick(DialogFragment dialog) {
+        instructionsFirstShow.edit().putBoolean(Constants.KEY_FIRST_SHOW, false).apply();
+    }
 
 }

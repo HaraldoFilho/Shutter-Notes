@@ -32,108 +32,116 @@ import java.util.Collection;
 
 @SuppressWarnings("unchecked")
 public class FlickrPhotosetsListActivity extends AppCompatActivity implements
-		ConfirmUploadAlertFragment.ConfirmUploadAlertDialogListener {
+        ConfirmUploadAlertFragment.ConfirmUploadAlertDialogListener {
 
-	private Collection<Photoset> photosets;
-	private ListView photosetsListView;
+    private Collection<Photoset> photosets;
+    private ListView photosetsListView;
 
-	private String selectedSetId;
-	private int selectedSetSize;
+    private String selectedSetId;
+    private int selectedSetSize;
 
-	private FlickrApi flickrApi;
-	private Auth auth;
+    private FlickrApi flickrApi;
+    private Auth auth;
 
-	private ProgressDialog progressDialog;
+    private ProgressDialog progressDialog;
 
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_flickr_photosets_list);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_flickr_photosets_list);
 
-		flickrApi = new FlickrApi(getApplicationContext());
+        flickrApi = new FlickrApi(getApplicationContext());
 
-		photosetsListView = findViewById(R.id.photosetsList);
-		photosetsListView.setOnItemClickListener((adapterView, view, i, l) -> {
-			ConfirmUploadAlertFragment dialogConfirm = new ConfirmUploadAlertFragment();
-			dialogConfirm.show(getSupportFragmentManager(), "ConfirmUploadDialogFragment");
-			Photoset photoset = (Photoset) adapterView.getAdapter().getItem(i);
-			selectedSetId = photoset.getId();
-			selectedSetSize = photoset.getPhotoCount();
-		});
+        photosetsListView = findViewById(R.id.photosetsList);
+        photosetsListView.setOnItemClickListener((adapterView, view, i, l) -> {
+            ConfirmUploadAlertFragment dialogConfirm = new ConfirmUploadAlertFragment();
+            dialogConfirm.show(getSupportFragmentManager(), "ConfirmUploadDialogFragment");
+            Photoset photoset = (Photoset) adapterView.getAdapter().getItem(i);
+            selectedSetId = photoset.getId();
+            selectedSetSize = photoset.getPhotoCount();
+        });
 
-		progressDialog = new ProgressDialog(this);
-		progressDialog.setMessage(getApplicationContext().getResources().getString(R.string.dialog_progress_photosets));
-		progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-		progressDialog.setIndeterminate(true);
-		progressDialog.setCanceledOnTouchOutside(false);
-		progressDialog.setCancelable(false);
-		progressDialog.show();
+    }
 
-		new CheckToken().execute();
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-	}
+        if (photosetsListView.getAdapter() == null) {
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage(getApplicationContext().getResources().getString(R.string.dialog_progress_photosets));
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setIndeterminate(true);
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
 
-	@Override
-	public void onConfirmUploadDialogPositiveClick(DialogFragment dialog) {
+            new CheckToken().execute();
+        }
 
-		if (!selectedSetId.isEmpty()) {
-			Intent intent = new Intent(getApplicationContext(), FlickrUploadToPhotosActivity.class);
-			Bundle bundle = new Bundle();
-			bundle.putString(Constants.PHOTOSET_ID, selectedSetId);
-			bundle.putInt(Constants.PHOTOSET_SIZE, selectedSetSize);
-			intent.putExtras(bundle);
-			startActivity(intent);
-		}
+    }
 
-	}
+    @Override
+    public void onConfirmUploadDialogPositiveClick(DialogFragment dialog) {
 
-	@Override
-	public void onConfirmUploadDialogNegativeClick(DialogFragment dialog) {
-		dialog.dismiss();
-	}
+        if (!selectedSetId.isEmpty()) {
+            Intent intent = new Intent(getApplicationContext(), FlickrUploadToPhotosActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString(Constants.PHOTOSET_ID, selectedSetId);
+            bundle.putInt(Constants.PHOTOSET_SIZE, selectedSetSize);
+            intent.putExtras(bundle);
+            startActivity(intent);
+        }
 
-	@SuppressLint("StaticFieldLeak")
-	private class CheckToken extends FlickrApi.CheckToken {
+    }
 
-		@Override
-		protected void onPostExecute(Object o) {
-			super.onPostExecute(o);
-			auth = flickrApi.getAuth();
-			if (auth == null) {
-				progressDialog.cancel();
-				Intent intent = new Intent(getApplicationContext(), FlickrAccountActivity.class);
-				startActivity(intent);
-			} else {
-				new GetPhotosets().execute();
-			}
+    @Override
+    public void onConfirmUploadDialogNegativeClick(DialogFragment dialog) {
+        dialog.dismiss();
+    }
 
-		}
-	}
+    @SuppressLint("StaticFieldLeak")
+    private class CheckToken extends FlickrApi.CheckToken {
 
-	@SuppressLint("StaticFieldLeak")
-	private class GetPhotosets extends AsyncTask {
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+            auth = flickrApi.getAuth();
+            if (auth == null) {
+                progressDialog.cancel();
+                Intent intent = new Intent(getApplicationContext(), FlickrAccountActivity.class);
+                startActivity(intent);
+            } else {
+                new GetPhotosets().execute();
+            }
 
-		protected Object doInBackground(Object[] objects) {
+        }
+    }
 
-			try {
-				String user = auth.getUser().getId();
-				RequestContext.getRequestContext().setAuth(auth);
-				photosets = FlickrApi.getFlickrInterface().getPhotosetsInterface().getList(user).getPhotosets();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			return null;
+    @SuppressLint("StaticFieldLeak")
+    private class GetPhotosets extends AsyncTask {
 
-		}
+        protected Object doInBackground(Object[] objects) {
 
-		@Override
-		protected void onPostExecute(Object o) {
-			super.onPostExecute(o);
-			progressDialog.cancel();
-			FlickrPhotosetsListAdapter adapter = new FlickrPhotosetsListAdapter(getApplicationContext(), photosets);
-			photosetsListView.setAdapter(adapter);
-		}
-	}
+            try {
+                String user = auth.getUser().getId();
+                RequestContext.getRequestContext().setAuth(auth);
+                photosets = FlickrApi.getFlickrInterface().getPhotosetsInterface().getList(user).getPhotosets();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+            progressDialog.cancel();
+            FlickrPhotosetsListAdapter adapter = new FlickrPhotosetsListAdapter(getApplicationContext(), photosets);
+            photosetsListView.setAdapter(adapter);
+        }
+    }
 
 }

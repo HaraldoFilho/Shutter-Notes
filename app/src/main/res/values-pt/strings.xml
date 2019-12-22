@@ -150,7 +150,7 @@
     <string name="dialog_instruction_title">Instruções</string>
     <string name="pref_title_overwrite_tags">Sobrescrever tags</string>
     <string name="pref_group_flickr_upload">UPLOAD</string>
-    <string name="nav_menu_clock">Relógio</string>
+    <string name="nav_menu_clock">Sincronizar Relógios</string>
     <string name="activity_title_clock">Relógio</string>
     <string name="text_syncronize_clock">SINCRONIZE O RELÓGIO DA SUA CÂMERA</string>
     <string name="action_sync_clock">Sincronizar relógio</string>
