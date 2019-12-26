@@ -17,7 +17,7 @@
         android:id="@+id/imageAppIcon"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="350dp"
+        android:layout_marginTop="250dp"
         android:src="@mipmap/ic_launcher" />
 
     <TextView
@@ -76,7 +76,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/info_name"
         android:id="@+id/textName"
-        android:layout_above="@+id/textEmail"
+        android:layout_above="@+id/textWebsite"
         android:layout_centerHorizontal="true" />
 
     <TextView
@@ -85,17 +85,7 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textSize="12sp"
         android:text="@string/info_website"
-        android:id="@+id/textEmail"
-        android:layout_above="@+id/textSkype"
-        android:layout_centerHorizontal="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="12sp"
-        android:text="@string/info_skype"
-        android:id="@+id/textSkype"
+        android:id="@+id/textWebsite"
         android:layout_above="@+id/textDeveloper"
         android:layout_centerHorizontal="true" />
 
