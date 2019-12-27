@@ -58,7 +58,6 @@
     <string name="url_help_settings">shutternotes-ajuda-configuracoes</string>
     <string name="url_help_main">shutternotes-ajuda-principal</string>
     <string name="url_bug_report">relatorio-de-falha</string>
-    <string name="map_location_here">Você está aqui</string>
     <string name="activity_title_flickr_notes">Notas do Flickr</string>
     <string name="activity_title_gear_notes">Notas de Equipamento</string>
     <string name="activity_title_simple_notes">Notas Simples</string>
@@ -154,5 +153,7 @@
     <string name="activity_title_clock">Relógio</string>
     <string name="text_syncronize_clock">SINCRONIZE O RELÓGIO DA SUA CÂMERA</string>
     <string name="action_sync_clock">Sincronizar relógio</string>
+    <string name="alert_title_authenticate">Autenticação necessária!</string>
+    <string name="alert_message_authenticate">Você precisa se autenticar no Flickr para fazer upload dos dados. Deseja tentar novamente?</string>
 
 </resources>

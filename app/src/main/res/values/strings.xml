@@ -7,18 +7,16 @@
 
     <!--Application version-->
     <string name="version_name">version: </string>
-    <string name="version_number" translatable="false">0.2.3</string>
-    <string name="version_code" translatable="false">37</string>
+    <string name="version_number" translatable="false">0.2.4</string>
+    <string name="version_code" translatable="false">38</string>
 
     <!--Application information-->
     <string name="info_app_name" translatable="false">Shutter Notes</string>
-    <string name="info_app_url" translatable="false">http://goo.gl/3zOJcC</string>
     <string name="info_name" translatable="false">mohb apps</string>
     <string name="info_website">mohb-apps.com</string>
     <string name="info_feedback_email">feedback@mohb-apps.com</string>
     <string name="info_developer">Developer:</string>
     <string name="info_developer_name" translatable="false">Haraldo Albergaria Filho</string>
-    <string name="info_skype" translatable="false">skype: mohb.apps</string>
     <string name="info_copyright_text" translatable="false">Copyright © 2019 mohb apps</string>
     <string name="info_rights_reserved_text">All Rights Reserved.</string>
 
@@ -138,12 +136,14 @@
     <string name="alert_title_delete_all_items">Delete all?</string>
     <string name="alert_title_reset_preferences">Restore defaults?</string>
     <string name="alert_title_confirm_upload">Confirm upload?</string>
+    <string name="alert_title_authenticate">Authentication needed!</string>
     <string name="alert_message_reset_preferences">All settings will be restored to the default values\n</string>
     <string name="alert_message_no_undone">This action can not be undone\n</string>
     <string name="alert_message_can_be_restored">They will can be restored later\n</string>
     <string name="alert_message_delete_all_notes">All notes will be permanently deleted\n</string>
     <string name="alert_message_restore_all_notes">All notes will be restored to its original location\n</string>
     <string name="alert_message_confirm_upload">The notes information will be uploaded to the selected photoset</string>
+    <string name="alert_message_authenticate">You need to authenticate in your Flickr account to upload data. Do you want to try again?</string>
     <string name="alert_button_no">No</string>
     <string name="alert_button_yes">Yes</string>
 
@@ -162,9 +162,6 @@
     <string name="toast_account_connected">Account connected!</string>
     <string name="toast_no_photos_updated">No photos were updated</string>
 
-    <!--Notification-->
-    <string name="notification_blank" translatable="false"></string>
-
     <!--Help pages-->
     <string name="url_website">https://mohb-apps.com/</string>
     <string name="url_help">shutter-notes</string>
@@ -176,10 +173,6 @@
 
     <string name="dummy_button" translatable="false">Dummy Button</string>
     <string name="dummy_content" translatable="false">DUMMY\nCONTENT</string>
-
-    <!--Map-->
-    <string name="map_location_here">You are here</string>
-
 
     <!-- Settings -->
 

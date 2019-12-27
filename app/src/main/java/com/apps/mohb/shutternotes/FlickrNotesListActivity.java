@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrNotesListActivity.java
- *  Last modified : 8/18/19 12:26 PM
+ *  Last modified : 12/26/19 2:48 PM
  *
  *  -----------------------------------------------------------
  */
@@ -173,9 +173,6 @@ public class FlickrNotesListActivity extends AppCompatActivity implements
 
         int id = item.getItemId();
 
-        Toasts.setContext(getApplicationContext());
-        Toasts.createMustSelect();
-
         boolean noNoteSelected = true;
         for (int i = notebook.getFlickrNotes().size() - 1; i >= 0; i--) {
             FlickrNote note = notebook.getFlickrNotes().get(i);
@@ -190,7 +187,7 @@ public class FlickrNotesListActivity extends AppCompatActivity implements
             // Upload to Flickr
             case R.id.action_upload_to_flickr: {
                 if (noNoteSelected) {
-                    Toasts.showMustSelect();
+                    Toasts.showMustSelect(getApplicationContext());
                 } else {
                     try {
                         notebook.saveState(this);
@@ -206,7 +203,7 @@ public class FlickrNotesListActivity extends AppCompatActivity implements
             // Archive all notes
             case R.id.action_archive_all: {
                 if (noNoteSelected) {
-                    Toasts.showMustSelect();
+                    Toasts.showMustSelect(getApplicationContext());
                 } else {
                     ArchiveSelectedNotesAlertFragment dialogArchive = new ArchiveSelectedNotesAlertFragment();
                     dialogArchive.show(getSupportFragmentManager(), "ArchiveSelectedNotesAlertFragment");
@@ -276,9 +273,7 @@ public class FlickrNotesListActivity extends AppCompatActivity implements
             }
         }
         notesListGridView.invalidateViews();
-        Toasts.setContext(getApplicationContext());
-        Toasts.createAllNotesArchived(R.string.toast_selected_notes_archived);
-        Toasts.showAllNotesArchived();
+        Toasts.showAllNotesArchived(getApplicationContext(), R.string.toast_selected_notes_archived);
         if (notebook.getFlickrNotes().isEmpty()) {
             menuItemUploadToFlickr.setEnabled(false);
             menuItemArchiveAll.setEnabled(false);
