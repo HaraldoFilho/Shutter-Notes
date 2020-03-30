@@ -6,8 +6,8 @@ android {
         applicationId "com.apps.mohb.shutternotes"
         minSdkVersion 24
         targetSdkVersion 28
-        versionCode 38
-        versionName "0.2.4"
+        versionCode 39
+        versionName "0.2.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }

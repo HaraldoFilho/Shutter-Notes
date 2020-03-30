@@ -19,7 +19,8 @@
         android:gravity="top"
         android:hint="@string/text_hint_simple_note"
         android:inputType="textMultiLine"
-        android:padding="@dimen/simple_note_text_padding"
+        android:paddingLeft="@dimen/simple_note_text_padding"
+        android:paddingRight="@dimen/simple_note_text_padding"
         android:singleLine="false"
         android:textSize="@dimen/simple_note_font_size"
         tools:targetApi="o" />
