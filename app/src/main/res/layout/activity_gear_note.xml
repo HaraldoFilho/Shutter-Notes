@@ -4,18 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackgroundGearNote"
     tools:context=".GearNoteActivity">
 
     <ListView
         android:id="@+id/gearList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@+id/buttonsGearNote"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="0dp"
-        android:layout_marginBottom="0dp"
-        android:layout_marginLeft="@dimen/item_margin"
-        android:layout_marginRight="@dimen/item_margin"
-        android:layout_above="@+id/buttonsGearNote" >
+        android:layout_marginLeft="@dimen/gear_item_margin"
+        android:layout_marginRight="@dimen/gear_item_margin"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="10dp">
 
     </ListView>
 
@@ -25,7 +26,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:gravity="bottom"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:background="@color/colorBackgroundWhite">
 
         <Button
             android:id="@+id/buttonGearNoteCancel"
@@ -54,7 +56,6 @@
             android:text="@string/button_show"
             android:textSize="@dimen/button_font_size" />
     </LinearLayout>
-
 
 
 </RelativeLayout>

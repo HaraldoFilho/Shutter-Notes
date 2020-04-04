@@ -12,6 +12,8 @@
 
 package com.apps.mohb.shutternotes;
 
+import com.flickr4java.flickr.FlickrException;
+
 import org.junit.Test;
 
 import static com.apps.mohb.shutternotes.FlickrApi.getPhotoTagsArray;
@@ -43,7 +45,11 @@ public class FlickrApiUnitTest {
 		String[] array1 = { "Elem1", "Elem2", "Elem3" };
 		String[] newArray = { "Elem1", "Elem2", "Elem3" };
 
-		assertArrayEquals(newArray, getPhotoTagsArray(array1));
+		try {
+			assertArrayEquals(newArray, getPhotoTagsArray(array1));
+		} catch (FlickrException e) {
+			e.printStackTrace();
+		}
 
 	}
 	@Test

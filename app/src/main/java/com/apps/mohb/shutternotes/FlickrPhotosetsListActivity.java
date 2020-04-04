@@ -1,11 +1,11 @@
 /*
- *  Copyright (c) 2019 mohb apps - All Rights Reserved
+ *  Copyright (c) 2020 mohb apps - All Rights Reserved
  *
  *  Project       : ShutterNotes
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrPhotosetsListActivity.java
- *  Last modified : 12/26/19 7:59 PM
+ *  Last modified : 4/4/20 5:39 PM
  *
  *  -----------------------------------------------------------
  */
@@ -19,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.ListView;
 
 import com.apps.mohb.shutternotes.adapters.FlickrPhotosetsListAdapter;
@@ -57,6 +58,9 @@ public class FlickrPhotosetsListActivity extends AppCompatActivity implements
 
         flickrApi = new FlickrApi(getApplicationContext());
 
+        View listHeader = getLayoutInflater().inflate(R.layout.list_header, photosetsListView);
+        View listFooter = getLayoutInflater().inflate(R.layout.list_footer, photosetsListView);
+
         photosetsListView = findViewById(R.id.photosetsList);
         photosetsListView.setOnItemClickListener((adapterView, view, i, l) -> {
             ConfirmUploadAlertFragment dialogConfirm = new ConfirmUploadAlertFragment();
@@ -65,6 +69,11 @@ public class FlickrPhotosetsListActivity extends AppCompatActivity implements
             selectedSetId = photoset.getId();
             selectedSetSize = photoset.getPhotoCount();
         });
+
+        photosetsListView.addHeaderView(listHeader);
+        photosetsListView.addFooterView(listFooter);
+        listHeader.setClickable(false);
+        listFooter.setClickable(false);
 
         callerActivity = getIntent().getIntExtra(Constants.KEY_CALLER_ACTIVITY, Constants.ACTIVITY_FLICKR_NOTES);
 

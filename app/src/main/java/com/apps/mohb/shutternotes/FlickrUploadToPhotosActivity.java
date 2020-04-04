@@ -20,6 +20,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.ListView;
 
 import com.apps.mohb.shutternotes.adapters.FlickrPhotosListAdapter;
@@ -71,7 +72,15 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
 
         flickrApi = new FlickrApi(getApplicationContext());
 
+        View listHeader = getLayoutInflater().inflate(R.layout.list_header, photosListView);
+        View listFooter = getLayoutInflater().inflate(R.layout.list_footer, photosListView);
+
         photosListView = findViewById(R.id.photosList);
+
+        photosListView.addHeaderView(listHeader);
+        photosListView.addFooterView(listFooter);
+        listHeader.setClickable(false);
+        listFooter.setClickable(false);
 
         settings = PreferenceManager.getDefaultSharedPreferences(this);
 

@@ -52,12 +52,11 @@
     <string name="activity_title_note_fullscreen">Nota em Tela Cheia</string>
     <string name="toast_must_type">Você precisa escrever alguma coisa</string>
     <string name="toast_must_type_title">Você precisa colocar um título</string>
-    <string name="url_website">https://mohb-apps.com.br/</string>
-    <string name="url_contact">contato</string>
-    <string name="url_help">shutter-notes</string>
+    <string name="url_contact">br-contact</string>
+    <string name="url_help">br-shutter-notes</string>
     <string name="url_help_settings">shutternotes-ajuda-configuracoes</string>
     <string name="url_help_main">shutternotes-ajuda-principal</string>
-    <string name="url_bug_report">relatorio-de-falha</string>
+    <string name="url_bug_report">br-bug-report</string>
     <string name="activity_title_flickr_notes">Notas do Flickr</string>
     <string name="activity_title_gear_notes">Notas de Equipamento</string>
     <string name="activity_title_simple_notes">Notas Simples</string>
@@ -68,7 +67,7 @@
     <string name="alert_button_no">Não</string>
     <string name="alert_button_yes">Sim</string>
     <string name="alert_message_delete_all_notes">Todas as notas serão permanentemente excluídas</string>
-    <string name="url_help_notes">shutternotes-help-notas</string>
+    <string name="url_help_notes">shutternotes-ajuda-notas</string>
     <string name="action_add_gear">Adicionar novo equipamento</string>
     <string name="activity_title_gears_list">Acessórios</string>
     <string name="dialog_add_gear_title">Novo acessório</string>
@@ -96,7 +95,6 @@
     <string name="alert_title_delete_all_items">Excluir tudo?</string>
     <string name="action_upload_to_flickr">Fazer upload para o Flickr</string>
     <string name="activity_title_add_tags">Adicionar Tags</string>
-    <string name="info_website">mohb-apps.com.br</string>
     <string name="action_unselect_all">Deselecionar tudo</string>
     <string name="alert_message_can_be_restored">Elas poderão ser restauradas mais tarde</string>
     <string name="alert_title_archive_all_notes">Arquivar todas as notas</string>

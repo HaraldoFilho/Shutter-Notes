@@ -3,7 +3,7 @@
     android:id="@+id/listItem"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/item_tile"
+    android:background="@drawable/note_item_tile"
     android:elevation="@dimen/item_elevation"
     android:gravity="center"
     android:orientation="vertical">

@@ -26,6 +26,8 @@
     <color name="colorBackgroundRed">#fa0c0c</color>
     <color name="colorBackgroundWhite">#ffffff</color>
     <color name="colorBackgroundTags">#f7f7f7</color>
+    <color name="colorBackgroundGearNote">#f7f7f7</color>
+    <color name="colorBackgroundPhotosets">#f7f7f7</color>
     <color name="colorBackgroudSplash">#ffffff</color>
 
     <color name="black_overlay">#66000000</color>

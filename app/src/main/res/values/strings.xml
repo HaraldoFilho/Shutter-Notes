@@ -7,13 +7,13 @@
 
     <!--Application version-->
     <string name="version_name">version: </string>
-    <string name="version_number" translatable="false">0.2.5</string>
-    <string name="version_code" translatable="false">39</string>
+    <string name="version_number" translatable="false">0.2.6</string>
+    <string name="version_code" translatable="false">40</string>
 
     <!--Application information-->
     <string name="info_app_name" translatable="false">Shutter Notes</string>
     <string name="info_name" translatable="false">mohb apps</string>
-    <string name="info_website">mohb-apps.com</string>
+    <string name="info_website" translatable="false">mohb-apps.com</string>
     <string name="info_feedback_email">feedback@mohb-apps.com</string>
     <string name="info_developer">Developer:</string>
     <string name="info_developer_name" translatable="false">Haraldo Albergaria Filho</string>
@@ -163,7 +163,7 @@
     <string name="toast_no_photos_updated">No photos were updated</string>
 
     <!--Help pages-->
-    <string name="url_website">https://mohb-apps.com/</string>
+    <string name="url_website" translatable="false">https://mohb-apps.com/</string>
     <string name="url_help">shutter-notes</string>
     <string name="url_help_main">shutternotes-help-main</string>
     <string name="url_help_notes">shutternotes-help-notes</string>

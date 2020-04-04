@@ -4,11 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackgroundPhotosets"
     tools:context=".FlickrPhotosetsListActivity">
 
     <ListView
         android:id="@+id/photosetsList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/gear_item_margin"
+        android:layout_marginRight="@dimen/gear_item_margin"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="10dp" />
 
 </LinearLayout>

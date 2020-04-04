@@ -56,12 +56,20 @@ public class GearNoteActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gear_note);
 
+        View listHeader = getLayoutInflater().inflate(R.layout.list_header, gearListView);
+        View listFooter = getLayoutInflater().inflate(R.layout.list_footer, gearListView);
+
         Button buttonCancel = findViewById(R.id.buttonGearNoteCancel);
         Button buttonReset = findViewById(R.id.buttonGearNoteReset);
         Button buttonOK = findViewById(R.id.buttonGearNoteOk);
 
         gearList = new GearList();
         gearListView = findViewById(R.id.gearList);
+
+        gearListView.addHeaderView(listHeader);
+        gearListView.addFooterView(listFooter);
+        listHeader.setClickable(false);
+        listFooter.setClickable(false);
 
         gearListView.setOnItemClickListener((adapterView, view, i, l) -> {
             if (!gearList.get(i).isSelected()) {
