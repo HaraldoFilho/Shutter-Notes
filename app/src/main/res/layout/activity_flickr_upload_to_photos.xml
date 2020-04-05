@@ -4,11 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackgroundPhotos"
     tools:context=".FlickrUploadToPhotosActivity">
 
     <ListView
         android:id="@+id/photosList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/flickr_upload_photos_margin"
+        android:layout_marginRight="@dimen/flickr_upload_photos_margin"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="@dimen/flickr_upload_photos_div_height" />
 
 </LinearLayout>

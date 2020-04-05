@@ -1,11 +1,11 @@
 /*
- *  Copyright (c) 2019 mohb apps - All Rights Reserved
+ *  Copyright (c) 2020 mohb apps - All Rights Reserved
  *
  *  Project       : ShutterNotes
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrAccountActivity.java
- *  Last modified : 12/26/19 4:35 PM
+ *  Last modified : 4/5/20 1:13 PM
  *
  *  -----------------------------------------------------------
  */
@@ -52,40 +52,45 @@ public class FlickrAccountActivity extends AppCompatActivity {
         setContentView(R.layout.activity_flickr_account_authorize);
         Objects.requireNonNull(getSupportActionBar()).hide();
 
-        flickrApi = new FlickrApi(getApplicationContext());
+        try {
+            flickrApi = new FlickrApi(getApplicationContext());
 
-        flickrWebView = findViewById(R.id.webViewFlickrAuth);
-        configureWebView(flickrWebView);
+            flickrWebView = findViewById(R.id.webViewFlickrAuth);
+            configureWebView(flickrWebView);
 
-        handlerForJavascriptInterface = new Handler();
+            handlerForJavascriptInterface = new Handler();
 
-        codeTextView = findViewById(R.id.inputTextFlickrAuth);
-        codeTextView.setOnFocusChangeListener((view, b) -> {
-            codeTextView.setHint(Constants.EMPTY);
-            connectButton.setClickable(true);
-            connectButton.setText(R.string.button_connect);
-            connectButton.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.colorGreen, null));
-        });
+            codeTextView = findViewById(R.id.inputTextFlickrAuth);
+            codeTextView.setOnFocusChangeListener((view, b) -> {
+                codeTextView.setHint(Constants.EMPTY);
+                connectButton.setClickable(true);
+                connectButton.setText(R.string.button_connect);
+                connectButton.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.colorGreen, null));
+            });
 
-        connectButton = findViewById(R.id.authButtonFlickrAuth);
-        connectButton.setClickable(false);
-        connectButton.setOnClickListener(view -> {
-            int textSize = codeTextView.getText().length();
-            if (textSize >= Constants.TOKEN_KEY_SIZE_MIN && textSize <= Constants.TOKEN_KEY_SIZE_MAX) {
-                tokenKey = codeTextView.getText().toString();
-                flickrApi.setTokenKey(tokenKey);
-                new GetAccessToken().execute();
+            connectButton = findViewById(R.id.authButtonFlickrAuth);
+            connectButton.setClickable(false);
+            connectButton.setOnClickListener(view -> {
+                int textSize = codeTextView.getText().length();
+                if (textSize >= Constants.TOKEN_KEY_SIZE_MIN && textSize <= Constants.TOKEN_KEY_SIZE_MAX) {
+                    tokenKey = codeTextView.getText().toString();
+                    flickrApi.setTokenKey(tokenKey);
+                    new GetAccessToken().execute();
+                } else {
+                    Toasts.showTypeCode(getApplicationContext());
+                }
+            });
+
+            callerActivity = getIntent().getIntExtra(Constants.KEY_CALLER_ACTIVITY, Constants.ACTIVITY_MAIN);
+
+            if (!flickrApi.getToken().isEmpty() && !flickrApi.getTokenSecret().isEmpty()) {
+                new CheckToken().execute();
             } else {
-                Toasts.showTypeCode(getApplicationContext());
+                new GetRequestToken().execute();
             }
-        });
-
-        callerActivity = getIntent().getIntExtra(Constants.KEY_CALLER_ACTIVITY, Constants.ACTIVITY_MAIN);
-
-        if (!flickrApi.getToken().isEmpty() && !flickrApi.getTokenSecret().isEmpty()) {
-            new CheckToken().execute();
-        } else {
-            new GetRequestToken().execute();
+        } catch (Exception e) {
+            Toasts.showUnableToCommunicate(getApplicationContext());
+            onBackPressed();
         }
 
     }

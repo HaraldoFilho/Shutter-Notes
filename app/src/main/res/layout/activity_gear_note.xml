@@ -13,10 +13,10 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/buttonsGearNote"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="@dimen/gear_item_margin"
-        android:layout_marginRight="@dimen/gear_item_margin"
+        android:layout_marginLeft="@dimen/gear_note_item_margin"
+        android:layout_marginRight="@dimen/gear_note_item_margin"
         android:divider="@android:color/transparent"
-        android:dividerHeight="10dp">
+        android:dividerHeight="@dimen/gear_note_item_spacing">
 
     </ListView>
 

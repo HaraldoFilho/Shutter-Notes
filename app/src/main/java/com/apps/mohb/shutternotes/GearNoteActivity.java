@@ -1,11 +1,11 @@
 /*
- *  Copyright (c) 2019 mohb apps - All Rights Reserved
+ *  Copyright (c) 2020 mohb apps - All Rights Reserved
  *
  *  Project       : ShutterNotes
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : GearNoteActivity.java
- *  Last modified : 12/26/19 12:52 PM
+ *  Last modified : 4/5/20 12:46 PM
  *
  *  -----------------------------------------------------------
  */
@@ -194,7 +194,7 @@ public class GearNoteActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.gear_note, menu);
+        getMenuInflater().inflate(R.menu.options_gear_note, menu);
         MenuItem menuAddGear = menu.findItem(R.id.action_add_gear);
         menuAddGear.setEnabled(true);
         return true;
@@ -242,6 +242,15 @@ public class GearNoteActivity extends AppCompatActivity
                 Toasts.showReorderedItems(getApplicationContext());
                 break;
             }
+
+            // Help
+            case R.id.action_help: {
+                Intent intent = new Intent(this, HelpActivity.class);
+                intent.putExtra(Constants.KEY_URL, getString(R.string.url_help_gear_note));
+                startActivity(intent);
+                break;
+            }
+
         }
 
         return super.onOptionsItemSelected(item);

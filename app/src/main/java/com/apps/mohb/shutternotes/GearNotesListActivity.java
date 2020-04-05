@@ -1,11 +1,11 @@
 /*
- *  Copyright (c) 2019 mohb apps - All Rights Reserved
+ *  Copyright (c) 2020 mohb apps - All Rights Reserved
  *
  *  Project       : ShutterNotes
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : GearNotesListActivity.java
- *  Last modified : 12/26/19 12:52 PM
+ *  Last modified : 4/5/20 12:46 PM
  *
  *  -----------------------------------------------------------
  */
@@ -180,6 +180,13 @@ public class GearNotesListActivity extends AppCompatActivity implements
                 break;
             }
 
+            // Help
+            case R.id.action_help: {
+                Intent intent = new Intent(this, HelpActivity.class);
+                intent.putExtra(Constants.KEY_URL, getString(R.string.url_help_gear_notes));
+                startActivity(intent);
+                break;
+            }
         }
 
         return super.onOptionsItemSelected(item);

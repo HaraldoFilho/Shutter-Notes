@@ -1,17 +1,18 @@
 /*
- *  Copyright (c) 2019 mohb apps - All Rights Reserved
+ *  Copyright (c) 2020 mohb apps - All Rights Reserved
  *
  *  Project       : ShutterNotes
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : ArchiveActivity.java
- *  Last modified : 12/26/19 7:59 PM
+ *  Last modified : 4/5/20 12:46 PM
  *
  *  -----------------------------------------------------------
  */
 
 package com.apps.mohb.shutternotes;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -213,6 +214,14 @@ public class ArchiveActivity extends AppCompatActivity implements
                     DialogFragment dialog = new RestoreAllNotesAlertFragment();
                     dialog.show(getSupportFragmentManager(), "RestoreAllNotesAlertFragment");
                 }
+                break;
+            }
+
+            // Help
+            case R.id.action_help: {
+                Intent intent = new Intent(this, HelpActivity.class);
+                intent.putExtra(Constants.KEY_URL, getString(R.string.url_help_archived));
+                startActivity(intent);
                 break;
             }
 

@@ -1,11 +1,11 @@
 /*
- *  Copyright (c) 2019 mohb apps - All Rights Reserved
+ *  Copyright (c) 2020 mohb apps - All Rights Reserved
  *
  *  Project       : ShutterNotes
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrUploadToPhotosActivity.java
- *  Last modified : 12/26/19 12:52 PM
+ *  Last modified : 4/5/20 1:13 PM
  *
  *  -----------------------------------------------------------
  */
@@ -69,6 +69,8 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_flickr_upload_to_photos);
+
+        try {
 
         flickrApi = new FlickrApi(getApplicationContext());
 
@@ -138,6 +140,11 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
         progressDialog.setMax(selectedSetSize);
 
         new CheckToken().execute();
+
+        } catch (Exception e) {
+            Toasts.showUnableToCommunicate(getApplicationContext());
+            onBackPressed();
+        }
 
     }
 

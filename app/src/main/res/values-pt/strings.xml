@@ -54,8 +54,7 @@
     <string name="toast_must_type_title">Você precisa colocar um título</string>
     <string name="url_contact">br-contact</string>
     <string name="url_help">br-shutter-notes</string>
-    <string name="url_help_settings">shutternotes-ajuda-configuracoes</string>
-    <string name="url_help_main">shutternotes-ajuda-principal</string>
+    <string name="url_help_settings">br-shutternotes-ajuda-configuracoes</string>
     <string name="url_bug_report">br-bug-report</string>
     <string name="activity_title_flickr_notes">Notas do Flickr</string>
     <string name="activity_title_gear_notes">Notas de Equipamento</string>
@@ -67,7 +66,6 @@
     <string name="alert_button_no">Não</string>
     <string name="alert_button_yes">Sim</string>
     <string name="alert_message_delete_all_notes">Todas as notas serão permanentemente excluídas</string>
-    <string name="url_help_notes">shutternotes-ajuda-notas</string>
     <string name="action_add_gear">Adicionar novo equipamento</string>
     <string name="activity_title_gears_list">Acessórios</string>
     <string name="dialog_add_gear_title">Novo acessório</string>
@@ -153,5 +151,14 @@
     <string name="action_sync_clock">Sincronizar relógio</string>
     <string name="alert_title_authenticate">Autenticação necessária!</string>
     <string name="alert_message_authenticate">Você precisa se autenticar no Flickr para fazer upload dos dados. Deseja tentar novamente?</string>
+    <string name="url_help_archived">br-shutternotes-help-archived</string>
+    <string name="url_help_flickr_notes">br-shutternotes-help-flickr-notes</string>
+    <string name="url_help_gear_notes">br-shutternotes-help-gear-notes</string>
+    <string name="url_help_simple_note">br-shuuternotes-help-simple-note</string>
+    <string name="url_help_simple_notes">br-shutternotes-help-simple-notes</string>
+    <string name="url_help_gear_note">br-shuuternotes-help-gear-note</string>
+    <string name="url_help_flickr_note">br-shuuternotes-help-flick-note</string>
+    <string name="action_help">Ajuda</string>
+    <string name="toast_unable_to_communicate">Não foi possível a comunicação com o Flickr</string>
 
 </resources>

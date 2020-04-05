@@ -1,11 +1,11 @@
 /*
- *  Copyright (c) 2019 mohb apps - All Rights Reserved
+ *  Copyright (c) 2020 mohb apps - All Rights Reserved
  *
  *  Project       : ShutterNotes
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : Toasts.java
- *  Last modified : 12/26/19 12:45 PM
+ *  Last modified : 4/5/20 1:09 PM
  *
  *  -----------------------------------------------------------
  */
@@ -35,9 +35,10 @@ public class Toasts {
     private static Toast wrongCode;
     private static Toast noPhotosUpdated;
     private static Toast accountConnected;
+    private static Toast unableToCommunicate;
 
 
-    // Toast to notify that is getting a help page from the internet
+    // Toast to notify that is getting a options_help page from the internet
 
     public static void showHelpPage(Context context) {
         helpPage = Toast.makeText((context), R.string.toast_get_help_page, Toast.LENGTH_SHORT);
@@ -200,6 +201,20 @@ public class Toasts {
     public static void cancelAccountConnected() {
         if (accountConnected != null) {
             accountConnected.cancel();
+        }
+    }
+
+    // Toast to notify that the account is connected
+
+    public static void showUnableToCommunicate(Context context) {
+        unableToCommunicate = Toast.makeText((context), R.string.toast_unable_to_communicate, Toast.LENGTH_SHORT);
+        unableToCommunicate.setGravity(Gravity.BOTTOM, Constants.TOAST_X_OFFSET, Constants.TOAST_Y_OFFSET);
+        unableToCommunicate.show();
+    }
+
+    public static void cancelUnableToCommunicate() {
+        if (unableToCommunicate != null) {
+            unableToCommunicate.cancel();
         }
     }
 

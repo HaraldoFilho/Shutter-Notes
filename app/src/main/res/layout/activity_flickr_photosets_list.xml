@@ -11,9 +11,9 @@
         android:id="@+id/photosetsList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="@dimen/gear_item_margin"
-        android:layout_marginRight="@dimen/gear_item_margin"
+        android:layout_marginLeft="@dimen/flickr_photosets_margin"
+        android:layout_marginRight="@dimen/flickr_photosets_margin"
         android:divider="@android:color/transparent"
-        android:dividerHeight="10dp" />
+        android:dividerHeight="@dimen/flickr_photosets_div_height" />
 
 </LinearLayout>

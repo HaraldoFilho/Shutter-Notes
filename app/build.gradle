@@ -1,3 +1,15 @@
+/*
+ *  Copyright (c) 2020 mohb apps - All Rights Reserved
+ *
+ *  Project       : ShutterNotes
+ *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
+ *
+ *  File          : build.gradle
+ *  Last modified : 4/5/20 12:47 PM
+ *
+ *  -----------------------------------------------------------
+ */
+
 apply plugin: 'com.android.application'
 
 android {
@@ -6,8 +18,8 @@ android {
         applicationId "com.apps.mohb.shutternotes"
         minSdkVersion 24
         targetSdkVersion 28
-        versionCode 40
-        versionName "0.2.6"
+        versionCode 41
+        versionName "0.2.7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }

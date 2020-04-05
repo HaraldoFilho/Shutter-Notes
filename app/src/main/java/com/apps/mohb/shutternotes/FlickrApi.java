@@ -1,11 +1,11 @@
 /*
- *  Copyright (c) 2019 mohb apps - All Rights Reserved
+ *  Copyright (c) 2020 mohb apps - All Rights Reserved
  *
  *  Project       : ShutterNotes
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrApi.java
- *  Last modified : 11/12/19 12:15 AM
+ *  Last modified : 4/5/20 1:09 PM
  *
  *  -----------------------------------------------------------
  */
@@ -44,6 +44,7 @@ public class FlickrApi {
 	private static AuthInterface authInterface;
 	private static Auth auth;
 
+	private static String apiKey;
 	private static String apiSecret;
 	private static String token;
 	private static String tokenKey;
@@ -56,10 +57,11 @@ public class FlickrApi {
 	private static SharedPreferences.Editor flickrAccountEditor;
 
 
-	public FlickrApi(Context context) {
+	public FlickrApi(Context context) throws Exception {
 
-		String apiKey = context.getResources().getString(R.string.flickr_key);
+		apiKey = context.getResources().getString(R.string.flickr_key);
 		apiSecret = context.getResources().getString(R.string.flickr_secret);
+
 		flickr = new Flickr(apiKey, apiSecret, new REST());
 		authInterface = flickr.getAuthInterface();
 
@@ -70,6 +72,7 @@ public class FlickrApi {
 
 		Log.i(Constants.LOG_INFO_TAG, "Token: " + token);
 		Log.i(Constants.LOG_INFO_TAG, "Token Secret: " + tokenSecret);
+
 	}
 
 	public static void clearTokens() {

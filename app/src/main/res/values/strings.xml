@@ -7,8 +7,8 @@
 
     <!--Application version-->
     <string name="version_name">version: </string>
-    <string name="version_number" translatable="false">0.2.6</string>
-    <string name="version_code" translatable="false">40</string>
+    <string name="version_number" translatable="false">0.2.7</string>
+    <string name="version_code" translatable="false">41</string>
 
     <!--Application information-->
     <string name="info_app_name" translatable="false">Shutter Notes</string>
@@ -19,6 +19,10 @@
     <string name="info_developer_name" translatable="false">Haraldo Albergaria Filho</string>
     <string name="info_copyright_text" translatable="false">Copyright © 2019 mohb apps</string>
     <string name="info_rights_reserved_text">All Rights Reserved.</string>
+
+    <!--Content description-->
+    <string name="cont_desc_app_icon" translatable="false">app icon</string>
+    <string name="cont_desc_mohb_logo" translatable="false">mohb logo</string>
 
     <!--Navigation drawer-->
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -99,6 +103,7 @@
     <string name="action_upload_to_flickr">Upload to Flickr</string>
     <string name="action_restore_defaults">Restore defaults</string>
     <string name="action_sync_clock">Syncronize clock</string>
+    <string name="action_help">Help</string>
 
     <string name="context_archive">Archive</string>
     <string name="context_restore">Restore</string>
@@ -160,13 +165,19 @@
     <string name="toast_type_code">You need to type the code</string>
     <string name="toast_wrong_code">Wrong code, try again</string>
     <string name="toast_account_connected">Account connected!</string>
+    <string name="toast_unable_to_communicate">Unable to communicate with Flickr</string>
     <string name="toast_no_photos_updated">No photos were updated</string>
 
     <!--Help pages-->
     <string name="url_website" translatable="false">https://mohb-apps.com/</string>
-    <string name="url_help">shutter-notes</string>
-    <string name="url_help_main">shutternotes-help-main</string>
-    <string name="url_help_notes">shutternotes-help-notes</string>
+    <string name="url_help">shutter-notes-help</string>
+    <string name="url_help_simple_note">shuuternotes-help-simple-note</string>
+    <string name="url_help_gear_note">shuuternotes-help-gear-note</string>
+    <string name="url_help_flickr_note">shuuternotes-help-flick-note</string>
+    <string name="url_help_simple_notes">shutternotes-help-simple-notes</string>
+    <string name="url_help_gear_notes">shutternotes-help-gear-notes</string>
+    <string name="url_help_flickr_notes">shutternotes-help-flickr-notes</string>
+    <string name="url_help_archived">shutternotes-help-archived</string>
     <string name="url_help_settings">shutternotes-help-settings</string>
     <string name="url_contact">contact</string>
     <string name="url_bug_report">bug-report</string>

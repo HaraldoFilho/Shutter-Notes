@@ -7,12 +7,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/item_tile"
-    android:elevation="@dimen/photoset_item_elevation">
+    android:elevation="@dimen/flickr_photoset_item_elevation">
 
     <ImageView
         android:id="@+id/imagePhotosetCover"
-        android:layout_width="@dimen/flickr_photo_size"
-        android:layout_height="@dimen/flickr_photo_size"
+        android:layout_width="@dimen/flickr_photoset_thumb_size"
+        android:layout_height="@dimen/flickr_photoset_thumb_size"
         android:layout_marginRight="@dimen/item_margin" />
 
     <LinearLayout
@@ -28,14 +28,14 @@
             android:layout_height="wrap_content"
             android:textSize="@dimen/flickr_photoset_title_size"
             android:layout_marginTop="@dimen/item_margin"
-            android:layout_marginEnd="@dimen/item_text_margin_right" />
+            android:layout_marginEnd="@dimen/item_margin" />
 
         <TextView
             android:id="@+id/textPhotosetSize"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="@dimen/flickr_photoset_number_size"
-            android:layout_marginEnd="@dimen/item_text_margin_right" />
+            android:layout_marginEnd="@dimen/item_margin" />
 
     </LinearLayout>
 

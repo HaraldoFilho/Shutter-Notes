@@ -23,5 +23,10 @@
         android:title="@string/action_reorder"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_help"
+        android:orderInCategory="5"
+        android:title="@string/action_help"
+        app:showAsAction="never" />
 
 </menu>

@@ -1,11 +1,11 @@
 /*
- *  Copyright (c) 2019 mohb apps - All Rights Reserved
+ *  Copyright (c) 2020 mohb apps - All Rights Reserved
  *
  *  Project       : ShutterNotes
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : HelpActivity.java
- *  Last modified : 12/26/19 12:52 PM
+ *  Last modified : 4/5/20 12:46 PM
  *
  *  -----------------------------------------------------------
  */
@@ -35,7 +35,7 @@ public class HelpActivity extends AppCompatActivity {
 
         bundle = getIntent().getExtras();
 
-        // create webView that will show help page
+        // create webView that will show options_help page
         webView = new WebView(this);
         setContentView(webView);
         webView.setWebViewClient(new WebViewClient());
@@ -46,27 +46,27 @@ public class HelpActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         // show toast to inform that will
-        // get help page from internet
+        // get options_help page from internet
         Toasts.showHelpPage(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // load help page in webView
+        // load options_help page in webView
         webView.loadUrl(getString(R.string.url_website) + bundle.getString(Constants.KEY_URL));
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // cancel toast if page if exit help screen
+        // cancel toast if page if exit options_help screen
         Toasts.cancelHelpPage();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.help, menu);
+        getMenuInflater().inflate(R.menu.options_help, menu);
         return true;
     }
 

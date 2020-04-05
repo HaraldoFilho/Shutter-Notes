@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrPhotosetsListActivity.java
- *  Last modified : 4/4/20 5:39 PM
+ *  Last modified : 4/5/20 1:13 PM
  *
  *  -----------------------------------------------------------
  */
@@ -25,6 +25,7 @@ import android.widget.ListView;
 import com.apps.mohb.shutternotes.adapters.FlickrPhotosetsListAdapter;
 import com.apps.mohb.shutternotes.fragments.dialogs.AuthenticationNeededAlertFragment;
 import com.apps.mohb.shutternotes.fragments.dialogs.ConfirmUploadAlertFragment;
+import com.apps.mohb.shutternotes.views.Toasts;
 import com.flickr4java.flickr.RequestContext;
 import com.flickr4java.flickr.auth.Auth;
 import com.flickr4java.flickr.photosets.Photoset;
@@ -56,33 +57,39 @@ public class FlickrPhotosetsListActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_flickr_photosets_list);
 
-        flickrApi = new FlickrApi(getApplicationContext());
+        try {
+            flickrApi = new FlickrApi(getApplicationContext());
 
-        View listHeader = getLayoutInflater().inflate(R.layout.list_header, photosetsListView);
-        View listFooter = getLayoutInflater().inflate(R.layout.list_footer, photosetsListView);
+            View listHeader = getLayoutInflater().inflate(R.layout.list_header, photosetsListView);
+            View listFooter = getLayoutInflater().inflate(R.layout.list_footer, photosetsListView);
 
-        photosetsListView = findViewById(R.id.photosetsList);
-        photosetsListView.setOnItemClickListener((adapterView, view, i, l) -> {
-            ConfirmUploadAlertFragment dialogConfirm = new ConfirmUploadAlertFragment();
-            dialogConfirm.show(getSupportFragmentManager(), "ConfirmUploadDialogFragment");
-            Photoset photoset = (Photoset) adapterView.getAdapter().getItem(i);
-            selectedSetId = photoset.getId();
-            selectedSetSize = photoset.getPhotoCount();
-        });
+            photosetsListView = findViewById(R.id.photosetsList);
+            photosetsListView.setOnItemClickListener((adapterView, view, i, l) -> {
+                ConfirmUploadAlertFragment dialogConfirm = new ConfirmUploadAlertFragment();
+                dialogConfirm.show(getSupportFragmentManager(), "ConfirmUploadDialogFragment");
+                Photoset photoset = (Photoset) adapterView.getAdapter().getItem(i);
+                selectedSetId = photoset.getId();
+                selectedSetSize = photoset.getPhotoCount();
+            });
 
-        photosetsListView.addHeaderView(listHeader);
-        photosetsListView.addFooterView(listFooter);
-        listHeader.setClickable(false);
-        listFooter.setClickable(false);
+            photosetsListView.addHeaderView(listHeader);
+            photosetsListView.addFooterView(listFooter);
+            listHeader.setClickable(false);
+            listFooter.setClickable(false);
 
-        callerActivity = getIntent().getIntExtra(Constants.KEY_CALLER_ACTIVITY, Constants.ACTIVITY_FLICKR_NOTES);
+            callerActivity = getIntent().getIntExtra(Constants.KEY_CALLER_ACTIVITY, Constants.ACTIVITY_FLICKR_NOTES);
 
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage(getApplicationContext().getResources().getString(R.string.dialog_progress_photosets));
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.setCancelable(false);
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage(getApplicationContext().getResources().getString(R.string.dialog_progress_photosets));
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setIndeterminate(true);
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.setCancelable(false);
+
+        } catch (Exception e) {
+            Toasts.showUnableToCommunicate(getApplicationContext());
+            onBackPressed();
+        }
 
     }
 

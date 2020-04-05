@@ -1,11 +1,11 @@
 /*
- *  Copyright (c) 2019 mohb apps - All Rights Reserved
+ *  Copyright (c) 2020 mohb apps - All Rights Reserved
  *
  *  Project       : ShutterNotes
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrNotesListActivity.java
- *  Last modified : 12/26/19 2:48 PM
+ *  Last modified : 4/5/20 12:46 PM
  *
  *  -----------------------------------------------------------
  */
@@ -222,6 +222,15 @@ public class FlickrNotesListActivity extends AppCompatActivity implements
                 unselectAllNotes();
                 break;
             }
+
+            // Help
+            case R.id.action_help: {
+                Intent intent = new Intent(this, HelpActivity.class);
+                intent.putExtra(Constants.KEY_URL, getString(R.string.url_help_flickr_notes));
+                startActivity(intent);
+                break;
+            }
+
         }
 
         notesListGridView.invalidateViews();

@@ -1,11 +1,11 @@
 /*
- *  Copyright (c) 2019 mohb apps - All Rights Reserved
+ *  Copyright (c) 2020 mohb apps - All Rights Reserved
  *
  *  Project       : ShutterNotes
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : SimpleNoteActivity.java
- *  Last modified : 12/26/19 12:52 PM
+ *  Last modified : 4/5/20 12:46 PM
  *
  *  -----------------------------------------------------------
  */
@@ -15,6 +15,8 @@ package com.apps.mohb.shutternotes;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -53,6 +55,36 @@ public class SimpleNoteActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    // OPTIONS MENU
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.options_simple_note, menu);
+        MenuItem menuAddGear = menu.findItem(R.id.action_help);
+        menuAddGear.setEnabled(true);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        switch (id) {
+
+            // Help
+            case R.id.action_help: {
+                Intent intent = new Intent(this, HelpActivity.class);
+                intent.putExtra(Constants.KEY_URL, getString(R.string.url_help_simple_note));
+                startActivity(intent);
+                break;
+            }
+
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
