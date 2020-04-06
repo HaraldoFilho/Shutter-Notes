@@ -1,3 +1,6 @@
+#### **0.2.8**
+- Minor improvements on user interface.
+
 #### **0.2.7**
 - Improvements on user interface.
 

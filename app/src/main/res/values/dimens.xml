@@ -59,7 +59,7 @@
     <dimen name="gear_note_item_text_padding">10dp</dimen>
     <dimen name="gear_note_item_spacing">7dp</dimen>
     <dimen name="gear_note_item_margin">7dp</dimen>
-    <dimen name="gear_note_item_radius">7dp</dimen>
+    <dimen name="gear_note_item_radius">9dp</dimen>
     <dimen name="gear_note_item_elevation">0.25dp</dimen>
 
     <dimen name="flickr_note_margin">20dp</dimen>

@@ -27,13 +27,13 @@
             android:textSize="@dimen/flickr_photo_title_size"
             android:textStyle="bold"
             android:layout_marginTop="@dimen/item_margin"
-            android:layout_marginEnd="@dimen/item_margin" />
+            android:layout_marginEnd="@dimen/item_text_margin_right" />
 
         <TextView
             android:id="@+id/textPhotoDescription"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginEnd="@dimen/item_margin"
+            android:layout_marginEnd="@dimen/item_text_margin_right"
             android:layout_marginBottom="@dimen/item_margin"
             android:textSize="@dimen/flickr_photo_description_size" />
 
