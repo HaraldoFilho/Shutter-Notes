@@ -128,7 +128,7 @@
     <string name="toast_wrong_code">Código errado, tente novamente</string>
     <string name="activity_title_flickr_photosets">Escolher álbum</string>
     <string name="text_photoset_size">fotos</string>
-    <string name="alert_message_confirm_upload">Será feito o upload das informações das notas para o álbum selecionado</string>
+    <string name="alert_message_confirm_upload">Será feito o upload das informações das notas para o álbum selecionado. APÓS INICIADA ESTA OPERAÇÃO NÃO PODERÁ SER CANCELADA!</string>
     <string name="alert_title_confirm_upload">Confirmar o upload?</string>
     <string name="activity_title_flickr_upload">Fotos atualizadas</string>
     <string name="toast_account_connected">Conta conectada!</string>

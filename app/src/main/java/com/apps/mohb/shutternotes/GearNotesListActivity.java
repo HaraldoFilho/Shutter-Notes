@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : GearNotesListActivity.java
- *  Last modified : 4/5/20 12:46 PM
+ *  Last modified : 4/6/20 7:43 PM
  *
  *  -----------------------------------------------------------
  */
@@ -258,7 +258,7 @@ public class GearNotesListActivity extends AppCompatActivity implements
     // CLASS METHODS
 
     private int getCorrectPosition(int position) {
-        return position - Constants.LIST_HEADER_POSITION;
+        return position - Constants.GRID_HEADER_POSITION;
     }
 
 }

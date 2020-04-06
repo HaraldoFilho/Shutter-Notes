@@ -1,11 +1,11 @@
 /*
- *  Copyright (c) 2019 mohb apps - All Rights Reserved
+ *  Copyright (c) 2020 mohb apps - All Rights Reserved
  *
  *  Project       : ShutterNotes
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : GearNoteAdapter.java
- *  Last modified : 8/17/19 12:08 PM
+ *  Last modified : 4/6/20 7:31 PM
  *
  *  -----------------------------------------------------------
  */
@@ -73,8 +73,10 @@ public class GearNoteAdapter extends ArrayAdapter {
 		}
 
 		if (item.isSelected()) {
+			convertView.setBackground(getContext().getResources().getDrawable(R.drawable.gear_item_tile_selected, null));
 			txtItem.setTextColor(getContext().getResources().getColor(R.color.colorBlackText, null));
 		} else {
+			convertView.setBackground(getContext().getResources().getDrawable(R.drawable.gear_item_tile, null));
 			txtItem.setTextColor(getContext().getResources().getColor(R.color.colorGreyText, null));
 		}
 

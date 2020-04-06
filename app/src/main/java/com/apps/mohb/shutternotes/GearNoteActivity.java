@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : GearNoteActivity.java
- *  Last modified : 4/5/20 12:46 PM
+ *  Last modified : 4/6/20 7:18 PM
  *
  *  -----------------------------------------------------------
  */
@@ -72,12 +72,12 @@ public class GearNoteActivity extends AppCompatActivity
         listFooter.setClickable(false);
 
         gearListView.setOnItemClickListener((adapterView, view, i, l) -> {
-            if (!gearList.get(i).isSelected()) {
-                gearList.get(i).setSelected(true);
-                gearList.moveToBottomOfLastSelected(i);
+            if (!gearList.get(getCorrectPosition(i)).isSelected()) {
+                gearList.get(getCorrectPosition(i)).setSelected(true);
+                gearList.moveToBottomOfLastSelected(getCorrectPosition(i));
             } else {
-                gearList.get(i).setSelected(false);
-                gearList.moveToBottom(i);
+                gearList.get(getCorrectPosition(i)).setSelected(false);
+                gearList.moveToBottom(getCorrectPosition(i));
             }
             gearListView.invalidateViews();
         });
@@ -172,8 +172,8 @@ public class GearNoteActivity extends AppCompatActivity
 
             // Edit
             case R.id.edit:
-                gearList.setEditedGearItemText(getApplicationContext(), gearList.getGearItem(menuInfo.position));
-                gearList.setEditedGearItemPosition(getApplicationContext(), menuInfo.position);
+                gearList.setEditedGearItemText(getApplicationContext(), gearList.getGearItem(getCorrectPosition(menuInfo.position)));
+                gearList.setEditedGearItemPosition(getApplicationContext(), getCorrectPosition(menuInfo.position));
                 DialogFragment addGearDialog = new EditGearListDialogFragment();
                 addGearDialog.show(getSupportFragmentManager(), "AddGearDialogFragment");
                 return true;
@@ -298,7 +298,7 @@ public class GearNoteActivity extends AppCompatActivity
 
     @Override
     public void onGearDeleteDialogPositiveClick(DialogFragment dialog) {
-        gearList.remove(menuInfo.position);
+        gearList.remove(getCorrectPosition(menuInfo.position));
         try {
             gearList.saveState(getApplicationContext(), Constants.GEAR_LIST_SAVED_STATE);
         } catch (IOException e) {
@@ -327,4 +327,11 @@ public class GearNoteActivity extends AppCompatActivity
     public void onDeleteAllDialogNegativeClick(DialogFragment dialog) {
         dialog.dismiss();
     }
+
+    // CLASS METHODS
+
+    private int getCorrectPosition(int position) {
+        return position - Constants.LIST_HEADER_POSITION;
+    }
+
 }

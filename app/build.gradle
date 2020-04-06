@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : build.gradle
- *  Last modified : 4/5/20 12:47 PM
+ *  Last modified : 4/6/20 7:46 PM
  *
  *  -----------------------------------------------------------
  */
@@ -18,8 +18,8 @@ android {
         applicationId "com.apps.mohb.shutternotes"
         minSdkVersion 24
         targetSdkVersion 28
-        versionCode 42
-        versionName "0.2.8"
+        versionCode 43
+        versionName "0.2.9"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }

@@ -7,8 +7,8 @@
 
     <!--Application version-->
     <string name="version_name">version: </string>
-    <string name="version_number" translatable="false">0.2.8</string>
-    <string name="version_code" translatable="false">42</string>
+    <string name="version_number" translatable="false">0.2.9</string>
+    <string name="version_code" translatable="false">43</string>
 
     <!--Application information-->
     <string name="info_app_name" translatable="false">Shutter Notes</string>
@@ -147,7 +147,7 @@
     <string name="alert_message_can_be_restored">They will can be restored later\n</string>
     <string name="alert_message_delete_all_notes">All notes will be permanently deleted\n</string>
     <string name="alert_message_restore_all_notes">All notes will be restored to its original location\n</string>
-    <string name="alert_message_confirm_upload">The notes information will be uploaded to the selected photoset</string>
+    <string name="alert_message_confirm_upload">The notes information will be uploaded to the selected photoset. AFTER STARTED THIS OPERATION WILL CAN NOT BE CANCELLED!</string>
     <string name="alert_message_authenticate">You need to authenticate in your Flickr account to upload data. Do you want to try again?</string>
     <string name="alert_button_no">No</string>
     <string name="alert_button_yes">Yes</string>

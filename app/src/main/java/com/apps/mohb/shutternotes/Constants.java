@@ -1,11 +1,11 @@
 /*
- *  Copyright (c) 2019 mohb apps - All Rights Reserved
+ *  Copyright (c) 2020 mohb apps - All Rights Reserved
  *
  *  Project       : ShutterNotes
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : Constants.java
- *  Last modified : 12/26/19 7:56 PM
+ *  Last modified : 4/6/20 7:43 PM
  *
  *  -----------------------------------------------------------
  */
@@ -81,7 +81,8 @@ public class Constants {
     // Lists
     public static final int LIST_ADAPTER_RESOURCE_ID = 0;
     public static final int LIST_HEAD = 0;
-    public static final int LIST_HEADER_POSITION = 2;
+    public static final int LIST_HEADER_POSITION = 1;
+    public static final int GRID_HEADER_POSITION = 2;
     public static final double LIST_ITEM_HEIGHT_FACTOR = 2.5;
 
     // Feedback and question
