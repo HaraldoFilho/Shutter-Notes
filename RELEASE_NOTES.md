@@ -1,3 +1,6 @@
+#### **0.2.10**
+- Disabled 'Help' in options menus until help pages are done.
+
 #### **0.2.9**
 - Improvements on user interface.
 - Fixed bugs.

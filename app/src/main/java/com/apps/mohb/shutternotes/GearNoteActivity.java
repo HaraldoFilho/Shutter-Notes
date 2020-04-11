@@ -197,6 +197,8 @@ public class GearNoteActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.options_gear_note, menu);
         MenuItem menuAddGear = menu.findItem(R.id.action_add_gear);
         menuAddGear.setEnabled(true);
+        MenuItem menuHelp = menu.findItem(R.id.action_help);
+        menuHelp.setEnabled(false);
         return true;
     }
 

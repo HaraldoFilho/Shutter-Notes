@@ -158,6 +158,8 @@ public class SimpleNotesListActivity extends AppCompatActivity implements
         if (notebook.getSimpleNotes().isEmpty()) {
             menuItemArchiveAll.setEnabled(false);
         }
+        MenuItem menuHelp = menu.findItem(R.id.action_help);
+        menuHelp.setEnabled(false);
         return true;
     }
 

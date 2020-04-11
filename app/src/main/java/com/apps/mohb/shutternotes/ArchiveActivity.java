@@ -189,6 +189,8 @@ public class ArchiveActivity extends AppCompatActivity implements
         menuItemRestoreAll.setIcon(R.drawable.ic_unarchive_white_24dp);
         menuItemDeleteAll.setEnabled(true);
         menuItemRestoreAll.setEnabled(true);
+        MenuItem menuHelp = menu.findItem(R.id.action_help);
+        menuHelp.setEnabled(false);
         return true;
     }
 

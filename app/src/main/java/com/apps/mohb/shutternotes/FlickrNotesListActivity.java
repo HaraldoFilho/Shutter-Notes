@@ -165,6 +165,8 @@ public class FlickrNotesListActivity extends AppCompatActivity implements
             menuItemUploadToFlickr.setEnabled(false);
             menuItemArchiveAll.setEnabled(false);
         }
+        MenuItem menuHelp = menu.findItem(R.id.action_help);
+        menuHelp.setEnabled(false);
         return true;
     }
 

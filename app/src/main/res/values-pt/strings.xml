@@ -54,7 +54,7 @@
     <string name="toast_must_type_title">Você precisa colocar um título</string>
     <string name="url_contact">br-contact</string>
     <string name="url_help">br-shutter-notes</string>
-    <string name="url_help_settings">br-shutternotes-ajuda-configuracoes</string>
+    <string name="url_help_settings">br-shutternotes-help-settings</string>
     <string name="url_bug_report">br-bug-report</string>
     <string name="activity_title_flickr_notes">Notas do Flickr</string>
     <string name="activity_title_gear_notes">Notas de Equipamento</string>
@@ -152,12 +152,12 @@
     <string name="alert_title_authenticate">Autenticação necessária!</string>
     <string name="alert_message_authenticate">Você precisa se autenticar no Flickr para fazer upload dos dados. Deseja tentar novamente?</string>
     <string name="url_help_archived">br-shutternotes-help-archived</string>
-    <string name="url_help_flickr_notes">br-shutternotes-help-flickr-notes</string>
-    <string name="url_help_gear_notes">br-shutternotes-help-gear-notes</string>
-    <string name="url_help_simple_note">br-shuuternotes-help-simple-note</string>
-    <string name="url_help_simple_notes">br-shutternotes-help-simple-notes</string>
-    <string name="url_help_gear_note">br-shuuternotes-help-gear-note</string>
-    <string name="url_help_flickr_note">br-shuuternotes-help-flick-note</string>
+    <string name="url_help_flickr_notes">br-shutternotes-help-flickrnotes</string>
+    <string name="url_help_gear_notes">br-shutternotes-help-gearnotes</string>
+    <string name="url_help_simple_note">br-shutternotes-help-simplenote</string>
+    <string name="url_help_simple_notes">br-shutternotes-help-simplenotes</string>
+    <string name="url_help_gear_note">br-shutternotes-help-gearnote</string>
+    <string name="url_help_flickr_note">br-shutternotes-help-flicknote</string>
     <string name="action_help">Ajuda</string>
     <string name="toast_unable_to_communicate">Não foi possível a comunicação com o Flickr</string>
 

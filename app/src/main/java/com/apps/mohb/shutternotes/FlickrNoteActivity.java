@@ -168,6 +168,8 @@ public class FlickrNoteActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.options_flickr_note, menu);
         MenuItem menuSyncClock = menu.findItem(R.id.action_sync_clock);
         menuSyncClock.setEnabled(true);
+        MenuItem menuHelp = menu.findItem(R.id.action_help);
+        menuHelp.setEnabled(false);
         return true;
     }
 

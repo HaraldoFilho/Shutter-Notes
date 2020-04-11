@@ -131,6 +131,8 @@ public class SettingsActivity extends AppCompatActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.options_settings, menu);
+        MenuItem menuHelp = menu.findItem(R.id.action_help);
+        menuHelp.setEnabled(false);
         return super.onCreateOptionsMenu(menu);
     }
 

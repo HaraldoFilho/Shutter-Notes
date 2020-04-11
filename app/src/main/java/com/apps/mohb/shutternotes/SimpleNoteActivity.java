@@ -62,8 +62,8 @@ public class SimpleNoteActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.options_simple_note, menu);
-        MenuItem menuAddGear = menu.findItem(R.id.action_help);
-        menuAddGear.setEnabled(true);
+        MenuItem menuHelp = menu.findItem(R.id.action_help);
+        menuHelp.setEnabled(false);
         return true;
     }
 

@@ -7,8 +7,8 @@
 
     <!--Application version-->
     <string name="version_name">version: </string>
-    <string name="version_number" translatable="false">0.2.9</string>
-    <string name="version_code" translatable="false">43</string>
+    <string name="version_number" translatable="false">0.2.10</string>
+    <string name="version_code" translatable="false">44</string>
 
     <!--Application information-->
     <string name="info_app_name" translatable="false">Shutter Notes</string>
@@ -170,13 +170,13 @@
 
     <!--Help pages-->
     <string name="url_website" translatable="false">https://mohb-apps.com/</string>
-    <string name="url_help">shutter-notes-help</string>
-    <string name="url_help_simple_note">shuuternotes-help-simple-note</string>
-    <string name="url_help_gear_note">shuuternotes-help-gear-note</string>
-    <string name="url_help_flickr_note">shuuternotes-help-flick-note</string>
-    <string name="url_help_simple_notes">shutternotes-help-simple-notes</string>
-    <string name="url_help_gear_notes">shutternotes-help-gear-notes</string>
-    <string name="url_help_flickr_notes">shutternotes-help-flickr-notes</string>
+    <string name="url_help">shutter-notes</string>
+    <string name="url_help_simple_note">shutternotes-help-simplenote</string>
+    <string name="url_help_gear_note">shutternotes-help-gearnote</string>
+    <string name="url_help_flickr_note">shutternotes-help-flicknote</string>
+    <string name="url_help_simple_notes">shutternotes-help-simplenotes</string>
+    <string name="url_help_gear_notes">shutternotes-help-gearnotes</string>
+    <string name="url_help_flickr_notes">shutternotes-help-flickrnotes</string>
     <string name="url_help_archived">shutternotes-help-archived</string>
     <string name="url_help_settings">shutternotes-help-settings</string>
     <string name="url_contact">contact</string>

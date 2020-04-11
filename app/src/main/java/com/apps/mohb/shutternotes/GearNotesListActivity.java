@@ -163,6 +163,8 @@ public class GearNotesListActivity extends AppCompatActivity implements
         if (notebook.getGearNotes().isEmpty()) {
             menuItemArchiveAll.setEnabled(false);
         }
+        MenuItem menuHelp = menu.findItem(R.id.action_help);
+        menuHelp.setEnabled(false);
         return true;
     }
 
