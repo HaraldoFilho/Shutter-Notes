@@ -1,3 +1,6 @@
+#### **0.2.11**
+- Updated app with the new site url.
+
 #### **0.2.10**
 - Disabled 'Help' in options menus until help pages are done.
 
