@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : ArchiveActivity.java
- *  Last modified : 4/6/20 7:43 PM
+ *  Last modified : 10/8/20 1:29 PM
  *
  *  -----------------------------------------------------------
  */
@@ -14,10 +14,6 @@ package com.apps.mohb.shutternotes;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -25,6 +21,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
 import com.apps.mohb.shutternotes.adapters.FlickrNotesListAdapter;
 import com.apps.mohb.shutternotes.adapters.GearNotesListAdapter;
@@ -32,16 +33,12 @@ import com.apps.mohb.shutternotes.adapters.SimpleNotesListAdapter;
 import com.apps.mohb.shutternotes.fragments.dialogs.DeleteAllNotesAlertFragment;
 import com.apps.mohb.shutternotes.fragments.dialogs.NoteDeleteAlertFragment;
 import com.apps.mohb.shutternotes.fragments.dialogs.RestoreAllNotesAlertFragment;
-import com.apps.mohb.shutternotes.notes.Archive;
-import com.apps.mohb.shutternotes.notes.FlickrNote;
-import com.apps.mohb.shutternotes.notes.GearNote;
-import com.apps.mohb.shutternotes.notes.Notebook;
-import com.apps.mohb.shutternotes.notes.SimpleNote;
+import com.apps.mohb.shutternotes.lists.Archive;
+import com.apps.mohb.shutternotes.lists.Notebook;
 import com.apps.mohb.shutternotes.views.GridViewWithHeaderAndFooter;
-import com.apps.mohb.shutternotes.views.Toasts;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 
 public class ArchiveActivity extends AppCompatActivity implements
@@ -49,17 +46,19 @@ public class ArchiveActivity extends AppCompatActivity implements
         DeleteAllNotesAlertFragment.DeleteAllNotesAlertDialogListener,
         RestoreAllNotesAlertFragment.RestoreAllNotesAlertDialogListener {
 
-    private Notebook notebook;
     private Archive archive;
+    private Notebook notebook;
+
     private BottomNavigationView botNavView;
     private GridViewWithHeaderAndFooter notesListGridView;
+
     private SimpleNotesListAdapter simpleNotesAdapter;
     private GearNotesListAdapter gearNotesAdapter;
     private FlickrNotesListAdapter flickrNotesAdapter;
 
     private AdapterView.AdapterContextMenuInfo menuInfo;
 
-    private int listItemHeight;
+    Toast allNotesRestored;
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -102,47 +101,34 @@ public class ArchiveActivity extends AppCompatActivity implements
         listHeader.setClickable(false);
         listFooter.setClickable(false);
 
-        if (archive == null) {
-            archive = new Archive();
-        }
+        // Define form factor of notes items accorging to screen height in pixels
+        DisplayMetrics metrics = this.getResources().getDisplayMetrics();
+        int listItemHeight = (int) (metrics.heightPixels / Constants.LIST_ITEM_HEIGHT_FACTOR);
 
-        if (notebook == null) {
-            notebook = new Notebook();
-        }
+        archive = Archive.getInstance(getApplicationContext());
+        notebook = Notebook.getInstance(getApplicationContext());
 
-        DisplayMetrics metrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        listItemHeight = (int) (metrics.heightPixels / Constants.LIST_ITEM_HEIGHT_FACTOR);
+        simpleNotesAdapter = new SimpleNotesListAdapter(getApplicationContext(), archive.getSimpleNotes(), listItemHeight);
+        gearNotesAdapter = new GearNotesListAdapter(getApplicationContext(), archive.getGearNotes(), listItemHeight);
+        flickrNotesAdapter = new FlickrNotesListAdapter(getApplicationContext(), archive.getFlickrNotes(), listItemHeight);
+        notesListGridView.setAdapter(simpleNotesAdapter);
 
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
+    protected void onDestroy() {
+        super.onDestroy();
         try {
-            archive.loadState(this);
+            archive.saveState();
+            notebook.saveState();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        try {
-            notebook.loadState(this);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        ArrayList<SimpleNote> simpleNotesList = archive.getSimpleNotes();
-        simpleNotesAdapter = new SimpleNotesListAdapter(getApplicationContext(), simpleNotesList, listItemHeight);
-        notesListGridView.setAdapter(simpleNotesAdapter);
-
-        ArrayList<GearNote> gearNotesList = archive.getGearNotes();
-        gearNotesAdapter = new GearNotesListAdapter(getApplicationContext(), gearNotesList, listItemHeight);
-
-        ArrayList<FlickrNote> flickrNotesList = archive.getFlickrNotes();
-        flickrNotesAdapter = new FlickrNotesListAdapter(getApplicationContext(), flickrNotesList, listItemHeight);
-
+        simpleNotesAdapter = null;
+        gearNotesAdapter = null;
+        flickrNotesAdapter = null;
     }
+
 
     // CONTEXT MENU
 
@@ -162,7 +148,7 @@ public class ArchiveActivity extends AppCompatActivity implements
 
             // Restore
             case R.id.restore:
-                restoreNote(getCorrectPosition(menuInfo.position));
+                restoreNote(menuInfo.position);
                 setAdapter(notesListGridView);
                 return true;
 
@@ -250,6 +236,7 @@ public class ArchiveActivity extends AppCompatActivity implements
         setAdapter(notesListGridView);
     }
 
+
     @Override
     public void onDeleteAllNotesDialogNegativeClick(DialogFragment dialog) {
         dialog.dismiss();
@@ -267,24 +254,9 @@ public class ArchiveActivity extends AppCompatActivity implements
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        try {
-            archive.saveState(this);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            notebook.saveState(this);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Toasts.cancelAllNotesRestored();
+        allNotesRestored.cancel();
     }
 
     // CLASS METHODS
@@ -327,7 +299,6 @@ public class ArchiveActivity extends AppCompatActivity implements
             case R.id.bot_nav_flickr:
                 archive.removeFlickrNote(position);
                 break;
-
         }
     }
 
@@ -338,18 +309,18 @@ public class ArchiveActivity extends AppCompatActivity implements
         switch (botNavView.getSelectedItemId()) {
 
             case R.id.bot_nav_simple:
-                notebook.addNote(archive.getSimpleNotes().get(getCorrectPosition(menuInfo.position)));
-                removeNote(getCorrectPosition(menuInfo.position));
+                notebook.addNote(archive.getSimpleNotes().get(getCorrectPosition(position)));
+                archive.removeSimpleNote(getCorrectPosition(position));
                 break;
 
             case R.id.bot_nav_gear:
-                notebook.addNote(archive.getGearNotes().get(getCorrectPosition(menuInfo.position)));
-                removeNote(getCorrectPosition(menuInfo.position));
+                notebook.addNote(archive.getGearNotes().get(getCorrectPosition(position)));
+                archive.removeGearNote(getCorrectPosition(position));
                 break;
 
             case R.id.bot_nav_flickr:
-                notebook.addNote(archive.getFlickrNotes().get(getCorrectPosition(menuInfo.position)));
-                removeNote(getCorrectPosition(menuInfo.position));
+                notebook.addNote(archive.getFlickrNotes().get(getCorrectPosition(position)));
+                archive.removeFlickrNote(getCorrectPosition(position));
                 break;
 
         }
@@ -359,7 +330,6 @@ public class ArchiveActivity extends AppCompatActivity implements
          Delete all notes from the correct type
      */
     private void deleteAllNotes() {
-
         switch (botNavView.getSelectedItemId()) {
 
             case R.id.bot_nav_simple:
@@ -375,7 +345,6 @@ public class ArchiveActivity extends AppCompatActivity implements
                 break;
 
         }
-
     }
 
     /*
@@ -408,8 +377,8 @@ public class ArchiveActivity extends AppCompatActivity implements
 
         }
 
-        Toasts.showAllNotesRestored(getApplicationContext());
-
+        allNotesRestored = Toast.makeText((this), R.string.toast_all_notes_restored, Toast.LENGTH_SHORT);
+        allNotesRestored.show();
     }
 
     /*

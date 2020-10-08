@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FeedbackActivity.java
- *  Last modified : 4/5/20 12:46 PM
+ *  Last modified : 10/8/20 1:29 PM
  *
  *  -----------------------------------------------------------
  */
@@ -13,9 +13,10 @@
 package com.apps.mohb.shutternotes;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 
 public class FeedbackActivity extends AppCompatActivity {

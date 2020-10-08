@@ -66,7 +66,7 @@
             android:textSize="@dimen/flickr_note_tags_text_size"
             android:textColor="@color/colorBlackText" />
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabAddGearFlickr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -83,18 +83,18 @@
 
     </RelativeLayout>
 
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/mapFragmentFlickrNote"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="@dimen/flickr_note_map_height"
-        android:layout_above="@id/buttonsFlickrNotes"
+        android:layout_above="@id/buttonsFlickrNote"
         android:layout_centerHorizontal="true"
         android:clickable="false"
         tools:context=".FlickrNoteActivity" />
 
     <LinearLayout
-        android:id="@+id/buttonsFlickrNotes"
+        android:id="@+id/buttonsFlickrNote"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

@@ -5,29 +5,34 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrNoteActivity.java
- *  Last modified : 4/5/20 12:46 PM
+ *  Last modified : 10/8/20 6:00 PM
  *
  *  -----------------------------------------------------------
  */
 
 package com.apps.mohb.shutternotes;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.DialogFragment;
+import androidx.preference.PreferenceManager;
 
 import com.apps.mohb.shutternotes.fragments.dialogs.FlickrNoteTipAlertFragment;
-import com.apps.mohb.shutternotes.notes.GearList;
-import com.apps.mohb.shutternotes.views.Toasts;
+import com.apps.mohb.shutternotes.lists.GearList;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -36,6 +41,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,11 +56,17 @@ public class FlickrNoteActivity extends AppCompatActivity
     private TextView textTags;
     private GearList gearList;
 
+    private FusedLocationProviderClient fusedLocationClient;
     private double lastLatitude;
     private double lastLongitude;
 
+    SupportMapFragment mapFragment;
+
     private SharedPreferences settings;
     private SharedPreferences warningFirstShow;
+
+    private Toast mustType;
+    private Toast locationUpdated;
 
 
     @Override
@@ -73,15 +85,10 @@ public class FlickrNoteActivity extends AppCompatActivity
         Button buttonClear = findViewById(R.id.buttonFlickrNoteClear);
         Button buttonOK = findViewById(R.id.buttonFlickrNoteOk);
 
-        // create map
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.mapFragmentFlickrNote);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
-        }
+        gearList = GearList.getInstance();
 
         fabAddTags.setOnClickListener(view -> {
-            Intent intent = new Intent(getApplicationContext(), GearNoteActivity.class);
+            Intent intent = new Intent(this, GearNoteActivity.class);
             intent.putExtra(Constants.KEY_CALLER_ACTIVITY, Constants.ACTIVITY_FLICKR_NOTE);
             startActivity(intent);
         });
@@ -117,9 +124,10 @@ public class FlickrNoteActivity extends AppCompatActivity
             String textGearList = gearList.getGearListText();
 
             if (textTitle.equals(Constants.EMPTY)) {
-                Toasts.showMustType(getApplicationContext(), true);
+                mustType = Toast.makeText(this, R.string.toast_must_type_title, Toast.LENGTH_SHORT);
+                mustType.show();
             } else {
-                Intent intent = new Intent(getApplicationContext(), FullscreenNoteActivity.class);
+                Intent intent = new Intent(this, FullscreenNoteActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString(Constants.FLICKR_TITLE, textTitle);
                 bundle.putString(Constants.FLICKR_DESCRIPTION, textDescription);
@@ -159,6 +167,13 @@ public class FlickrNoteActivity extends AppCompatActivity
             dialogWarning.show(getSupportFragmentManager(), "FlickrNoteTipAlertFragment");
         }
 
+        // Create an instance of GoogleAPIClient to load maps
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        // create map
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.mapFragmentFlickrNote);
+
     }
 
     // OPTIONS MENU
@@ -187,6 +202,17 @@ public class FlickrNoteActivity extends AppCompatActivity
                 break;
             }
 
+            // Update location
+            case R.id.action_update_location: {
+                getLastLocation();
+                locationUpdated = Toast.makeText(this, R.string.toast_location_updated, Toast.LENGTH_SHORT);
+                if (lastLatitude == Constants.DEFAULT_LATITUDE && lastLongitude == Constants.DEFAULT_LONGITUDE) {
+                    locationUpdated.setText(R.string.toast_location_not_updated);
+                }
+                locationUpdated.show();
+                break;
+            }
+
             // Help
             case R.id.action_help: {
                 Intent intent = new Intent(this, HelpActivity.class);
@@ -205,7 +231,6 @@ public class FlickrNoteActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
-        gearList = new GearList();
         try {
             gearList.loadState(getApplicationContext(), Constants.GEAR_LIST_SELECTED_STATE);
         } catch (IOException e) {
@@ -227,6 +252,20 @@ public class FlickrNoteActivity extends AppCompatActivity
             textTags.setText(tags);
         } else {
             textTags.setText(Constants.EMPTY);
+        }
+
+        getLastLocation();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        gearList.getList().clear();
+        try {
+            gearList.saveState(getApplicationContext(), Constants.GEAR_LIST_SELECTED_STATE);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
     }
@@ -257,15 +296,6 @@ public class FlickrNoteActivity extends AppCompatActivity
                 break;
         }
 
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null) {
-            lastLatitude = bundle.getDouble(Constants.LATITUDE);
-            lastLongitude = bundle.getDouble(Constants.LONGITUDE);
-        } else {
-            lastLatitude = 0.0;
-            lastLongitude = 0.0;
-        }
-
         LatLng currentLocation = new LatLng(lastLatitude, lastLongitude);
         LatLng markerLocation = new LatLng(lastLatitude + markerOffset, lastLongitude);
         googleMap.getUiSettings().setAllGesturesEnabled(false);
@@ -279,26 +309,53 @@ public class FlickrNoteActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        GearList gearList = new GearList();
-        try {
-            gearList.saveState(getApplicationContext(), Constants.GEAR_LIST_SELECTED_STATE);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Toasts.cancelMustType();
+        try {
+            mustType.cancel();
+            locationUpdated.cancel();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void onFlickrNoteTipDialogPositiveClick(DialogFragment dialog) {
         warningFirstShow.edit().putBoolean(Constants.KEY_FIRST_SHOW, false).apply();
+    }
+
+    private void getLastLocation() {
+
+        // Get the last user's none location. Most of the times
+        // this corresponds to user's current location or very near
+        // Check if location permissions are granted
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            // If permission is granted get the last location
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, location -> {
+                        if (location != null) {
+                            lastLatitude = location.getLatitude();
+                            lastLongitude = location.getLongitude();
+                        } else {
+                            lastLongitude = Constants.DEFAULT_LATITUDE;
+                            lastLongitude = Constants.DEFAULT_LONGITUDE;
+                        }
+                        if (mapFragment != null) {
+                            mapFragment.getMapAsync(this);
+                        }
+                    });
+        } else {
+            // Check if user already denied permission request
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                // Request permissions
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        Constants.FINE_LOCATION_PERMISSION_REQUEST);
+            }
+        }
+
     }
 
 }

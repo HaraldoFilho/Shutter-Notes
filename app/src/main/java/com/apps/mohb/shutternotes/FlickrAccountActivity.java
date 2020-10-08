@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrAccountActivity.java
- *  Last modified : 4/5/20 1:13 PM
+ *  Last modified : 10/8/20 1:29 PM
  *
  *  -----------------------------------------------------------
  */
@@ -15,7 +15,7 @@ package com.apps.mohb.shutternotes;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.webkit.JavascriptInterface;
@@ -23,14 +23,15 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.apps.mohb.shutternotes.views.Toasts;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.flickr4java.flickr.auth.Auth;
 
 import java.util.Objects;
 
 
-@SuppressWarnings("unchecked")
 public class FlickrAccountActivity extends AppCompatActivity {
 
     private WebView flickrWebView;
@@ -40,9 +41,12 @@ public class FlickrAccountActivity extends AppCompatActivity {
     private FlickrApi flickrApi;
     private String tokenKey;
 
-    private Handler handlerForJavascriptInterface;
-
     private int callerActivity;
+
+    private Toast accountConnected;
+    private Toast unableToCommunicate;
+    private Toast typeCode;
+    private Toast wrongCode;
 
 
     @Override
@@ -53,19 +57,16 @@ public class FlickrAccountActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).hide();
 
         try {
-            flickrApi = new FlickrApi(getApplicationContext());
+
+            flickrApi = FlickrApi.getInstance(getApplicationContext());
 
             flickrWebView = findViewById(R.id.webViewFlickrAuth);
             configureWebView(flickrWebView);
 
-            handlerForJavascriptInterface = new Handler();
-
             codeTextView = findViewById(R.id.inputTextFlickrAuth);
             codeTextView.setOnFocusChangeListener((view, b) -> {
                 codeTextView.setHint(Constants.EMPTY);
-                connectButton.setClickable(true);
-                connectButton.setText(R.string.button_connect);
-                connectButton.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.colorGreen, null));
+                setButtonConnect();
             });
 
             connectButton = findViewById(R.id.authButtonFlickrAuth);
@@ -75,21 +76,32 @@ public class FlickrAccountActivity extends AppCompatActivity {
                 if (textSize >= Constants.TOKEN_KEY_SIZE_MIN && textSize <= Constants.TOKEN_KEY_SIZE_MAX) {
                     tokenKey = codeTextView.getText().toString();
                     flickrApi.setTokenKey(tokenKey);
-                    new GetAccessToken().execute();
+                    setButtonConnecting();
+                    if (flickrApi.getAccessToken()) {
+                        authenticate(flickrApi.checkToken());
+                    } else {
+                        wrongCode = Toast.makeText(this, R.string.toast_wrong_code, Toast.LENGTH_SHORT);
+                        wrongCode.show();
+                        setButtonConnect();
+                    }
+
                 } else {
-                    Toasts.showTypeCode(getApplicationContext());
+                    typeCode = Toast.makeText(this, R.string.toast_type_code, Toast.LENGTH_SHORT);
+                    typeCode.show();
                 }
             });
 
             callerActivity = getIntent().getIntExtra(Constants.KEY_CALLER_ACTIVITY, Constants.ACTIVITY_MAIN);
 
             if (!flickrApi.getToken().isEmpty() && !flickrApi.getTokenSecret().isEmpty()) {
-                new CheckToken().execute();
+                authenticate(flickrApi.checkToken());
             } else {
-                new GetRequestToken().execute();
+                flickrWebView.loadUrl(flickrApi.getAuthorizationUrl());
+                setButtonConnect();
             }
         } catch (Exception e) {
-            Toasts.showUnableToCommunicate(getApplicationContext());
+            unableToCommunicate = Toast.makeText(this, R.string.toast_unable_to_communicate, Toast.LENGTH_SHORT);
+            unableToCommunicate.show();
             onBackPressed();
         }
 
@@ -98,93 +110,68 @@ public class FlickrAccountActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Toasts.cancelAccountConnected();
-        Toasts.cancelTypeCode();
-        Toasts.cancelWrongCode();
+        try {
+            accountConnected.cancel();
+            unableToCommunicate.cancel();
+            typeCode.cancel();
+            wrongCode.cancel();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    @SuppressLint("StaticFieldLeak")
-    private class GetRequestToken extends FlickrApi.GetRequestToken {
+    private void authenticate(Auth auth) {
+        if (auth == null) {
+            if (connectButton.getText()
+                    .equals(this.getResources().getString(R.string.button_connecting))) {
+                wrongCode = Toast.makeText(this, R.string.toast_wrong_code, Toast.LENGTH_SHORT);
+                wrongCode.show();
+                setButtonConnect();
+            }
+            flickrApi.clearTokens();
+            flickrWebView.loadUrl(flickrApi.getAuthorizationUrl());
+            setButtonConnect();
+        } else {
+            String userId = auth.getUser().getId();
+            Log.i(Constants.LOG_INFO_TAG, "User id: " + userId);
+            accountConnected = Toast.makeText(this, R.string.toast_account_connected, Toast.LENGTH_SHORT);
+            accountConnected.show();
 
-        @Override
-        protected void onPostExecute(Object o) {
-            super.onPostExecute(o);
-            String authorizationUrl = FlickrApi.getAuthorizationUrl();
-            flickrWebView.loadUrl(authorizationUrl);
-            connectButton.setClickable(true);
-            connectButton.setText(R.string.button_connect);
-        }
-
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    private class GetAccessToken extends FlickrApi.GetAccessToken {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            connectButton.setClickable(false);
-            connectButton.setText(R.string.button_connecting);
-            connectButton.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.colorYellow, null));
-        }
-
-        @Override
-        protected void onPostExecute(Object o) {
-            super.onPostExecute(o);
-            if (FlickrApi.accessTokenFailed()) {
-                Toasts.showWrongCode(getApplicationContext());
-                connectButton.setClickable(true);
-                connectButton.setText(R.string.button_connect);
-                connectButton.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.colorGreen, null));
+            if (callerActivity == Constants.ACTIVITY_FLICKR_PHOTOSETS) {
+                onBackPressed();
             } else {
-                new CheckToken().execute();
+                setContentView(R.layout.activity_flickr_account_connected);
+                flickrWebView = findViewById(R.id.webViewFlickrProfile);
+                configureWebView(flickrWebView);
+                flickrWebView.loadUrl(Constants.FLICKR_URL + userId);
             }
         }
-
     }
 
-    @SuppressLint("StaticFieldLeak")
-    private class CheckToken extends FlickrApi.CheckToken {
+    private void setButtonConnect() {
+        connectButton.setClickable(true);
+        connectButton.setText(R.string.button_connect);
+        connectButton.setBackgroundColor(this.getResources().getColor(R.color.colorGreen, null));
+    }
 
-        @Override
-        protected void onPostExecute(Object o) {
-            super.onPostExecute(o);
-            Auth auth = flickrApi.getAuth();
-            if (auth == null) {
-                if (connectButton.getText()
-                        .equals(getApplicationContext().getResources().getString(R.string.button_connecting))) {
-                    Toasts.showWrongCode(getApplicationContext());
-                    connectButton.setClickable(true);
-                    connectButton.setText(R.string.button_connect);
-                    connectButton.setBackgroundColor(getApplicationContext().getResources().getColor(R.color.colorGreen, null));
-                }
-                FlickrApi.clearTokens();
-                new GetRequestToken().execute();
-            } else {
-                String userId = auth.getUser().getId();
-                Log.i(Constants.LOG_INFO_TAG, "User id: " + userId);
-                Toasts.showAccountConnected(getApplicationContext());
-
-                if (callerActivity == Constants.ACTIVITY_FLICKR_PHOTOSETS) {
-                    onBackPressed();
-                } else {
-                    setContentView(R.layout.activity_flickr_account_connected);
-                    flickrWebView = findViewById(R.id.webViewFlickrProfile);
-                    configureWebView(flickrWebView);
-                    flickrWebView.loadUrl(Constants.FLICKR_URL + userId);
-                }
-
-            }
-        }
-
+    private void setButtonConnecting() {
+        connectButton.setClickable(false);
+        connectButton.setText(R.string.button_connecting);
+        connectButton.setBackgroundColor(this.getResources().getColor(R.color.colorYellow, null));
     }
 
     // Insert token key in text field and execute get access token
     private void insertTokenKey(String key) {
         codeTextView.setText(key);
         flickrApi.setTokenKey(key);
-        new GetAccessToken().execute();
-
+        setButtonConnecting();
+        if (flickrApi.getAccessToken()) {
+            authenticate(flickrApi.checkToken());
+        } else {
+            wrongCode = Toast.makeText(this, R.string.toast_wrong_code, Toast.LENGTH_SHORT);
+            wrongCode.show();
+            setButtonConnect();
+        }
     }
 
     // Below this point it was used code from the following page:
@@ -217,6 +204,7 @@ public class FlickrAccountActivity extends AppCompatActivity {
 
         @JavascriptInterface
         public void getTokenKey(String code) {
+            Handler handlerForJavascriptInterface = new Handler(Looper.getMainLooper());
             handlerForJavascriptInterface.post(() -> {
                 if (code.length() == Constants.TOKEN_KEY_SIZE_MAX && code.contains(Constants.DASH)) {
                     insertTokenKey(code);

@@ -5,27 +5,25 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrPhotosetsListActivity.java
- *  Last modified : 4/5/20 1:13 PM
+ *  Last modified : 10/8/20 6:00 PM
  *
  *  -----------------------------------------------------------
  */
 
 package com.apps.mohb.shutternotes;
 
-import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
+
+import androidx.fragment.app.DialogFragment;
 
 import com.apps.mohb.shutternotes.adapters.FlickrPhotosetsListAdapter;
 import com.apps.mohb.shutternotes.fragments.dialogs.AuthenticationNeededAlertFragment;
 import com.apps.mohb.shutternotes.fragments.dialogs.ConfirmUploadAlertFragment;
-import com.apps.mohb.shutternotes.views.Toasts;
 import com.flickr4java.flickr.RequestContext;
 import com.flickr4java.flickr.auth.Auth;
 import com.flickr4java.flickr.photosets.Photoset;
@@ -33,8 +31,7 @@ import com.flickr4java.flickr.photosets.Photoset;
 import java.util.Collection;
 
 
-@SuppressWarnings("unchecked")
-public class FlickrPhotosetsListActivity extends AppCompatActivity implements
+public class FlickrPhotosetsListActivity extends BackgroundTaskActivity implements
         ConfirmUploadAlertFragment.ConfirmUploadAlertDialogListener,
         AuthenticationNeededAlertFragment.AuthenticationNeededAlertDialogListener {
 
@@ -47,7 +44,7 @@ public class FlickrPhotosetsListActivity extends AppCompatActivity implements
     private FlickrApi flickrApi;
     private Auth auth;
 
-    private ProgressDialog progressDialog;
+    private View progressSpinnerView;
 
     private int callerActivity;
 
@@ -58,7 +55,8 @@ public class FlickrPhotosetsListActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_flickr_photosets_list);
 
         try {
-            flickrApi = new FlickrApi(getApplicationContext());
+
+            flickrApi = FlickrApi.getInstance(getApplicationContext());
 
             View listHeader = getLayoutInflater().inflate(R.layout.list_header, photosetsListView);
             View listFooter = getLayoutInflater().inflate(R.layout.list_footer, photosetsListView);
@@ -77,17 +75,13 @@ public class FlickrPhotosetsListActivity extends AppCompatActivity implements
             listHeader.setClickable(false);
             listFooter.setClickable(false);
 
+            progressSpinnerView = findViewById(R.id.progressSpinnerView);
+            ProgressBar progressSpinner = findViewById(R.id.progressSpinner);
+
             callerActivity = getIntent().getIntExtra(Constants.KEY_CALLER_ACTIVITY, Constants.ACTIVITY_FLICKR_NOTES);
 
-            progressDialog = new ProgressDialog(this);
-            progressDialog.setMessage(getApplicationContext().getResources().getString(R.string.dialog_progress_photosets));
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.setIndeterminate(true);
-            progressDialog.setCanceledOnTouchOutside(false);
-            progressDialog.setCancelable(false);
-
         } catch (Exception e) {
-            Toasts.showUnableToCommunicate(getApplicationContext());
+            Toast.makeText(getBaseContext(), R.string.toast_unable_to_communicate, Toast.LENGTH_SHORT).show();
             onBackPressed();
         }
 
@@ -98,8 +92,24 @@ public class FlickrPhotosetsListActivity extends AppCompatActivity implements
         super.onResume();
 
         if (photosetsListView.getAdapter() == null) {
-            new CheckToken().execute();
+            auth = flickrApi.checkToken();
+            if (auth == null) {
+                if (callerActivity == Constants.ACTIVITY_FLICKR_NOTES) {
+                    callerActivity = Constants.ACTIVITY_FLICKR_PHOTOSETS;
+                    Intent intent = new Intent(getApplicationContext(), FlickrAccountActivity.class);
+                    intent.putExtra(Constants.KEY_CALLER_ACTIVITY, Constants.ACTIVITY_FLICKR_PHOTOSETS);
+                    startActivity(intent);
+                } else {
+                    AuthenticationNeededAlertFragment authenticationNeeded = new AuthenticationNeededAlertFragment();
+                    authenticationNeeded.show(getSupportFragmentManager(), "AuthenticationNeededDialogFragment");
+                }
+
+            } else {
+                new GetPhotosets().start();
+            }
+
         }
+
 
     }
 
@@ -134,56 +144,24 @@ public class FlickrPhotosetsListActivity extends AppCompatActivity implements
         onBackPressed();
     }
 
-    @SuppressLint("StaticFieldLeak")
-    private class CheckToken extends FlickrApi.CheckToken {
+    private class GetPhotosets extends BackgroundTask {
 
-        @Override
-        protected void onPostExecute(Object o) {
-            super.onPostExecute(o);
-            auth = flickrApi.getAuth();
-            if (auth == null) {
-                if (callerActivity == Constants.ACTIVITY_FLICKR_NOTES) {
-                    callerActivity = Constants.ACTIVITY_FLICKR_PHOTOSETS;
-                    Intent intent = new Intent(getApplicationContext(), FlickrAccountActivity.class);
-                    intent.putExtra(Constants.KEY_CALLER_ACTIVITY, Constants.ACTIVITY_FLICKR_PHOTOSETS);
-                    startActivity(intent);
-                } else {
-                    AuthenticationNeededAlertFragment authenticationNeeded = new AuthenticationNeededAlertFragment();
-                    authenticationNeeded.show(getSupportFragmentManager(), "AuthenticationNeededDialogFragment");
-                }
-            } else {
-                new GetPhotosets().execute();
-            }
-
-        }
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    private class GetPhotosets extends AsyncTask {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressDialog.show();
-        }
-
-        protected Object doInBackground(Object[] objects) {
+        protected void doInBackground() {
 
             try {
                 String user = auth.getUser().getId();
                 RequestContext.getRequestContext().setAuth(auth);
-                photosets = FlickrApi.getFlickrInterface().getPhotosetsInterface().getList(user).getPhotosets();
+                photosets = flickrApi.getFlickrInterface().getPhotosetsInterface().getList(user).getPhotosets();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            return null;
 
         }
 
         @Override
-        protected void onPostExecute(Object o) {
-            super.onPostExecute(o);
-            progressDialog.cancel();
+        protected void onPostExecute() {
+            super.onPostExecute();
+            progressSpinnerView.setVisibility(View.INVISIBLE);
             FlickrPhotosetsListAdapter adapter = new FlickrPhotosetsListAdapter(getApplicationContext(), photosets);
             photosetsListView.setAdapter(adapter);
         }

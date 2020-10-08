@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : HelpActivity.java
- *  Last modified : 4/5/20 12:46 PM
+ *  Last modified : 10/8/20 1:29 PM
  *
  *  -----------------------------------------------------------
  */
@@ -15,19 +15,21 @@ package com.apps.mohb.shutternotes;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
-import com.apps.mohb.shutternotes.views.Toasts;
+import androidx.appcompat.app.AppCompatActivity;
 
 
 public class HelpActivity extends AppCompatActivity {
 
     private WebView webView;
     private Bundle bundle;
+
+    private Toast getHelpPage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +49,8 @@ public class HelpActivity extends AppCompatActivity {
         super.onStart();
         // show toast to inform that will
         // get options_help page from internet
-        Toasts.showHelpPage(this);
+        getHelpPage = Toast.makeText(this, R.string.toast_get_help_page, Toast.LENGTH_SHORT);
+        getHelpPage.show();
     }
 
     @Override
@@ -61,7 +64,7 @@ public class HelpActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         // cancel toast if page if exit options_help screen
-        Toasts.cancelHelpPage();
+        getHelpPage.cancel();
     }
 
     @Override

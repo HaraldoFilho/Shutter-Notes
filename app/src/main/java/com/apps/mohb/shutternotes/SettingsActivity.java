@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : SettingsActivity.java
- *  Last modified : 4/5/20 12:46 PM
+ *  Last modified : 10/8/20 1:29 PM
  *
  *  -----------------------------------------------------------
  */
@@ -17,21 +17,23 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+import androidx.preference.ListPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceManager;
+
 import com.apps.mohb.shutternotes.fragments.dialogs.PreferencesResetAlertFragment;
 
+import java.util.Objects;
 
-/**
+
+/*
  * A {@link PreferenceActivity} that presents a set of application settings. On
  * handset devices, settings are presented as a single list. On tablets,
  * settings are split by category, with category headers shown to the left of
@@ -45,44 +47,37 @@ import com.apps.mohb.shutternotes.fragments.dialogs.PreferencesResetAlertFragmen
 public class SettingsActivity extends AppCompatActivity implements
         PreferencesResetAlertFragment.PreferencesResetDialogListener {
 
-    GeneralPreferenceFragment settingsFragment;
-
-    /**
+    /*
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
      */
-    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
+    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = (preference, value) -> {
+        String stringValue = value.toString();
 
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object value) {
-            String stringValue = value.toString();
+        if (preference instanceof ListPreference) {
+            // For list preferences, look up the correct display value in
+            // the preference's 'entries' list.
+            ListPreference listPreference = (ListPreference) preference;
+            int index = listPreference.findIndexOfValue(stringValue);
 
-            if (preference instanceof ListPreference) {
-                // For list preferences, look up the correct display value in
-                // the preference's 'entries' list.
-                ListPreference listPreference = (ListPreference) preference;
-                int index = listPreference.findIndexOfValue(stringValue);
+            // Set the summary to reflect the new value.
+            preference.setSummary(
+                    index >= Constants.LIST_HEAD
+                            ? listPreference.getEntries()[index]
+                            : null);
 
-                // Set the summary to reflect the new value.
-                preference.setSummary(
-                        index >= Constants.LIST_HEAD
-                                ? listPreference.getEntries()[index]
-                                : null);
-
-            } else {
-                // For all other preferences, set the summary to the value's
-                // simple string representation.
-                preference.setSummary(stringValue);
-            }
-
-            return true;
-
+        } else {
+            // For all other preferences, set the summary to the value's
+            // simple string representation.
+            preference.setSummary(stringValue);
         }
+
+        return true;
 
     };
 
 
-    /**
+    /*
      * Binds a preference's summary to its value. More specifically, when the
      * preference's value is changed, its summary (line of text below the
      * preference title) is updated to reflect the value. The summary is also
@@ -109,15 +104,14 @@ public class SettingsActivity extends AppCompatActivity implements
         setupActionBar();
 
         // Create settings fragment which actually contain the settings screen
-        settingsFragment = new GeneralPreferenceFragment();
-        getFragmentManager().beginTransaction()
-                .replace(android.R.id.content, settingsFragment)
+        getSupportFragmentManager().beginTransaction()
+                .replace(android.R.id.content, new GeneralPreferenceFragment())
                 .commit();
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
     }
 
-    /**
+    /*
      * Set up the {@link android.app.ActionBar}, if the API is available.
      */
     private void setupActionBar() {
@@ -166,25 +160,15 @@ public class SettingsActivity extends AppCompatActivity implements
     }
 
 
-    /**
-     * This method stops fragment injection in malicious applications.
-     * Make sure to deny any unknown fragments here.
-     */
-    protected boolean isValidFragment(String fragmentName) {
-        return PreferenceFragment.class.getName().equals(fragmentName)
-                || GeneralPreferenceFragment.class.getName().equals(fragmentName);
-    }
-
-    /**
+    /*
      * This fragment shows general preferences only. It is used when the
      * activity is showing a two-pane settings UI.
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class GeneralPreferenceFragment extends PreferenceFragment {
+    public static class GeneralPreferenceFragment extends PreferenceFragmentCompat {
 
         @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             addPreferencesFromResource(R.xml.preferences);
             setHasOptionsMenu(true);
 
@@ -192,11 +176,10 @@ public class SettingsActivity extends AppCompatActivity implements
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference(Constants.PREF_KEY_FONT_SIZE));
-            bindPreferenceSummaryToValue(findPreference(Constants.PREF_KEY_WHAT_SHOW));
-            bindPreferenceSummaryToValue(findPreference(Constants.PREF_KEY_MAP_ZOOM_LEVEL));
-            bindPreferenceSummaryToValue(findPreference(Constants.PREF_KEY_OVERWRITE_TAGS));
-
+            bindPreferenceSummaryToValue(Objects.requireNonNull(findPreference(Constants.PREF_KEY_FONT_SIZE)));
+            bindPreferenceSummaryToValue(Objects.requireNonNull(findPreference(Constants.PREF_KEY_WHAT_SHOW)));
+            bindPreferenceSummaryToValue(Objects.requireNonNull(findPreference(Constants.PREF_KEY_MAP_ZOOM_LEVEL)));
+            bindPreferenceSummaryToValue(Objects.requireNonNull(findPreference(Constants.PREF_KEY_OVERWRITE_TAGS)));
         }
 
     }
@@ -210,17 +193,17 @@ public class SettingsActivity extends AppCompatActivity implements
         PreferenceManager.getDefaultSharedPreferences(this).edit().clear().apply();
         // Set defaults on memory
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
         // Update settings screen with the default values
-        getFragmentManager().beginTransaction().detach(settingsFragment).commit();
-        settingsFragment = new GeneralPreferenceFragment();
-        getFragmentManager().beginTransaction()
-                .replace(android.R.id.content, settingsFragment)
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(android.R.id.content, new GeneralPreferenceFragment())
                 .commit();
     }
 
     @Override // No
     public void onAlertDialogNegativeClick(DialogFragment dialog) {
-        dialog.getDialog().cancel();
+        Objects.requireNonNull(dialog.getDialog()).cancel();
     }
 
 }

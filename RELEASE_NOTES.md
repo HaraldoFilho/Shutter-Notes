@@ -1,3 +1,10 @@
+#### **0.2.12**
+- Migrated to Android X
+- Deleted Toasts class
+- Replaced deprecated class 'AsyncTask' with a custom class
+- Added action button on FlickrNote to update location
+- Replaced deprecated 'progressDialog' with 'progressBar'
+
 #### **0.2.11**
 - Updated app with the new site url.
 

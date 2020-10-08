@@ -1,29 +1,28 @@
 /*
- *  Copyright (c) 2019 mohb apps - All Rights Reserved
+ *  Copyright (c) 2020 mohb apps - All Rights Reserved
  *
  *  Project       : ShutterNotes
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : ClockActivity.java
- *  Last modified : 12/22/19 10:55 AM
+ *  Last modified : 10/7/20 12:18 PM
  *
  *  -----------------------------------------------------------
  */
 
 package com.apps.mohb.shutternotes;
 
-import android.annotation.SuppressLint;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
 import java.util.SimpleTimeZone;
+import java.util.concurrent.RecursiveTask;
 
 import static android.os.SystemClock.sleep;
 
@@ -36,8 +35,8 @@ public class ClockActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onCreate(Bundle readdInstanceState) {
-        super.onCreate(readdInstanceState);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_clock);
         Objects.requireNonNull(getSupportActionBar()).hide();
 
@@ -53,7 +52,7 @@ public class ClockActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         stopClock = false;
-        new Clock().execute();
+        new UpdateClock().compute();
     }
 
     @Override
@@ -62,45 +61,38 @@ public class ClockActivity extends AppCompatActivity {
         stopClock = true;
     }
 
-    @SuppressLint("StaticFieldLeak")
-    private class Clock extends AsyncTask {
+    private class UpdateClock extends RecursiveTask<Void> {
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            Log.i(Constants.LOG_INFO_TAG, "Clock started!");
+        UpdateClock() {
+
+            Date currentTime = Calendar.getInstance().getTime();
+            String timeText = SimpleDateFormat.getTimeInstance().format(currentTime);
+            String date = SimpleDateFormat.getDateInstance().format(currentTime);
+            String timeZone = String.valueOf(SimpleTimeZone.getDefault().getRawOffset() / Constants.MS_PER_HOUR);
+            String dateText = date + Constants.UTC + timeZone;
+
+            runOnUiThread(() -> {
+                timeTextview.setText(timeText);
+                dateTextView.setText(dateText);
+            });
+
         }
 
         @Override
-        protected Object doInBackground(Object[] objects) {
-            updateClock();
-            return null;
-        }
+        protected Void compute() {
 
-        @Override
-        protected void onPostExecute(Object o) {
-            super.onPostExecute(o);
-            Log.i(Constants.LOG_INFO_TAG, "Clock stopped!");
-        }
-    }
+            if (stopClock) {
+                return null;
+            }
 
-    private void updateClock() {
-        Date currentTime = Calendar.getInstance().getTime();
-        String timeText = SimpleDateFormat.getTimeInstance().format(currentTime);
-        String date = SimpleDateFormat.getDateInstance().format(currentTime);
-        String timeZone = String.valueOf(SimpleTimeZone.getDefault().getRawOffset() / Constants.MS_PER_HOUR);
-        String dateText = date + Constants.UTC + timeZone;
+            UpdateClock updateClock = new UpdateClock();
+            updateClock.fork();
 
-        runOnUiThread(() -> {
-            timeTextview.setText(timeText);
-            dateTextView.setText(dateText);
-        });
-
-        if (!stopClock) {
             sleep(100);
-            updateClock();
-        }
 
+            return null;
+
+        }
     }
 
 }

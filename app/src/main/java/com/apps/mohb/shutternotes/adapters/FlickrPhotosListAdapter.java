@@ -1,11 +1,11 @@
 /*
- *  Copyright (c) 2019 mohb apps - All Rights Reserved
+ *  Copyright (c) 2020 mohb apps - All Rights Reserved
  *
  *  Project       : ShutterNotes
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrPhotosListAdapter.java
- *  Last modified : 8/17/19 12:08 PM
+ *  Last modified : 10/8/20 1:29 PM
  *
  *  -----------------------------------------------------------
  */
@@ -14,14 +14,15 @@ package com.apps.mohb.shutternotes.adapters;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.apps.mohb.shutternotes.Constants;
 import com.apps.mohb.shutternotes.R;
@@ -33,39 +34,38 @@ import java.util.List;
 import java.util.Objects;
 
 
-public class FlickrPhotosListAdapter extends ArrayAdapter {
+public class FlickrPhotosListAdapter extends ArrayAdapter<Photo> {
 
 
-	@SuppressWarnings("unchecked")
-	public FlickrPhotosListAdapter(@NonNull Context context, Collection<Photo> photosList) {
-		super(context, Constants.LIST_ADAPTER_RESOURCE_ID, (List) photosList);
-	}
+    public FlickrPhotosListAdapter(@NonNull Context context, Collection<Photo> photosList) {
+        super(context, Constants.LIST_ADAPTER_RESOURCE_ID, (List<Photo>) photosList);
+    }
 
-	@NonNull
-	@Override
-	public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    @NonNull
+    @Override
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-		if (convertView == null) {
-			convertView = LayoutInflater.from(getContext()).inflate(R.layout.photo_item, parent, false);
-		}
+        if (convertView == null) {
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.photo_item, parent, false);
+        }
 
-		ImageView photoView = convertView.findViewById(R.id.imagePhoto);
-		TextView titleView = convertView.findViewById(R.id.textPhotoTitle);
-		TextView descriptionView = convertView.findViewById(R.id.textPhotoDescription);
+        ImageView photoView = convertView.findViewById(R.id.imagePhoto);
+        TextView titleView = convertView.findViewById(R.id.textPhotoTitle);
+        TextView descriptionView = convertView.findViewById(R.id.textPhotoDescription);
 
-		Photo photo = (Photo) getItem(position);
-		String imgPhotoUrl = Objects.requireNonNull(photo).getSquareLargeUrl();
+        Photo photo = getItem(position);
+        String imgPhotoUrl = Objects.requireNonNull(photo).getSquareLargeUrl();
 
-		String txtTitle = photo.getTitle();
-		String txtDescription = photo.getDescription();
+        String txtTitle = photo.getTitle();
+        String txtDescription = photo.getDescription();
 
-		Picasso.get().load(imgPhotoUrl).into(photoView);
+        Picasso.get().load(imgPhotoUrl).into(photoView);
 
-		titleView.setText(txtTitle);
-		titleView.setTypeface(Typeface.defaultFromStyle(android.graphics.Typeface.BOLD));
-		descriptionView.setText(txtDescription);
+        titleView.setText(txtTitle);
+        titleView.setTypeface(Typeface.defaultFromStyle(android.graphics.Typeface.BOLD));
+        descriptionView.setText(txtDescription);
 
-		return convertView;
+        return convertView;
 
-	}
+    }
 }

@@ -5,39 +5,29 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : MainActivity.java
- *  Last modified : 4/5/20 12:46 PM
+ *  Last modified : 10/8/20 1:29 PM
  *
  *  -----------------------------------------------------------
  */
 
 package com.apps.mohb.shutternotes;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.Button;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.google.android.material.navigation.NavigationView;
 
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
-    private FusedLocationProviderClient mFusedLocationClient;
-    private double lastLatitude;
-    private double lastLongitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,49 +65,8 @@ public class MainActivity extends AppCompatActivity
 
         buttonFlickrNote.setOnClickListener(view -> {
             Intent intent = new Intent(view.getContext(), FlickrNoteActivity.class);
-            Bundle bundle = new Bundle();
-            bundle.putDouble(Constants.LATITUDE, lastLatitude);
-            bundle.putDouble(Constants.LONGITUDE, lastLongitude);
-            intent.putExtras(bundle);
             startActivity(intent);
         });
-
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // Check if location permissions are granted
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            // If GoogleApiClient is connected get the last location
-            mFusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            if (location != null) {
-                                lastLatitude = location.getLatitude();
-                                lastLongitude = location.getLongitude();
-                            } else {
-                                lastLongitude = Constants.DEFAULT_LATITUDE;
-                                lastLongitude = Constants.DEFAULT_LONGITUDE;
-                            }
-
-                        }
-                    });
-
-        } else {
-            // Check if user already denied permission request
-            if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-                // Request permissions
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        Constants.FINE_LOCATION_PERMISSION_REQUEST);
-            }
-        }
 
     }
 

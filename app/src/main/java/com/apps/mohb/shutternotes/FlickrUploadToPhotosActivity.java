@@ -5,45 +5,47 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrUploadToPhotosActivity.java
- *  Last modified : 4/5/20 1:13 PM
+ *  Last modified : 10/8/20 1:49 PM
  *
  *  -----------------------------------------------------------
  */
 
 package com.apps.mohb.shutternotes;
 
-import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.preference.PreferenceManager;
 
 import com.apps.mohb.shutternotes.adapters.FlickrPhotosListAdapter;
-import com.apps.mohb.shutternotes.notes.Archive;
+import com.apps.mohb.shutternotes.lists.Archive;
+import com.apps.mohb.shutternotes.lists.Notebook;
 import com.apps.mohb.shutternotes.notes.FlickrNote;
-import com.apps.mohb.shutternotes.notes.Notebook;
-import com.apps.mohb.shutternotes.views.Toasts;
 import com.flickr4java.flickr.Flickr;
 import com.flickr4java.flickr.FlickrException;
 import com.flickr4java.flickr.RequestContext;
 import com.flickr4java.flickr.auth.Auth;
+import com.flickr4java.flickr.photos.Exif;
 import com.flickr4java.flickr.photos.Photo;
 import com.flickr4java.flickr.photos.PhotosInterface;
-import com.flickr4java.flickr.photosets.Photoset;
+import com.flickr4java.flickr.tags.TagRaw;
+import com.flickr4java.flickr.tags.TagsInterface;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 
-@SuppressWarnings("unchecked")
-public class FlickrUploadToPhotosActivity extends AppCompatActivity {
+public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity {
 
     private Collection<Photo> updatedPhotos;
     private ListView photosListView;
@@ -62,17 +64,15 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
 
     private SharedPreferences settings;
 
-    private ProgressDialog progressDialog;
+    private View progressBarView;
+    private ProgressBar progressBar;
+    private TextView progressRatio;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_flickr_upload_to_photos);
-
-        try {
-
-        flickrApi = new FlickrApi(getApplicationContext());
 
         View listHeader = getLayoutInflater().inflate(R.layout.list_header, photosListView);
         View listFooter = getLayoutInflater().inflate(R.layout.list_footer, photosListView);
@@ -84,6 +84,21 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
         listHeader.setClickable(false);
         listFooter.setClickable(false);
 
+        photosListView.setOnItemClickListener((adapterView, view, i, l) -> {
+            Photo photo = (Photo) adapterView.getAdapter().getItem(i);
+            String url = photo.getUrl();
+            Intent intent = new Intent(getApplicationContext(), FlickrPhotoActivity.class);
+            intent.putExtra(Constants.KEY_URL, url);
+            startActivity(intent);
+        });
+
+        progressBarView = findViewById(R.id.progressBarView);
+
+        progressBar = findViewById(R.id.progressBar);
+        progressRatio = findViewById(R.id.progressRatio);
+
+        flickrApi = FlickrApi.getInstance(getApplicationContext());
+
         settings = PreferenceManager.getDefaultSharedPreferences(this);
 
         Bundle bundle = getIntent().getExtras();
@@ -91,27 +106,11 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
             selectedSetId = bundle.getString(Constants.PHOTOSET_ID);
             selectedSetSize = bundle.getInt(Constants.PHOTOSET_SIZE);
         }
+
         updatedPhotos = new ArrayList<>();
 
-        if (notebook == null) {
-            notebook = new Notebook();
-        }
-
-        if (archive == null) {
-            archive = new Archive();
-        }
-
-        try {
-            notebook.loadState(this);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            archive.loadState(this);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        notebook = Notebook.getInstance(getApplicationContext());
+        archive = Archive.getInstance(getApplicationContext());
 
         flickrNotes = notebook.getFlickrNotes();
         selectedNotes = new ArrayList<>();
@@ -123,130 +122,124 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
             }
         }
 
-        photosListView.setOnItemClickListener((adapterView, view, i, l) -> {
-            Photo photo = (Photo) adapterView.getAdapter().getItem(i);
-            String url = photo.getUrl();
-            Intent intent = new Intent(getApplicationContext(), FlickrPhotoActivity.class);
-            intent.putExtra(Constants.KEY_URL, url);
-            startActivity(intent);
-        });
+        try {
 
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage(getApplicationContext().getResources().getString(R.string.dialog_progress_upload_data));
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progressDialog.setIndeterminate(false);
-        progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.setCancelable(false);
-        progressDialog.setMax(selectedSetSize);
+            auth = flickrApi.checkToken();
 
-        new CheckToken().execute();
+            if (auth == null) {
+                Intent intent = new Intent(getApplicationContext(), FlickrAccountActivity.class);
+                startActivity(intent);
+            } else {
+                new UploadData().start();
+            }
+
 
         } catch (Exception e) {
-            Toasts.showUnableToCommunicate(getApplicationContext());
+            Toast.makeText(this, R.string.toast_unable_to_communicate, Toast.LENGTH_SHORT).show();
             onBackPressed();
         }
 
     }
 
-    @SuppressLint("StaticFieldLeak")
-    private class CheckToken extends FlickrApi.CheckToken {
-
-        @Override
-        protected void onPostExecute(Object o) {
-            super.onPostExecute(o);
-            auth = flickrApi.getAuth();
-            if (auth == null) {
-                Intent intent = new Intent(getApplicationContext(), FlickrAccountActivity.class);
-                startActivity(intent);
-            } else {
-                new UploadData().execute();
-            }
-
-        }
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    private class UploadData extends AsyncTask {
+    private class UploadData extends BackgroundTask {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog.show();
+
+            progressBar.setMax(selectedSetSize);
+
         }
 
-        protected Object doInBackground(Object[] objects) {
+        @Override
+        protected void doInBackground() {
+            super.doInBackground();
 
             try {
-                Flickr flickr = FlickrApi.getFlickrInterface();
-                String user = auth.getUser().getId();
+
+                Flickr flickr = flickrApi.getFlickrInterface();
                 RequestContext.getRequestContext().setAuth(auth);
-                Collection<Photoset> photosets = flickr.getPhotosetsInterface().getList(user).getPhotosets();
-                for (Photoset photoset : photosets) {
-                    if (photoset.getId().equals(selectedSetId)) {
-                        int progress = 0;
-                        int pages = FlickrApi.getNumOfPages(selectedSetSize, Constants.PHOTOSET_PER_PAGE);
-                        for (int page = 1; page <= pages; page++) {
-                            Collection<Photo> photos = flickr.getPhotosetsInterface()
-                                    .getPhotos(selectedSetId, Constants.PHOTOSET_PER_PAGE, page);
-                            for (Photo photo : photos) {
-                                String photoId = photo.getId();
-                                for (int i = 0; i < selectedNotes.size(); i++) {
-                                    FlickrNote note = selectedNotes.get(i);
-                                    String date = FlickrApi.getDateTaken(photoId);
-                                    if (note.isInTimeInterval(date)) {
-                                        if (uploadDataToPhoto(photoId, note)) {
-                                            // If photo was updated, added it to list
-                                            updatedPhotos.add(FlickrApi.getFlickrInterface()
-                                                    .getPhotosInterface().getPhoto(photoId));
-                                        }
-                                    }
+                int progress = 0;
+                int pages = getNumOfPages(selectedSetSize, Constants.PHOTOSET_PER_PAGE);
+                for (int page = 1; page <= pages; page++) {
+                    Collection<Photo> photos = flickr.getPhotosetsInterface()
+                            .getPhotos(selectedSetId, Constants.PHOTOSET_PER_PAGE, page);
+                    for (Photo photo : photos) {
+                        progress++;
+                        final int p = progress;
+                        runOnUiThread(() -> {
+                            progressBar.setProgress(p, true);
+                        });
+                        String progressText = getBaseContext().getResources().getString(R.string.text_photo_cl)
+                                + Constants.SPACE + progress + Constants.SLASH + selectedSetSize;
+                        progressRatio.setText(progressText);
+                        String photoId = photo.getId();
+                        for (int i = 0; i < selectedNotes.size(); i++) {
+                            FlickrNote note = selectedNotes.get(i);
+                            String date = getDateTaken(photoId);
+                            if (note.isInTimeInterval(date)) {
+                                if (uploadDataToPhoto(photoId, note)) {
+                                    // If photo was updated, added it to list
+                                    updatedPhotos.add(flickrApi.getFlickrInterface()
+                                            .getPhotosInterface().getPhoto(photoId));
                                 }
-                                progress++;
-                                progressDialog.setProgress(progress);
                             }
                         }
                     }
                 }
 
-            } catch (FlickrException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            return null;
         }
 
         @Override
-        protected void onPostExecute(Object o) {
-            super.onPostExecute(o);
+        protected void onPostExecute() {
+            super.onPostExecute();
 
-            progressDialog.cancel();
+            progressBarView.setVisibility(View.INVISIBLE);
 
             if (adapter == null) {
                 adapter = new FlickrPhotosListAdapter(getApplicationContext(), updatedPhotos);
             }
+
             photosListView.setAdapter(adapter);
 
             if (updatedPhotos.isEmpty()) {
-                Toasts.showNoPhotosUpdated(getApplicationContext());
+                Toast.makeText(getBaseContext(), R.string.toast_no_photos_updated, Toast.LENGTH_SHORT).show();
                 onBackPressed();
-            } else if (settings.getBoolean(Constants.PREF_KEY_ARCHIVE_NOTES, false)) {
-                int i, listSize = flickrNotes.size();
-                for (i = listSize - 1; i >= 0; i--) {
-                    FlickrNote note = flickrNotes.get(i);
-                    if (note.isSelected()) {
-                        archive.addNote(note);
-                        notebook.removeFlickrNote(i);
+            } else {
+
+                String toastText = updatedPhotos.size() + Constants.SPACE + getBaseContext().getResources().getString(R.string.toast_photo);
+
+                if (updatedPhotos.size() > 1) {
+                    toastText = toastText + getBaseContext().getResources().getString(R.string.toast_s) + Constants.SPACE
+                            + getBaseContext().getResources().getString(R.string.toast_were) + Constants.SPACE
+                            + getBaseContext().getResources().getString(R.string.toast_updated)
+                            + getBaseContext().getResources().getString(R.string.toast_end_s);
+                } else {
+                    toastText = toastText + getBaseContext().getResources().getString(R.string.toast_was) + Constants.SPACE
+                            + getBaseContext().getResources().getString(R.string.toast_updated);
+                }
+
+                Toast.makeText(getBaseContext(), toastText, Toast.LENGTH_SHORT).show();
+
+                if (settings.getBoolean(Constants.PREF_KEY_ARCHIVE_NOTES, false)) {
+                    int listSize = flickrNotes.size();
+                    for (int i = listSize - 1; i >= 0; i--) {
+                        FlickrNote note = flickrNotes.get(i);
+                        if (note.isSelected()) {
+                            archive.addNote(note);
+                            notebook.removeFlickrNote(i);
+                        }
                     }
                 }
             }
 
             try {
-                notebook.saveState(getApplicationContext());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
-                archive.saveState(getApplicationContext());
+                notebook.saveState();
+                archive.saveState();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -261,7 +254,7 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
         String overwriteTags = settings.getString(Constants.PREF_KEY_OVERWRITE_TAGS, Constants.PREF_REPLACE_ALL);
 
         RequestContext.getRequestContext().setAuth(auth);
-        PhotosInterface photosInterface = FlickrApi.getFlickrInterface().getPhotosInterface();
+        PhotosInterface photosInterface = flickrApi.getFlickrInterface().getPhotosInterface();
 
         boolean wasUpdated = false;
 
@@ -273,15 +266,15 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
         }
 
         // If upload tags setting is on and there are tags in the notes upload tags to photo
-        if ((settings.getBoolean(Constants.PREF_KEY_UPLOAD_TAGS, true)) && (note.getTagsArray().length != 0)) {
+        if ((settings.getBoolean(Constants.PREF_KEY_UPLOAD_TAGS, true)) && (note.getTagsArray().length > 0)) {
 
             String[] tagsToAdd = note.getTagsArray();
-            String[] tagsOnPhoto = FlickrApi.getPhotoTagsArray(photosInterface.getPhoto(photoId).getTags().toArray());
+            String[] tagsOnPhoto = getPhotoTagsArray(photosInterface.getPhoto(photoId).getTags().toArray());
 
             // Add note's tags if there are no tags on the photo
             // or overwrite data setting is on and overwrite tags setting is replace all
             if (tagsOnPhoto.length == 0) {
-                photosInterface.setTags(photoId, FlickrApi.getNewPhotoTagsArray(tagsToAdd));
+                photosInterface.setTags(photoId, getNewPhotoTagsArray(tagsToAdd));
 
             } else if (overwriteData) {
 
@@ -290,18 +283,18 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
                 switch (Objects.requireNonNull(overwriteTags)) {
 
                     case Constants.PREF_REPLACE_ALL:
-                        FlickrApi.getNewPhotoTagsArray(tagsToAdd);
-                        photosInterface.setTags(photoId, FlickrApi.getNewPhotoTagsArray(tagsToAdd));
+                        getNewPhotoTagsArray(tagsToAdd);
+                        photosInterface.setTags(photoId, getNewPhotoTagsArray(tagsToAdd));
                         break;
 
                     case Constants.PREF_INSERT_BEGIN:
-                        FlickrApi.getNewPhotoTagsArray(tagsToAdd, tagsOnPhoto);
-                        photosInterface.setTags(photoId, FlickrApi.getNewPhotoTagsArray(tagsToAdd, tagsOnPhoto));
+                        getNewPhotoTagsArray(tagsToAdd, tagsOnPhoto);
+                        photosInterface.setTags(photoId, getNewPhotoTagsArray(tagsToAdd, tagsOnPhoto));
                         break;
 
                     case Constants.PREF_INSERT_END:
-                        FlickrApi.getNewPhotoTagsArray(tagsOnPhoto, tagsToAdd);
-                        photosInterface.setTags(photoId, FlickrApi.getNewPhotoTagsArray(tagsOnPhoto, tagsToAdd));
+                        getNewPhotoTagsArray(tagsOnPhoto, tagsToAdd);
+                        photosInterface.setTags(photoId, getNewPhotoTagsArray(tagsOnPhoto, tagsToAdd));
                         break;
 
                 }
@@ -322,6 +315,104 @@ public class FlickrUploadToPhotosActivity extends AppCompatActivity {
         return wasUpdated;
 
     }
+
+    public int getNumOfPages(int photosCount, int perPage) {
+
+        float floatDiv = (float) photosCount / perPage;
+        int intDiv = photosCount / perPage;
+
+        if (floatDiv - intDiv > 0) {
+            return intDiv + 1;
+        } else {
+            return intDiv;
+        }
+
+    }
+
+    public String getDateTaken(String photoId) throws FlickrException {
+        Collection<Exif> exif = flickrApi.getFlickrInterface().getPhotosInterface().getExif(photoId, flickrApi.getApiSecret());
+        Iterator<Exif> exifIterator = exif.iterator();
+        int date = Constants.DATE_INIT;
+
+        while (exifIterator.hasNext()) {
+            Exif e = exifIterator.next();
+            if (Pattern.matches(Constants.DATE_PATTERN, e.getRaw())) {
+                if (date == Constants.DATE_TAKEN) {
+                    return e.getRaw();
+                }
+                date++;
+            }
+        }
+
+        return Constants.EMPTY;
+    }
+
+    public String[] getPhotoTagsArray(Object[] tags) throws FlickrException {
+
+        TagsInterface tagsInterface = flickrApi.getFlickrInterface().getTagsInterface();
+
+        String[] tagsStringArray = new String[tags.length];
+
+        // Complete list of user's "raw" tags, including spaces, upper cases and non-alpha characters
+        Collection<TagRaw> listUserRaw = tagsInterface.getListUserRaw();
+
+        for (int i = 0; i < tags.length; i++) {
+
+            // The tag retrieved from the photo, with only lower-case alpha characters
+            String tag = tags[i].toString()
+                    .replace("Tag [value=", Constants.EMPTY)
+                    .replace(", count=0]", Constants.EMPTY);
+
+            for (TagRaw tagRaw : listUserRaw) {
+                // Get tag's raw string
+                String tagString = String.valueOf(tagRaw.getRaw())
+                        .replace(Constants.BRACKET_LEFT, Constants.QUOTE)
+                        .replace(Constants.BRACKET_RIGHT, Constants.QUOTE);
+
+                //  If there is more than one tag, get only the first
+                if (tagString.contains(Constants.COMMA)) {
+                    tagString = tagString.split(Constants.COMMA)[0].concat(Constants.QUOTE);
+                }
+
+                // The string to compare with the tag
+                String tagToCompare = tagString.toLowerCase().replaceAll(Constants.NON_ALPHA, Constants.EMPTY);
+
+                if (tag.equals(tagToCompare)) {
+                    tagsStringArray[i] = tagString.replace(Constants.QUOTE, Constants.EMPTY);
+                }
+            }
+        }
+
+        return tagsStringArray;
+
+    }
+
+    public String[] getNewPhotoTagsArray(String[] tagsArray1, String[] tagsArray2) {
+
+        String[] newTagsArray = new String[tagsArray1.length + tagsArray2.length];
+
+        for (int i = 0; i < newTagsArray.length; i++) {
+            if (i < tagsArray1.length) {
+                newTagsArray[i] = Constants.DOUBLE_QUOTE.concat(tagsArray1[i]).concat(Constants.DOUBLE_QUOTE);
+            } else {
+                newTagsArray[i] = Constants.DOUBLE_QUOTE.concat(tagsArray2[i - tagsArray1.length]).concat(Constants.DOUBLE_QUOTE);
+            }
+        }
+
+        return newTagsArray;
+
+    }
+
+    public String[] getNewPhotoTagsArray(String[] tagsArray) {
+
+        for (int i = 0; i < tagsArray.length; i++) {
+            tagsArray[i] = Constants.DOUBLE_QUOTE.concat(tagsArray[i]).concat(Constants.DOUBLE_QUOTE);
+        }
+
+        return tagsArray;
+
+    }
+
 
 }
 

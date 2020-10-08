@@ -1,116 +1,109 @@
 /*
- *  Copyright (c) 2019 mohb apps - All Rights Reserved
+ *  Copyright (c) 2020 mohb apps - All Rights Reserved
  *
  *  Project       : ShutterNotes
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : EditGearListDialogFragment.java
- *  Last modified : 8/17/19 12:08 PM
+ *  Last modified : 10/8/20 1:29 PM
  *
  *  -----------------------------------------------------------
  */
 
 package com.apps.mohb.shutternotes.fragments.dialogs;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.DialogFragment;
+
 import com.apps.mohb.shutternotes.Constants;
 import com.apps.mohb.shutternotes.R;
-import com.apps.mohb.shutternotes.notes.GearList;
+import com.apps.mohb.shutternotes.lists.GearList;
 
 import java.io.IOException;
 import java.util.Objects;
 
 public class EditGearListDialogFragment extends DialogFragment {
 
-	public interface EditGearListDialogListener {
-		void onEditGearListDialogPositiveClick(DialogFragment dialog);
+    public interface EditGearListDialogListener {
+        void onEditGearListDialogPositiveClick(DialogFragment dialog);
 
-		void onEditGearListDialogNegativeClick(DialogFragment dialog);
-	}
+        void onEditGearListDialogNegativeClick(DialogFragment dialog);
+    }
 
-	private EditGearListDialogListener mListener;
-	private GearList gearList;
-	private EditText text;
+    private EditGearListDialogListener mListener;
+    private GearList gearList;
+    private EditText text;
 
-	@NonNull
-	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState) {
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-		gearList = new GearList();
+        try {
+            gearList = GearList.getInstance();
+            Objects.requireNonNull(gearList).loadState(requireActivity().getApplicationContext(), Constants.GEAR_LIST_SAVED_STATE);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-		try {
-			gearList.loadState(getContext(), Constants.GEAR_LIST_SAVED_STATE);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+        final LayoutInflater inflater = requireActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.fragment_edit_gear_list_dialog, null);
 
-		final LayoutInflater inflater = Objects.requireNonNull(getActivity()).getLayoutInflater();
-		View view = inflater.inflate(R.layout.fragment_edit_gear_list_dialog, null);
+        text = view.findViewById(R.id.txtEditGear);
+        final String editedText = gearList.getEditedGearItemText(requireContext());
+        final int itemPosition = gearList.getEditedGearItemPosition(requireContext());
 
-		text = view.findViewById(R.id.txtEditGear);
-		final String editedText = gearList.getEditedGearItemText(Objects.requireNonNull(getContext()));
-		final int itemPosition = gearList.getEditedGearItemPosition(getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setView(view);
+        builder.setTitle(R.string.dialog_add_gear_title);
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setView(view);
-		builder.setTitle(R.string.dialog_add_gear_title);
+        if (!editedText.isEmpty()) {
+            text.setText(editedText);
+            builder.setTitle(R.string.dialog_edit_gear_title);
+        }
 
-		if (!editedText.isEmpty()) {
-			text.setText(editedText);
-			builder.setTitle(R.string.dialog_edit_gear_title);
-		}
+        builder.setPositiveButton(R.string.button_ok, (dialog, id) -> {
+            String textString = text.getText().toString();
+            if (!textString.isEmpty()) {
+                if (editedText.isEmpty()) {
+                    gearList.add(textString);
+                } else if (itemPosition != Constants.NULL_POSITION) {
+                    gearList.setEditedGearItemText(requireContext(), textString);
+                    gearList.setEditedGearItemPosition(requireContext(), itemPosition);
+                }
+                try {
+                    gearList.saveState(requireActivity().getApplicationContext(), Constants.GEAR_LIST_SAVED_STATE);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            mListener.onEditGearListDialogPositiveClick(EditGearListDialogFragment.this);
+        })
+                .setNegativeButton(R.string.button_cancel, (dialog, id) -> mListener.onEditGearListDialogNegativeClick(EditGearListDialogFragment.this));
 
-		builder.setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int id) {
-				String textString = text.getText().toString();
-				if (!textString.isEmpty()) {
-					if (editedText.isEmpty()) {
-						gearList.add(textString);
-					} else if (itemPosition != Constants.NULL_POSITION) {
-						gearList.setEditedGearItemText(Objects.requireNonNull(getContext()), textString);
-						gearList.setEditedGearItemPosition(getContext(), itemPosition);
-					}
-					try {
-						gearList.saveState(getContext(), Constants.GEAR_LIST_SAVED_STATE);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-				mListener.onEditGearListDialogPositiveClick(EditGearListDialogFragment.this);
-			}
-		})
-				.setNegativeButton(R.string.button_cancel, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						mListener.onEditGearListDialogNegativeClick(EditGearListDialogFragment.this);
-					}
-				});
+        return builder.create();
 
-		return builder.create();
+    }
 
-	}
-
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		// Verify that the host activity implements the callback interface
-		try {
-			// Instantiate the BookmarkEditDialogListener so we can send events to the host
-			mListener = (EditGearListDialogListener) activity;
-		} catch (ClassCastException e) {
-			// The activity doesn't implement the interface, throw exception
-			throw new ClassCastException(activity.toString()
-					+ " must implement AddGearDialogListener");
-		}
-	}
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        // Verify that the host activity implements the callback interface
+        try {
+            // Instantiate the BookmarkEditDialogListener so we can send events to the host
+            mListener = (EditGearListDialogListener) context;
+        } catch (ClassCastException e) {
+            // The activity doesn't implement the interface, throw exception
+            throw new ClassCastException(context.toString()
+                    + " must implement AddGearDialogListener");
+        }
+    }
 
 }

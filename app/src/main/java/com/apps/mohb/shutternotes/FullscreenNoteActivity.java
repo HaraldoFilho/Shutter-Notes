@@ -1,11 +1,11 @@
 /*
- *  Copyright (c) 2019 mohb apps - All Rights Reserved
+ *  Copyright (c) 2020 mohb apps - All Rights Reserved
  *
  *  Project       : ShutterNotes
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FullscreenNoteActivity.java
- *  Last modified : 9/2/19 7:32 PM
+ *  Last modified : 10/8/20 6:00 PM
  *
  *  -----------------------------------------------------------
  */
@@ -16,20 +16,21 @@ import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+import androidx.preference.PreferenceManager;
+
 import com.apps.mohb.shutternotes.fragments.dialogs.FullscreenTipAlertFragment;
+import com.apps.mohb.shutternotes.lists.Notebook;
 import com.apps.mohb.shutternotes.notes.FlickrNote;
 import com.apps.mohb.shutternotes.notes.GearNote;
-import com.apps.mohb.shutternotes.notes.Notebook;
 import com.apps.mohb.shutternotes.notes.SimpleNote;
 
 import java.io.IOException;
@@ -106,7 +107,7 @@ public class FullscreenNoteActivity extends AppCompatActivity
     };
 
     private boolean mVisible;
-    private final Runnable mHideRunnable = () -> hide();
+    private final Runnable mHideRunnable = this::hide;
 
     /**
      * Touch listener to use for in-layout UI controls to delay hiding the
@@ -114,6 +115,7 @@ public class FullscreenNoteActivity extends AppCompatActivity
      * while interacting with activity UI.
      */
     private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
+        @SuppressLint("ClickableViewAccessibility")
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             if (AUTO_HIDE) {
@@ -131,15 +133,7 @@ public class FullscreenNoteActivity extends AppCompatActivity
 
         setContentView(R.layout.activity_fullscreen_note);
 
-        if (notebook == null) {
-            notebook = new Notebook();
-        }
-
-        try {
-            notebook.loadState(getApplicationContext());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        notebook = Notebook.getInstance(getApplicationContext());
 
         mVisible = true;
 
@@ -192,7 +186,6 @@ public class FullscreenNoteActivity extends AppCompatActivity
             FullscreenTipAlertFragment dialogInstructions = new FullscreenTipAlertFragment();
             dialogInstructions.show(getSupportFragmentManager(), "FullscreenTipAlertFragment");
         }
-
 
     }
 
@@ -307,7 +300,7 @@ public class FullscreenNoteActivity extends AppCompatActivity
         super.onDestroy();
 
         try {
-            notebook.saveState(getApplicationContext());
+            notebook.saveState();
         } catch (IOException e) {
             e.printStackTrace();
         }

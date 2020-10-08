@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : Constants.java
- *  Last modified : 4/6/20 7:43 PM
+ *  Last modified : 10/8/20 1:29 PM
  *
  *  -----------------------------------------------------------
  */
@@ -88,10 +88,6 @@ public class Constants {
     // Feedback and question
     public static final int QUESTION_ARRAY_SIZE = 1;
 
-    // Toasts
-    public static final int TOAST_X_OFFSET = 0;
-    public static final int TOAST_Y_OFFSET = 100;
-
     // States
     public static final int STATE_COLOR_GREEN = 1;
     public static final int STATE_COLOR_RED = 2;
@@ -128,6 +124,7 @@ public class Constants {
     public static final String COMMA = ", ";
     public static final String COLON = ": ";
     public static final String DASH = "-";
+    public static final String SLASH = "/";
     public static final String QUOTE = "\"";
     public static final String DOUBLE_QUOTE = "\"\"";
     public static final String BRACKET_LEFT = "[";

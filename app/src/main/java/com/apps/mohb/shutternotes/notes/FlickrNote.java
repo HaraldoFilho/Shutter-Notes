@@ -1,11 +1,11 @@
 /*
- *  Copyright (c) 2019 mohb apps - All Rights Reserved
+ *  Copyright (c) 2020 mohb apps - All Rights Reserved
  *
  *  Project       : ShutterNotes
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrNote.java
- *  Last modified : 11/15/19 1:47 PM
+ *  Last modified : 10/8/20 1:29 PM
  *
  *  -----------------------------------------------------------
  */
@@ -25,131 +25,127 @@ import java.util.Locale;
 
 public class FlickrNote extends Note {
 
-	private String description;
-	private ArrayList<String> tags;
-	private double latitude;
-	private double longitude;
-	private String startTime;
-	private String finishTime;
-	private boolean selected;
+    private String description;
+    private ArrayList<String> tags;
+    private double latitude;
+    private double longitude;
+    private String startTime;
+    private String finishTime;
+    private boolean selected;
 
-	public FlickrNote(String title, String description, ArrayList<String> tags,
-	                  double latitude, double longitude, String startTime, String finishTime) {
-		super.setText(title);
-		this.description = description;
-		this.tags = tags;
-		this.latitude = latitude;
-		this.longitude = longitude;
-		this.startTime = startTime;
-		this.finishTime = finishTime;
-		this.selected = false;
-	}
+    public FlickrNote(String title, String description, ArrayList<String> tags,
+                      double latitude, double longitude, String startTime, String finishTime) {
+        super.setText(title);
+        this.description = description;
+        this.tags = tags;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.startTime = startTime;
+        this.finishTime = finishTime;
+        this.selected = false;
+    }
 
-	public String getTitle() {
-		return super.getText();
-	}
+    public String getTitle() {
+        return super.getText();
+    }
 
-	public void setTitle(String title) {
-		super.setText(title);
-	}
+    public void setTitle(String title) {
+        super.setText(title);
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public ArrayList<String> getTags() {
-		return tags;
-	}
+    public ArrayList<String> getTags() {
+        return tags;
+    }
 
-	public void setTags(ArrayList<String> tags) {
-		this.tags = tags;
-	}
+    public void setTags(ArrayList<String> tags) {
+        this.tags = tags;
+    }
 
-	public double getLatitude() {
-		return latitude;
-	}
+    public double getLatitude() {
+        return latitude;
+    }
 
-	public void setLatitude(double latitude) {
-		this.latitude = latitude;
-	}
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
 
-	public double getLongitude() {
-		return longitude;
-	}
+    public double getLongitude() {
+        return longitude;
+    }
 
-	public void setLongitude(double longitude) {
-		this.longitude = longitude;
-	}
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
 
-	public String getStartTime() {
-		return startTime;
-	}
+    public String getStartTime() {
+        return startTime;
+    }
 
-	public void setStartTime(String startTime) {
-		this.startTime = startTime;
-	}
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
 
-	public String getFinishTime() {
-		return finishTime;
-	}
+    public String getFinishTime() {
+        return finishTime;
+    }
 
-	public void setFinishTime(String finishTime) {
-		this.finishTime = finishTime;
-	}
+    public void setFinishTime(String finishTime) {
+        this.finishTime = finishTime;
+    }
 
-	public boolean isSelected() {
-		return selected;
-	}
+    public boolean isSelected() {
+        return selected;
+    }
 
-	public void setSelected(boolean selected) {
-		this.selected = selected;
-	}
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
 
 
-	public boolean isInTimeInterval(String time) {
+    public boolean isInTimeInterval(String time) {
 
-		SimpleDateFormat date = new SimpleDateFormat(Constants.DATE_FORMAT, Locale.getDefault());
+        SimpleDateFormat date = new SimpleDateFormat(Constants.DATE_FORMAT, Locale.getDefault());
 
-		Date startTime = date.parse(this.getStartTime(), new ParsePosition(Constants.INITIAL_POSITION));
-		Date finishTime = date.parse(this.getFinishTime(), new ParsePosition(Constants.INITIAL_POSITION));
-		Date photoTime = date.parse(time, new ParsePosition(Constants.INITIAL_POSITION));
+        Date startTime = date.parse(this.getStartTime(), new ParsePosition(Constants.INITIAL_POSITION));
+        Date finishTime = date.parse(this.getFinishTime(), new ParsePosition(Constants.INITIAL_POSITION));
+        Date photoTime = date.parse(time, new ParsePosition(Constants.INITIAL_POSITION));
 
-		try {
-			if (photoTime.after(startTime) && photoTime.before(finishTime)) {
-				return true;
-			} else {
-				return false;
-			}
-		} catch (Exception e) {
-			return false;
-		}
+        if (photoTime != null) {
+            return photoTime.after(startTime) && photoTime.before(finishTime);
+        } else {
+            return false;
+        }
 
-	}
+    }
 
-	public String[] getTagsArray() {
+    public String[] getTagsArray() {
 
-		String[] tagsArray = new String[tags.size()];
-		Iterator<String> iterator = tags.iterator();
-		int i = 0;
+        String[] tagsArray = new String[tags.size()];
+        Iterator<String> iterator = tags.iterator();
+        int i = 0;
 
-		while (iterator.hasNext()) {
-			tagsArray[i] = iterator.next();
-			i++;
-		}
+        while (iterator.hasNext()) {
+            tagsArray[i] = iterator.next();
+            i++;
+        }
 
-		return tagsArray;
+        return tagsArray;
 
-	}
+    }
 
-	public GeoData getGeoData() {
-		GeoData geoData = new GeoData();
-		geoData.setLatitude((float) latitude);
-		geoData.setLongitude((float) longitude);
-		return geoData;
-	}
+    public GeoData getGeoData() {
+        GeoData geoData = new GeoData();
+        geoData.setLatitude((float) latitude);
+        geoData.setLongitude((float) longitude);
+        return geoData;
+    }
 
 }

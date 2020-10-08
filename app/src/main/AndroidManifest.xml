@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.apps.mohb.shutternotes"
-    android:versionCode="@string/version_code"
-    android:versionName="@string/version_number">
-
+    package="com.apps.mohb.shutternotes">
     <!--
      The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
      Google Maps Android API v2, but you must specify either coarse or fine
      location permissions for the 'MyLocation' functionality.
     -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- Needed to Android 5.0 (API level 21) or higher. -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- Needed to Android 5.0 (API level 21) or higher. -->
     <uses-feature android:name="android.hardware.location.network" />
     <!--
          The Maps API requires the additional following permissions to be set
@@ -28,7 +24,7 @@
         android:label="@string/info_app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="AllowBackup,GoogleAppIndexingWarning">
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -87,7 +83,7 @@
         <activity
             android:name=".FlickrUploadToPhotosActivity"
             android:label="@string/activity_title_flickr_upload"
-            android:parentActivityName=".FlickrPhotosetsListActivity"
+            android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".FlickrPhotoActivity" />
         <activity
@@ -125,6 +121,9 @@
             android:label="@string/action_feedback"
             android:parentActivityName=".AboutActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".BackgroundTaskActivity" />
+
     </application>
 
 </manifest>

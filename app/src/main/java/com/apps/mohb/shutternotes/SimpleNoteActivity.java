@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : SimpleNoteActivity.java
- *  Last modified : 4/5/20 12:46 PM
+ *  Last modified : 10/8/20 1:29 PM
  *
  *  -----------------------------------------------------------
  */
@@ -14,18 +14,19 @@ package com.apps.mohb.shutternotes;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
-import com.apps.mohb.shutternotes.views.Toasts;
+import androidx.appcompat.app.AppCompatActivity;
 
 
 public class SimpleNoteActivity extends AppCompatActivity {
 
     private EditText editText;
+    private Toast mustType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +45,8 @@ public class SimpleNoteActivity extends AppCompatActivity {
         buttonOK.setOnClickListener(view -> {
             String textString = editText.getText().toString().trim();
             if (textString.equals(Constants.EMPTY)) {
-                Toasts.showMustType(getApplicationContext());
+                mustType = Toast.makeText((this), R.string.toast_must_type, Toast.LENGTH_SHORT);
+                mustType.show();
             } else {
                 Intent intent = new Intent(getApplicationContext(), FullscreenNoteActivity.class);
                 Bundle bundle = new Bundle();
@@ -72,16 +74,11 @@ public class SimpleNoteActivity extends AppCompatActivity {
 
         int id = item.getItemId();
 
-        switch (id) {
-
-            // Help
-            case R.id.action_help: {
-                Intent intent = new Intent(this, HelpActivity.class);
-                intent.putExtra(Constants.KEY_URL, getString(R.string.url_help_simple_note));
-                startActivity(intent);
-                break;
-            }
-
+        // Help
+        if (id == R.id.action_help) {
+            Intent intent = new Intent(this, HelpActivity.class);
+            intent.putExtra(Constants.KEY_URL, getString(R.string.url_help_simple_note));
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
@@ -90,7 +87,11 @@ public class SimpleNoteActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Toasts.cancelMustType();
+        try {
+            mustType.cancel();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

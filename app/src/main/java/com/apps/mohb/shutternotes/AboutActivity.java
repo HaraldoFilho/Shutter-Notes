@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : AboutActivity.java
- *  Last modified : 9/22/20 2:04 PM
+ *  Last modified : 10/8/20 1:29 PM
  *
  *  -----------------------------------------------------------
  */
@@ -15,11 +15,12 @@ package com.apps.mohb.shutternotes;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
 import com.apps.mohb.shutternotes.fragments.dialogs.MaterialIconsDialogFragment;
 import com.apps.mohb.shutternotes.fragments.dialogs.PrivacyPolicyDialogFragment;
@@ -33,8 +34,9 @@ public class AboutActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
         // displays app version number
-        TextView version = (TextView) findViewById(R.id.textAppVersion);
-        version.setText(getString(R.string.version_name) + " " + getString(R.string.version_number));
+        TextView version = findViewById(R.id.textAppVersion);
+        String versionText = getString(R.string.version_name) + Constants.SPACE + getString(R.string.version_number);
+        version.setText(versionText);
     }
 
 
@@ -51,8 +53,6 @@ public class AboutActivity extends AppCompatActivity {
 
         int id = item.getItemId();
         DialogFragment dialog;
-        Intent intent;
-        Bundle bundle;
 
         switch (id) {
 
@@ -61,8 +61,8 @@ public class AboutActivity extends AppCompatActivity {
                 String[] feedback_address = new String[Constants.QUESTION_ARRAY_SIZE];
                 feedback_address[Constants.LIST_HEAD] = getString(R.string.info_feedback_email);
                 composeEmail(feedback_address, getString(R.string.action_feedback)
-                        + " " + getString(R.string.action_about_application)
-                        + " " + getString(R.string.info_app_name));
+                        + Constants.SPACE + getString(R.string.action_about_application)
+                        + Constants.SPACE + getString(R.string.info_app_name));
                 break;
 
             // Bug report
@@ -70,7 +70,7 @@ public class AboutActivity extends AppCompatActivity {
                 String[] bug_address = new String[Constants.QUESTION_ARRAY_SIZE];
                 bug_address[Constants.LIST_HEAD] = getString(R.string.info_bug_email);
                 composeEmail(bug_address, getString(R.string.action_bug_report)
-                        + " " + getString(R.string.info_app_name));
+                        + Constants.SPACE + getString(R.string.info_app_name));
                 break;
 
             // Terms of use

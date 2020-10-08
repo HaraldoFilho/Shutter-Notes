@@ -5,17 +5,16 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrNotesListActivity.java
- *  Last modified : 4/6/20 7:43 PM
+ *  Last modified : 10/8/20 6:00 PM
  *
  *  -----------------------------------------------------------
  */
 
 package com.apps.mohb.shutternotes;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -23,15 +22,18 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
 import com.apps.mohb.shutternotes.adapters.FlickrNotesListAdapter;
 import com.apps.mohb.shutternotes.fragments.dialogs.ArchiveSelectedNotesAlertFragment;
 import com.apps.mohb.shutternotes.fragments.dialogs.NoteDeleteAlertFragment;
-import com.apps.mohb.shutternotes.notes.Archive;
+import com.apps.mohb.shutternotes.lists.Archive;
+import com.apps.mohb.shutternotes.lists.Notebook;
 import com.apps.mohb.shutternotes.notes.FlickrNote;
-import com.apps.mohb.shutternotes.notes.Notebook;
 import com.apps.mohb.shutternotes.views.GridViewWithHeaderAndFooter;
-import com.apps.mohb.shutternotes.views.Toasts;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,7 +53,11 @@ public class FlickrNotesListActivity extends AppCompatActivity implements
 
     private int listItemHeight;
 
+    private Toast mustSelect;
+    private Toast allNotesArchived;
 
+
+    @SuppressLint("ShowToast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,13 +76,8 @@ public class FlickrNotesListActivity extends AppCompatActivity implements
         listHeader.setClickable(false);
         listFooter.setClickable(false);
 
-        if (notebook == null) {
-            notebook = new Notebook();
-        }
-
-        if (archive == null) {
-            archive = new Archive();
-        }
+        notebook = Notebook.getInstance(getApplicationContext());
+        archive = Archive.getInstance(getApplicationContext());
 
         notesListGridView.setOnItemClickListener((adapterView, view, i, l) -> {
             if (notebook.getFlickrNotes().size() > 0) { // Fix java.lang.IndexOutOfBoundsException: Invalid index 0, size is 0
@@ -86,11 +87,18 @@ public class FlickrNotesListActivity extends AppCompatActivity implements
                     notebook.getFlickrNotes().get(i).setSelected(false);
                 }
                 notesListGridView.invalidateViews();
+                try {
+                    notebook.saveState();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
-        DisplayMetrics metrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        mustSelect = Toast.makeText((this), R.string.toast_must_select, Toast.LENGTH_SHORT);
+
+        // Define form factor of notes items accorging to screen height in pixels
+        DisplayMetrics metrics = this.getResources().getDisplayMetrics();
         listItemHeight = (int) (metrics.heightPixels / Constants.LIST_ITEM_HEIGHT_FACTOR);
 
     }
@@ -98,23 +106,23 @@ public class FlickrNotesListActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        try {
-            notebook.loadState(this);
-            unselectAllNotes();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            archive.loadState(this);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        unselectAllNotes();
         ArrayList<FlickrNote> flickrNotesList = notebook.getFlickrNotes();
-        FlickrNotesListAdapter notesAdapter = new FlickrNotesListAdapter(getApplicationContext(), flickrNotesList, listItemHeight);
+        notesListGridView.invalidateViews();
+        FlickrNotesListAdapter notesAdapter = null;
+        notesAdapter = new FlickrNotesListAdapter(this, flickrNotesList, listItemHeight);
         notesListGridView.setAdapter(notesAdapter);
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            archive.saveState();
+            notebook.saveState();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // CONTEXT MENU
@@ -189,13 +197,8 @@ public class FlickrNotesListActivity extends AppCompatActivity implements
             // Upload to Flickr
             case R.id.action_upload_to_flickr: {
                 if (noNoteSelected) {
-                    Toasts.showMustSelect(getApplicationContext());
+                    mustSelect.show();
                 } else {
-                    try {
-                        notebook.saveState(this);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
                     Intent intent = new Intent(this, FlickrPhotosetsListActivity.class);
                     startActivity(intent);
                 }
@@ -205,7 +208,7 @@ public class FlickrNotesListActivity extends AppCompatActivity implements
             // Archive all notes
             case R.id.action_archive_all: {
                 if (noNoteSelected) {
-                    Toasts.showMustSelect(getApplicationContext());
+                    mustSelect.show();
                 } else {
                     ArchiveSelectedNotesAlertFragment dialogArchive = new ArchiveSelectedNotesAlertFragment();
                     dialogArchive.show(getSupportFragmentManager(), "ArchiveSelectedNotesAlertFragment");
@@ -240,27 +243,15 @@ public class FlickrNotesListActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        try {
-            notebook.saveState(this);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            archive.saveState(this);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Toasts.cancelMustSelect();
-        Toasts.cancelAllNotesArchived();
+        try {
+            mustSelect.cancel();
+            allNotesArchived.cancel();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -284,7 +275,8 @@ public class FlickrNotesListActivity extends AppCompatActivity implements
             }
         }
         notesListGridView.invalidateViews();
-        Toasts.showAllNotesArchived(getApplicationContext(), R.string.toast_selected_notes_archived);
+        allNotesArchived = Toast.makeText((this), R.string.toast_all_notes_archived, Toast.LENGTH_SHORT);
+        allNotesArchived.show();
         if (notebook.getFlickrNotes().isEmpty()) {
             menuItemUploadToFlickr.setEnabled(false);
             menuItemArchiveAll.setEnabled(false);
@@ -307,13 +299,22 @@ public class FlickrNotesListActivity extends AppCompatActivity implements
         for (int i = 0; i < notebook.getFlickrNotes().size(); i++) {
             notebook.getFlickrNotes().get(i).setSelected(true);
         }
+        try {
+            notebook.saveState();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void unselectAllNotes() {
         for (int i = 0; i < notebook.getFlickrNotes().size(); i++) {
             notebook.getFlickrNotes().get(i).setSelected(false);
         }
-
+        try {
+            notebook.saveState();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

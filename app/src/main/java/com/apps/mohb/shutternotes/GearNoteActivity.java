@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : GearNoteActivity.java
- *  Last modified : 4/6/20 7:18 PM
+ *  Last modified : 10/8/20 1:29 PM
  *
  *  -----------------------------------------------------------
  */
@@ -15,8 +15,6 @@ package com.apps.mohb.shutternotes;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AppCompatActivity;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,13 +23,16 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
 import com.apps.mohb.shutternotes.adapters.GearNoteAdapter;
 import com.apps.mohb.shutternotes.fragments.dialogs.DeleteAllAlertFragment;
 import com.apps.mohb.shutternotes.fragments.dialogs.EditGearListDialogFragment;
 import com.apps.mohb.shutternotes.fragments.dialogs.GearDeleteAlertFragment;
-import com.apps.mohb.shutternotes.notes.GearList;
-import com.apps.mohb.shutternotes.views.Toasts;
+import com.apps.mohb.shutternotes.lists.GearList;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -48,8 +49,11 @@ public class GearNoteActivity extends AppCompatActivity
 
     private AdapterView.AdapterContextMenuInfo menuInfo;
 
-
     private int callerActivity;
+
+    private Toast mustPickup;
+    private Toast reorderedItems;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,13 +67,14 @@ public class GearNoteActivity extends AppCompatActivity
         Button buttonReset = findViewById(R.id.buttonGearNoteReset);
         Button buttonOK = findViewById(R.id.buttonGearNoteOk);
 
-        gearList = new GearList();
         gearListView = findViewById(R.id.gearList);
 
         gearListView.addHeaderView(listHeader);
         gearListView.addFooterView(listFooter);
         listHeader.setClickable(false);
         listFooter.setClickable(false);
+
+        gearList = GearList.getInstance();
 
         gearListView.setOnItemClickListener((adapterView, view, i, l) -> {
             if (!gearList.get(getCorrectPosition(i)).isSelected()) {
@@ -90,12 +95,12 @@ public class GearNoteActivity extends AppCompatActivity
         try {
             switch (callerActivity) {
                 case Constants.ACTIVITY_GEAR_NOTE:
-                    gearList.loadState(getApplicationContext(), Constants.GEAR_LIST_SAVED_STATE);
+                    Objects.requireNonNull(gearList).loadState(getApplicationContext(), Constants.GEAR_LIST_SAVED_STATE);
                     break;
                 case Constants.ACTIVITY_FLICKR_NOTE:
                     Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.activity_title_add_tags);
                     buttonOK.setText(R.string.button_ok);
-                    gearList.loadState(getApplicationContext(), Constants.GEAR_LIST_SELECTED_STATE);
+                    Objects.requireNonNull(gearList).loadState(getApplicationContext(), Constants.GEAR_LIST_SELECTED_STATE);
                     if (gearList.getList().isEmpty()) {
                         gearList.loadState(getApplicationContext(), Constants.GEAR_LIST_SAVED_STATE);
                     }
@@ -113,7 +118,8 @@ public class GearNoteActivity extends AppCompatActivity
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            gearNoteAdapter = new GearNoteAdapter(getApplicationContext(), gearList.getList());
+            gearNoteAdapter = null;
+            gearNoteAdapter = new GearNoteAdapter(this, gearList.getList());
             gearListView.setAdapter(gearNoteAdapter);
         });
 
@@ -123,9 +129,10 @@ public class GearNoteActivity extends AppCompatActivity
                 case Constants.ACTIVITY_GEAR_NOTE:
                     String textString = gearList.getGearListText();
                     if (textString.equals(Constants.EMPTY)) {
-                        Toasts.showMustPickup(getApplicationContext());
+                        mustPickup = Toast.makeText((this), R.string.toast_must_pickup, Toast.LENGTH_SHORT);
+                        mustPickup.show();
                     } else {
-                        Intent intent = new Intent(getBaseContext(), FullscreenNoteActivity.class);
+                        Intent intent = new Intent(this, FullscreenNoteActivity.class);
                         Bundle bundle = new Bundle();
                         bundle.putString(Constants.KEY_FULL_SCREEN_TEXT, textString.trim());
                         bundle.putInt(Constants.KEY_CALLER_ACTIVITY, Constants.ACTIVITY_GEAR_NOTE);
@@ -146,7 +153,7 @@ public class GearNoteActivity extends AppCompatActivity
             }
         });
 
-        gearNoteAdapter = new GearNoteAdapter(getApplicationContext(), gearList.getList());
+        gearNoteAdapter = new GearNoteAdapter(this, gearList.getList());
 
         // create notes list
         gearListView.setAdapter(gearNoteAdapter);
@@ -211,7 +218,7 @@ public class GearNoteActivity extends AppCompatActivity
 
             // Add gear
             case R.id.action_add_gear: {
-                gearList.setEditedGearItemText(getApplicationContext(), "");
+                gearList.setEditedGearItemText(getApplicationContext(), Constants.EMPTY);
                 gearList.setEditedGearItemPosition(getApplicationContext(), Constants.NULL_POSITION);
                 DialogFragment addGearDialog = new EditGearListDialogFragment();
                 addGearDialog.show(getSupportFragmentManager(), "AddGearDialogFragment");
@@ -241,7 +248,8 @@ public class GearNoteActivity extends AppCompatActivity
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                Toasts.showReorderedItems(getApplicationContext());
+                reorderedItems = Toast.makeText((this), R.string.toast_reordered, Toast.LENGTH_SHORT);
+                reorderedItems.show();
                 break;
             }
 
@@ -261,14 +269,17 @@ public class GearNoteActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Toasts.cancelMustPickup();
-        Toasts.cancelReorderedItems();
+        try {
+            mustPickup.cancel();
+            reorderedItems.cancel();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void onEditGearListDialogPositiveClick(DialogFragment dialog) {
-        SharedPreferences gearTextEdit = getApplicationContext()
-                .getSharedPreferences(Constants.EDIT_GEAR_TEXT, Constants.PRIVATE_MODE);
+        SharedPreferences gearTextEdit = this.getSharedPreferences(Constants.EDIT_GEAR_TEXT, Constants.PRIVATE_MODE);
         int itemPosition = gearTextEdit.getInt(Constants.GEAR_ITEM_POSITION, Constants.NULL_POSITION);
         if (itemPosition < 0) {
             try {
@@ -280,7 +291,8 @@ public class GearNoteActivity extends AppCompatActivity
             String editedText = gearTextEdit.getString(Constants.GEAR_EDITED_TEXT, Constants.EMPTY);
             gearList.setGearItem(itemPosition, editedText);
         }
-        gearNoteAdapter = new GearNoteAdapter(getApplicationContext(), gearList.getList());
+        gearNoteAdapter = null;
+        gearNoteAdapter = new GearNoteAdapter(this, gearList.getList());
         gearListView.setAdapter(gearNoteAdapter);
         try {
             gearList.saveState(getApplicationContext(), Constants.GEAR_LIST_SAVED_STATE);

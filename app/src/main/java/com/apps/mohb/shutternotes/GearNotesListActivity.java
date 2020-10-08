@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : GearNotesListActivity.java
- *  Last modified : 4/6/20 7:43 PM
+ *  Last modified : 10/8/20 6:00 PM
  *
  *  -----------------------------------------------------------
  */
@@ -14,8 +14,6 @@ package com.apps.mohb.shutternotes;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -23,16 +21,19 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
 import com.apps.mohb.shutternotes.adapters.GearNotesListAdapter;
 import com.apps.mohb.shutternotes.fragments.dialogs.ArchiveAllNotesAlertFragment;
 import com.apps.mohb.shutternotes.fragments.dialogs.DeleteAllNotesAlertFragment;
 import com.apps.mohb.shutternotes.fragments.dialogs.NoteDeleteAlertFragment;
-import com.apps.mohb.shutternotes.notes.Archive;
+import com.apps.mohb.shutternotes.lists.Archive;
+import com.apps.mohb.shutternotes.lists.Notebook;
 import com.apps.mohb.shutternotes.notes.GearNote;
-import com.apps.mohb.shutternotes.notes.Notebook;
 import com.apps.mohb.shutternotes.views.GridViewWithHeaderAndFooter;
-import com.apps.mohb.shutternotes.views.Toasts;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,12 +46,14 @@ public class GearNotesListActivity extends AppCompatActivity implements
 
     private Notebook notebook;
     private Archive archive;
+
     private GridViewWithHeaderAndFooter notesListGridView;
 
     private AdapterView.AdapterContextMenuInfo menuInfo;
     private MenuItem menuItemArchiveAll;
 
-    private int listItemHeight;
+    private Toast allNotesArchived;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,13 +73,8 @@ public class GearNotesListActivity extends AppCompatActivity implements
         listHeader.setClickable(false);
         listFooter.setClickable(false);
 
-        if (notebook == null) {
-            notebook = new Notebook();
-        }
-
-        if (archive == null) {
-            archive = new Archive();
-        }
+        notebook = Notebook.getInstance(getApplicationContext());
+        archive = Archive.getInstance(getApplicationContext());
 
         notesListGridView.setOnItemClickListener((adapterView, view, i, l) -> {
             if (notebook.getGearNotes().size() > 0) { // Fix java.lang.IndexOutOfBoundsException: Invalid index 0, size is 0
@@ -90,33 +88,27 @@ public class GearNotesListActivity extends AppCompatActivity implements
             }
         });
 
-        DisplayMetrics metrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        listItemHeight = (int) (metrics.heightPixels / Constants.LIST_ITEM_HEIGHT_FACTOR);
+        // Define form factor of notes items accorging to screen height in pixels
+        DisplayMetrics metrics = this.getResources().getDisplayMetrics();
+        int listItemHeight = (int) (metrics.heightPixels / Constants.LIST_ITEM_HEIGHT_FACTOR);
+
+        ArrayList<GearNote> gearNotesList = notebook.getGearNotes();
+        GearNotesListAdapter notesAdapter = new GearNotesListAdapter(this, gearNotesList, listItemHeight);
+        notesListGridView.setAdapter(notesAdapter);
 
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
+    protected void onDestroy() {
+        super.onDestroy();
         try {
-            notebook.loadState(this);
+            archive.saveState();
+            notebook.saveState();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        try {
-            archive.loadState(this);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        ArrayList<GearNote> gearNotesList = notebook.getGearNotes();
-        GearNotesListAdapter notesAdapter = new GearNotesListAdapter(getApplicationContext(), gearNotesList, listItemHeight);
-        notesListGridView.setAdapter(notesAdapter);
-
     }
+
 
     // CONTEXT MENU
 
@@ -194,26 +186,14 @@ public class GearNotesListActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        try {
-            notebook.saveState(this);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            archive.saveState(this);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Toasts.cancelAllNotesArchived();
+        try {
+            allNotesArchived.cancel();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -248,7 +228,8 @@ public class GearNotesListActivity extends AppCompatActivity implements
         }
         notesListGridView.invalidateViews();
         menuItemArchiveAll.setEnabled(false);
-        Toasts.showAllNotesArchived(getApplicationContext());
+        allNotesArchived = Toast.makeText(this, R.string.toast_all_notes_archived, Toast.LENGTH_SHORT);
+        allNotesArchived.show();
     }
 
     @Override
