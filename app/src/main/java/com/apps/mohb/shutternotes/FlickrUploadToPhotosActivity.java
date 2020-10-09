@@ -68,6 +68,7 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity {
     private ProgressBar progressBar;
     private TextView progressRatio;
 
+    private Toast unableToCommunicate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,18 +129,30 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity {
 
             if (auth == null) {
                 Intent intent = new Intent(getApplicationContext(), FlickrAccountActivity.class);
+                intent.putExtra(Constants.KEY_CALLER_ACTIVITY, Constants.ACTIVITY_FLICKR_UPLOAD);
                 startActivity(intent);
             } else {
                 new UploadData().start();
             }
 
-
         } catch (Exception e) {
-            Toast.makeText(this, R.string.toast_unable_to_communicate, Toast.LENGTH_SHORT).show();
+            unableToCommunicate = Toast.makeText(this, R.string.toast_unable_to_communicate, Toast.LENGTH_SHORT);
+            unableToCommunicate.show();
             onBackPressed();
         }
 
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        try {
+            unableToCommunicate.cancel();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private class UploadData extends BackgroundTask {
 

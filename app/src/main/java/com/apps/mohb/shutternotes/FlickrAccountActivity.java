@@ -44,7 +44,6 @@ public class FlickrAccountActivity extends AppCompatActivity {
     private int callerActivity;
 
     private Toast accountConnected;
-    private Toast unableToCommunicate;
     private Toast typeCode;
     private Toast wrongCode;
 
@@ -78,7 +77,12 @@ public class FlickrAccountActivity extends AppCompatActivity {
                     flickrApi.setTokenKey(tokenKey);
                     setButtonConnecting();
                     if (flickrApi.getAccessToken()) {
-                        authenticate(flickrApi.checkToken());
+                        try {
+                            authenticate(flickrApi.checkToken());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            flickrApi.clearTokens();
+                        }
                     } else {
                         wrongCode = Toast.makeText(this, R.string.toast_wrong_code, Toast.LENGTH_SHORT);
                         wrongCode.show();
@@ -96,12 +100,17 @@ public class FlickrAccountActivity extends AppCompatActivity {
             if (!flickrApi.getToken().isEmpty() && !flickrApi.getTokenSecret().isEmpty()) {
                 authenticate(flickrApi.checkToken());
             } else {
-                flickrWebView.loadUrl(flickrApi.getAuthorizationUrl());
-                setButtonConnect();
+                String authorizationUrl = flickrApi.getAuthorizationUrl();
+                if (!authorizationUrl.isEmpty()) {
+                    flickrWebView.loadUrl(authorizationUrl);
+                    setButtonConnect();
+                } else {
+                    Toast.makeText(this, R.string.toast_unable_to_communicate, Toast.LENGTH_SHORT).show();
+                    onBackPressed();
+                }
             }
         } catch (Exception e) {
-            unableToCommunicate = Toast.makeText(this, R.string.toast_unable_to_communicate, Toast.LENGTH_SHORT);
-            unableToCommunicate.show();
+            Toast.makeText(this, R.string.toast_unable_to_communicate, Toast.LENGTH_SHORT).show();
             onBackPressed();
         }
 
@@ -112,7 +121,6 @@ public class FlickrAccountActivity extends AppCompatActivity {
         super.onBackPressed();
         try {
             accountConnected.cancel();
-            unableToCommunicate.cancel();
             typeCode.cancel();
             wrongCode.cancel();
         } catch (Exception e) {
@@ -120,7 +128,7 @@ public class FlickrAccountActivity extends AppCompatActivity {
         }
     }
 
-    private void authenticate(Auth auth) {
+    private void authenticate(Auth auth) throws Exception {
         if (auth == null) {
             if (connectButton.getText()
                     .equals(this.getResources().getString(R.string.button_connecting))) {
@@ -137,7 +145,7 @@ public class FlickrAccountActivity extends AppCompatActivity {
             accountConnected = Toast.makeText(this, R.string.toast_account_connected, Toast.LENGTH_SHORT);
             accountConnected.show();
 
-            if (callerActivity == Constants.ACTIVITY_FLICKR_PHOTOSETS) {
+            if (callerActivity != Constants.ACTIVITY_MAIN) {
                 onBackPressed();
             } else {
                 setContentView(R.layout.activity_flickr_account_connected);
@@ -161,7 +169,7 @@ public class FlickrAccountActivity extends AppCompatActivity {
     }
 
     // Insert token key in text field and execute get access token
-    private void insertTokenKey(String key) {
+    private void insertTokenKey(String key) throws Exception {
         codeTextView.setText(key);
         flickrApi.setTokenKey(key);
         setButtonConnecting();
@@ -207,7 +215,11 @@ public class FlickrAccountActivity extends AppCompatActivity {
             Handler handlerForJavascriptInterface = new Handler(Looper.getMainLooper());
             handlerForJavascriptInterface.post(() -> {
                 if (code.length() == Constants.TOKEN_KEY_SIZE_MAX && code.contains(Constants.DASH)) {
-                    insertTokenKey(code);
+                    try {
+                        insertTokenKey(code);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             });
         }

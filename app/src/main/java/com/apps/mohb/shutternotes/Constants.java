@@ -106,9 +106,11 @@ public class Constants {
     public static final int ACTIVITY_FLICKR_NOTE = 4;
     public static final int ACTIVITY_FLICKR_NOTES = 5;
     public static final int ACTIVITY_FLICKR_PHOTOSETS = 6;
+    public static final int ACTIVITY_FLICKR_UPLOAD = 7;
 
     // Flickr
     public static final String FLICKR_ACCOUNT = "FlickrAccount";
+    public static final int AUTH_TIMEOUT = 3;
     public static final String TOKEN = "Token";
     public static final String TOKEN_SECRET = "TokenSecret";
     public static final int TOKEN_KEY_SIZE_MIN = 9;

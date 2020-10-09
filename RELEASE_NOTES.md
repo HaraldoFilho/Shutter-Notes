@@ -1,3 +1,6 @@
+#### **0.2.13**
+- Fixed crashes and ANRs
+
 #### **0.2.12**
 - Migrated to Android X
 - Deleted Toasts class

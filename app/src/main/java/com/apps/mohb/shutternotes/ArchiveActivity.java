@@ -256,7 +256,11 @@ public class ArchiveActivity extends AppCompatActivity implements
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        allNotesRestored.cancel();
+        try {
+            allNotesRestored.cancel();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     // CLASS METHODS
