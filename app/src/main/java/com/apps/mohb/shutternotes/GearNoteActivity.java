@@ -77,7 +77,17 @@ public class GearNoteActivity extends AppCompatActivity
         gearList = GearList.getInstance();
 
         gearListView.setOnItemClickListener((adapterView, view, i, l) -> {
-            if (!gearList.get(getCorrectPosition(i)).isSelected()) {
+
+            boolean itemIsSelected;
+
+            try {
+                itemIsSelected = gearList.get(getCorrectPosition(i)).isSelected();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
+
+            if (!itemIsSelected) {
                 gearList.get(getCorrectPosition(i)).setSelected(true);
                 gearList.moveToBottomOfLastSelected(getCorrectPosition(i));
             } else {

@@ -83,7 +83,7 @@
 
     </RelativeLayout>
 
-    <androidx.fragment.app.FragmentContainerView
+    <fragment
         android:id="@+id/mapFragmentFlickrNote"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
@@ -91,7 +91,8 @@
         android:layout_above="@id/buttonsFlickrNote"
         android:layout_centerHorizontal="true"
         android:clickable="false"
-        tools:context=".FlickrNoteActivity" />
+        tools:context=".FlickrNoteActivity"
+        tools:ignore="FragmentTagUsage" />
 
     <LinearLayout
         android:id="@+id/buttonsFlickrNote"

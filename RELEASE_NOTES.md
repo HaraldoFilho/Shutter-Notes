@@ -1,3 +1,7 @@
+#### **0.2.14**
+- Fixed crashes
+- Replaced deprecated code on fullscreen activity
+
 #### **0.2.13**
 - Fixed crashes and ANRs
 

@@ -18,8 +18,8 @@ android {
         applicationId "com.apps.mohb.shutternotes"
         minSdkVersion 24
         targetSdkVersion 30
-        versionCode 48
-        versionName "0.2.13"
+        versionCode 49
+        versionName "0.2.14"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         vectorDrawables.useSupportLibrary = true
     }
@@ -56,6 +56,8 @@ dependencies {
     implementation 'com.github.scribejava:scribejava-core:6.2.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'org.slf4j:slf4j-log4j12:1.7.27'
+    implementation 'org.apache.logging.log4j:log4j-api:2.5'
+    annotationProcessor 'org.apache.logging.log4j:log4j-core:2.5'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'

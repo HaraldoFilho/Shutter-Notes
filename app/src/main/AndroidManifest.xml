@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.apps.mohb.shutternotes">
+
     <!--
      The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
      Google Maps Android API v2, but you must specify either coarse or fine
@@ -25,6 +26,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
+        <activity
+            android:name=".NewFullscreenActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_new_fullscreen"
+            android:theme="@style/FullscreenTheme"></activity>
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -121,9 +127,7 @@
             android:label="@string/action_feedback"
             android:parentActivityName=".AboutActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".BackgroundTaskActivity" />
-
+        <activity android:name=".BackgroundTaskActivity" />
     </application>
 
 </manifest>
