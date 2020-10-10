@@ -1,3 +1,6 @@
+#### **0.2.16**
+- Downgraded targetSdk to 29 trying to solve crash on FlickrAccountActivity
+
 #### **0.2.15**
 - Fixed crashes.
 - Adjusted UI colors to increase contrast.
