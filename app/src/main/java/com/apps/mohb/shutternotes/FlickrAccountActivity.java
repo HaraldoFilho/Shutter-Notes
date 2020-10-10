@@ -100,18 +100,11 @@ public class FlickrAccountActivity extends AppCompatActivity {
             if (!flickrApi.getToken().isEmpty() && !flickrApi.getTokenSecret().isEmpty()) {
                 authenticate(flickrApi.checkToken());
             } else {
-                String authorizationUrl = flickrApi.getAuthorizationUrl();
-                if (!authorizationUrl.isEmpty()) {
-                    flickrWebView.loadUrl(authorizationUrl);
-                    setButtonConnect();
-                } else {
-                    Toast.makeText(this, R.string.toast_unable_to_communicate, Toast.LENGTH_SHORT).show();
-                    onBackPressed();
-                }
+                openAuthorizationUrl();
             }
+
         } catch (Exception e) {
-            Toast.makeText(this, R.string.toast_unable_to_communicate, Toast.LENGTH_SHORT).show();
-            onBackPressed();
+            showUnableToCommunicate();
         }
 
     }
@@ -128,7 +121,7 @@ public class FlickrAccountActivity extends AppCompatActivity {
         }
     }
 
-    private void authenticate(Auth auth) throws Exception {
+    private void authenticate(Auth auth) {
         if (auth == null) {
             if (connectButton.getText()
                     .equals(this.getResources().getString(R.string.button_connecting))) {
@@ -137,8 +130,7 @@ public class FlickrAccountActivity extends AppCompatActivity {
                 setButtonConnect();
             }
             flickrApi.clearTokens();
-            flickrWebView.loadUrl(flickrApi.getAuthorizationUrl());
-            setButtonConnect();
+            openAuthorizationUrl();
         } else {
             String userId = auth.getUser().getId();
             Log.i(Constants.LOG_INFO_TAG, "User id: " + userId);
@@ -154,6 +146,21 @@ public class FlickrAccountActivity extends AppCompatActivity {
                 flickrWebView.loadUrl(Constants.FLICKR_URL + userId);
             }
         }
+    }
+
+    private void openAuthorizationUrl() {
+        String authorizationUrl = flickrApi.getAuthorizationUrl();
+        if (!authorizationUrl.isEmpty()) {
+            flickrWebView.loadUrl(authorizationUrl);
+            setButtonConnect();
+        } else {
+            showUnableToCommunicate();
+        }
+    }
+
+    private void showUnableToCommunicate() {
+        Toast.makeText(this, R.string.toast_unable_to_communicate, Toast.LENGTH_SHORT).show();
+        onBackPressed();
     }
 
     private void setButtonConnect() {

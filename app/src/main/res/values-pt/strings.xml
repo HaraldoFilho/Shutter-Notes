@@ -5,7 +5,7 @@
     <string name="navigation_drawer_close">Fechar drawer</string>
     <string name="navigation_drawer_open">Abrir drawer</string>
     <string name="nav_header_title">mohb apps</string>
-    <string name="nav_header_subtitle">mail@mohb.app</string>
+    <string name="nav_header_subtitle">mail@mohb.dev</string>
     <string name="nav_header_desc">ShutterNotes</string>
     <string name="activity_title_about">Sobre</string>
     <string name="activity_title_help">Ajuda</string>
@@ -157,8 +157,8 @@
     <string name="url_help_gear_note">br-shutternotes-help-gearnote</string>
     <string name="url_help_flickr_note">br-shutternotes-help-flicknote</string>
     <string name="action_help">Ajuda</string>
-    <string name="toast_unable_to_communicate">Não foi possível a comunicação com o Flickr</string>
-    <string name="info_website">mohb.app/br</string>
+    <string name="toast_unable_to_communicate">Falha na comunicação com o Flickr</string>
+    <string name="info_website">mohb.dev/br</string>
     <string name="action_bug_report">Falha no aplicativo</string>
     <string name="toast_location_updated">Localização atualizada!</string>
     <string name="toast_location_not_updated">Não foi possível atualizar a localização</string>

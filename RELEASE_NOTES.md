@@ -1,3 +1,7 @@
+#### **0.2.15**
+- Fixed crashes.
+- Adjusted UI colors to increase contrast.
+
 #### **0.2.14**
 - Fixed crashes
 - Replaced deprecated code on fullscreen activity

@@ -4,7 +4,7 @@
     <!--Color pallete-->
     <color name="colorPrimary">#1fc406</color>
     <color name="colorPrimaryDark">#1a7c07</color>
-    <color name="colorAccent">#35dc43</color>
+    <color name="colorAccent">#00E613</color>
     <color name="colorWhite">#ffffff</color>
     <color name="colorBlack">#000000</color>
     <color name="colorRed">#ff0000</color>
@@ -17,7 +17,7 @@
 
     <!--Text colors-->
     <color name="colorBlackText">#000000</color>
-    <color name="colorGreyText">#969696</color>
+    <color name="colorGreyText">#818181</color>
     <color name="colorWhiteText">#ffffff</color>
 
     <!--Background colors-->

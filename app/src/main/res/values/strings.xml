@@ -7,15 +7,15 @@
 
     <!--Application version-->
     <string name="version_name">version: </string>
-    <string name="version_number" translatable="false">0.2.14</string>
-    <string name="version_code" translatable="false">49</string>
+    <string name="version_number" translatable="false">0.2.15</string>
+    <string name="version_code" translatable="false">50</string>
 
     <!--Application information-->
     <string name="info_app_name" translatable="false">Shutter Notes</string>
     <string name="info_name" translatable="false">mohb apps</string>
-    <string name="info_website">mohb.app</string>
-    <string name="info_feedback_email" translatable="false">feedback@mohb.app</string>
-    <string name="info_bug_email" translatable="false">bug@mohb.app</string>
+    <string name="info_website">mohb.dev</string>
+    <string name="info_feedback_email" translatable="false">feedback@mohb.dev</string>
+    <string name="info_bug_email" translatable="false">bug@mohb.dev</string>
     <string name="info_developer">Developer:</string>
     <string name="info_developer_name" translatable="false">Haraldo Albergaria Filho</string>
     <string name="info_copyright_text" translatable="false">Copyright © 2019 mohb apps</string>
@@ -29,7 +29,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">mohb apps</string>
-    <string name="nav_header_subtitle">mail@mohb.app</string>
+    <string name="nav_header_subtitle">mail@mohb.dev</string>
     <string name="nav_header_desc">ShutterNotes</string>
     <string name="nav_menu_simple">Simple Notes</string>
     <string name="nav_menu_gear">Gear Notes</string>
@@ -182,7 +182,7 @@
     <string name="toast_location_not_updated">Unable to update location</string>
 
     <!--Help pages-->
-    <string name="url_website" translatable="false">https://mohb.app/Shutter-Notes/</string>
+    <string name="url_website" translatable="false">https://mohb.dev/Shutter-Notes/</string>
     <string name="url_help">help</string>
     <string name="url_help_simple_note">shutternotes-help-simplenote</string>
     <string name="url_help_gear_note">shutternotes-help-gearnote</string>
@@ -260,6 +260,5 @@
     <string name="pref_archive_notes_summ_on">Archive after upload finished</string>
     <string name="pref_archive_notes_summ_off">Do not archive after upload finished</string>
     <string name="pref_def_archive_notes" translatable="false">false</string>
-    <string name="title_activity_new_fullscreen">FullscreenActivity</string>
 
 </resources>
