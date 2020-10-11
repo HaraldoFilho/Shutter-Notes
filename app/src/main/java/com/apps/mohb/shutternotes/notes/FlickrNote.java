@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrNote.java
- *  Last modified : 10/8/20 1:29 PM
+ *  Last modified : 10/11/20 2:44 PM
  *
  *  -----------------------------------------------------------
  */

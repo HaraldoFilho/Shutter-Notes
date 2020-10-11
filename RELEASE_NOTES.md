@@ -1,3 +1,6 @@
+#### **0.2.17**
+- Removed 'slf4j-log4j12' dependency from gradle to fix crash on communication with Flickr (class not found).
+
 #### **0.2.16**
 - Downgraded targetSdk to 29 trying to solve crash on FlickrAccountActivity
 
