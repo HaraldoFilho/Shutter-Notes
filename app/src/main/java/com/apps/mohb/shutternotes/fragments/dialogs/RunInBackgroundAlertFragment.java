@@ -4,8 +4,8 @@
  *  Project       : ShutterNotes
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
- *  File          : DeleteAllAlertFragment.java
- *  Last modified : 10/11/20 3:13 PM
+ *  File          : RunInBackgroundAlertFragment.java
+ *  Last modified : 10/11/20 3:44 PM
  *
  *  -----------------------------------------------------------
  */
@@ -22,15 +22,15 @@ import androidx.fragment.app.DialogFragment;
 import com.apps.mohb.shutternotes.R;
 
 
-public class DeleteAllAlertFragment extends DialogFragment {
+public class RunInBackgroundAlertFragment extends DialogFragment {
 
-    public interface DeleteAllAlertDialogListener {
-        void onDeleteAllDialogPositiveClick(DialogFragment dialog);
+    public interface RunInBackgroundAlertDialogListener {
+        void onRunInBackgroundDialogPositiveClick(DialogFragment dialog);
 
-        void onDeleteAllDialogNegativeClick(DialogFragment dialog);
+        void onRunInBackgroundDialogNegativeClick(DialogFragment dialog);
     }
 
-    private DeleteAllAlertDialogListener mListener;
+    private RunInBackgroundAlertDialogListener mListener;
 
 
     @NonNull
@@ -38,9 +38,9 @@ public class DeleteAllAlertFragment extends DialogFragment {
     public AlertDialog onCreateDialog(Bundle savedInstanceState) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.alert_title_delete_all_items).setMessage(R.string.alert_message_no_undone)
-                .setPositiveButton(R.string.alert_button_yes, (dialog, id) -> mListener.onDeleteAllDialogPositiveClick(DeleteAllAlertFragment.this))
-                .setNegativeButton(R.string.alert_button_no, (dialog, id) -> mListener.onDeleteAllDialogNegativeClick(DeleteAllAlertFragment.this));
+        builder.setTitle(R.string.alert_title_run_background).setMessage(R.string.alert_message_run_background)
+                .setPositiveButton(R.string.alert_button_yes, (dialog, id) -> mListener.onRunInBackgroundDialogPositiveClick(RunInBackgroundAlertFragment.this))
+                .setNegativeButton(R.string.alert_button_no, (dialog, id) -> mListener.onRunInBackgroundDialogNegativeClick(RunInBackgroundAlertFragment.this));
 
         return builder.create();
 
@@ -51,12 +51,12 @@ public class DeleteAllAlertFragment extends DialogFragment {
         super.onAttach(context);
         // Verify that the host context implements the callback interface
         try {
-            // Instantiate the NotesListClearDialogListener so we can send events to the host
-            mListener = (DeleteAllAlertDialogListener) context;
+            // Instantiate the RunInBackgroundDialogListener so we can send events to the host
+            mListener = (RunInBackgroundAlertDialogListener) context;
         } catch (ClassCastException e) {
             // The activity doesn't implement the interface, throw exception
             throw new ClassCastException(context.toString()
-                    + " must implement DeleteAllDialogListener");
+                    + " must implement RunInBackgroundDialogListener");
         }
     }
 

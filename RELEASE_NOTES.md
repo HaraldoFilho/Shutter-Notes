@@ -1,3 +1,6 @@
+#### **0.3.0**
+- Added a notification when data upload is being done on background.
+
 #### **0.2.17**
 - Removed 'slf4j-log4j12' dependency from gradle to fix crash on communication with Flickr (class not found).
 

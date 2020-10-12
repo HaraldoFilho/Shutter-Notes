@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrPhotosListAdapter.java
- *  Last modified : 10/11/20 2:44 PM
+ *  Last modified : 10/11/20 3:13 PM
  *
  *  -----------------------------------------------------------
  */

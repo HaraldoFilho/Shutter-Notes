@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.apps.mohb.shutternotes">
-
     <!--
      The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
      Google Maps Android API v2, but you must specify either coarse or fine
@@ -43,7 +42,6 @@
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -84,9 +82,12 @@
         <activity
             android:name=".FlickrUploadToPhotosActivity"
             android:label="@string/activity_title_flickr_upload"
-            android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".FlickrPhotoActivity" />
+        <activity
+            android:name=".ReturnToForegroundActivity" />
+        <activity
+            android:name=".FlickrPhotoActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ArchiveActivity"
             android:label="@string/activity_title_archive"
@@ -122,7 +123,6 @@
             android:label="@string/action_feedback"
             android:parentActivityName=".AboutActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".BackgroundTaskActivity" />
     </application>
 
 </manifest>

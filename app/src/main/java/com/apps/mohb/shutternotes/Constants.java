@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : Constants.java
- *  Last modified : 10/11/20 2:44 PM
+ *  Last modified : 10/12/20 12:31 PM
  *
  *  -----------------------------------------------------------
  */
@@ -84,6 +84,10 @@ public class Constants {
     public static final int LIST_HEADER_POSITION = 1;
     public static final int GRID_HEADER_POSITION = 2;
     public static final double LIST_ITEM_HEIGHT_FACTOR = 2.5;
+
+    // Notifications
+    public static final String NOTIFICATION_CHANNEL = "0";
+    public static final int NOTIFICATION_ID = 0;
 
     // Feedback and question
     public static final int QUESTION_ARRAY_SIZE = 1;

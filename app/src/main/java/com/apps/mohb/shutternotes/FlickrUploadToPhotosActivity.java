@@ -5,15 +5,19 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrUploadToPhotosActivity.java
- *  Last modified : 10/11/20 2:44 PM
+ *  Last modified : 10/12/20 5:37 PM
  *
  *  -----------------------------------------------------------
  */
 
 package com.apps.mohb.shutternotes;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
@@ -21,9 +25,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.app.NotificationCompat;
+import androidx.fragment.app.DialogFragment;
 import androidx.preference.PreferenceManager;
 
 import com.apps.mohb.shutternotes.adapters.FlickrPhotosListAdapter;
+import com.apps.mohb.shutternotes.fragments.dialogs.RunInBackgroundAlertFragment;
 import com.apps.mohb.shutternotes.lists.Archive;
 import com.apps.mohb.shutternotes.lists.Notebook;
 import com.apps.mohb.shutternotes.notes.FlickrNote;
@@ -45,7 +52,8 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 
-public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity {
+public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity implements
+        RunInBackgroundAlertFragment.RunInBackgroundAlertDialogListener {
 
     private Collection<Photo> updatedPhotos;
     private ListView photosListView;
@@ -68,7 +76,11 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity {
     private ProgressBar progressBar;
     private TextView progressRatio;
 
-    private Toast unableToCommunicate;
+    private NotificationManager notificationManager;
+    private NotificationCompat.Builder notificationBuilder;
+    private boolean inBackground;
+    private int progress;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +109,8 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity {
 
         progressBar = findViewById(R.id.progressBar);
         progressRatio = findViewById(R.id.progressRatio);
+
+        inBackground = false;
 
         flickrApi = FlickrApi.getInstance(getApplicationContext());
 
@@ -136,21 +150,73 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity {
             }
 
         } catch (Exception e) {
-            unableToCommunicate = Toast.makeText(this, R.string.toast_unable_to_communicate, Toast.LENGTH_SHORT);
+            Toast unableToCommunicate = Toast.makeText(this, R.string.toast_unable_to_communicate, Toast.LENGTH_SHORT);
             unableToCommunicate.show();
             onBackPressed();
         }
 
+        notificationManager = getSystemService(NotificationManager.class);
+
+        createNotificationChannel(notificationManager);
+
+        Intent intent = new Intent(this, ReturnToForegroundActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_NO_CREATE);
+
+        notificationBuilder = new NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL)
+                .setSmallIcon(R.drawable.ic_camera_black_24dp)
+                .setContentTitle(getBaseContext().getResources().getString(R.string.notify_title))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)
+                .setNotificationSilent()
+                .setOngoing(true)
+                .setAutoCancel(true);
+
+        progress = 0;
+
+        notificationBuilder.setProgress(selectedSetSize, progress, false);
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        inBackground = true;
+        if (progress > 0 && progress < selectedSetSize) {
+            notificationManager.notify(Constants.NOTIFICATION_ID, notificationBuilder.build());
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        inBackground = false;
+        notificationManager.cancel(Constants.NOTIFICATION_ID);
     }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         try {
-            unableToCommunicate.cancel();
+            if ((progress > 0 && progress < selectedSetSize) || inBackground) {
+                RunInBackgroundAlertFragment runInBackgroundAlertFragment = new RunInBackgroundAlertFragment();
+                runInBackgroundAlertFragment.show(getSupportFragmentManager(), "RunInBackgroundDialogFragment");
+            } else {
+                super.onBackPressed();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onRunInBackgroundDialogPositiveClick(DialogFragment dialog) {
+        dialog.dismiss();
+        moveTaskToBack(true);
+    }
+
+    @Override
+    public void onRunInBackgroundDialogNegativeClick(DialogFragment dialog) {
+        dialog.dismiss();
     }
 
 
@@ -172,7 +238,6 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity {
 
                 Flickr flickr = flickrApi.getFlickrInterface();
                 RequestContext.getRequestContext().setAuth(auth);
-                int progress = 0;
                 int pages = getNumOfPages(selectedSetSize, Constants.PHOTOSET_PER_PAGE);
                 for (int page = 1; page <= pages; page++) {
                     Collection<Photo> photos = flickr.getPhotosetsInterface()
@@ -183,9 +248,18 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity {
                         runOnUiThread(() -> {
                             progressBar.setProgress(p, true);
                         });
+
                         String progressText = getBaseContext().getResources().getString(R.string.text_photo_cl)
                                 + Constants.SPACE + progress + Constants.SLASH + selectedSetSize;
+
+                        if (inBackground) {
+                            notificationBuilder.setProgress(selectedSetSize, progress, false);
+                            notificationBuilder.setContentText(progressText);
+                            notificationManager.notify(Constants.NOTIFICATION_ID, notificationBuilder.build());
+                        }
+
                         progressRatio.setText(progressText);
+
                         String photoId = photo.getId();
                         for (int i = 0; i < selectedNotes.size(); i++) {
                             FlickrNote note = selectedNotes.get(i);
@@ -211,6 +285,12 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity {
         protected void onPostExecute() {
             super.onPostExecute();
 
+            notificationManager.cancel(Constants.NOTIFICATION_ID);
+
+            Intent intent = new Intent(getBaseContext(), ReturnToForegroundActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
+
             progressBarView.setVisibility(View.INVISIBLE);
 
             if (adapter == null) {
@@ -219,35 +299,47 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity {
 
             photosListView.setAdapter(adapter);
 
-            if (updatedPhotos.isEmpty()) {
-                Toast.makeText(getBaseContext(), R.string.toast_no_photos_updated, Toast.LENGTH_SHORT).show();
-                onBackPressed();
+            String updatedPhotosText = updatedPhotos.size() + Constants.SPACE + getBaseContext().getResources().getString(R.string.toast_photo);
+
+            if (updatedPhotos.size() > 1) {
+                updatedPhotosText = updatedPhotosText + getBaseContext().getResources().getString(R.string.toast_s) + Constants.SPACE
+                        + getBaseContext().getResources().getString(R.string.toast_were) + Constants.SPACE
+                        + getBaseContext().getResources().getString(R.string.toast_updated)
+                        + getBaseContext().getResources().getString(R.string.toast_end_s);
             } else {
+                updatedPhotosText = updatedPhotosText + getBaseContext().getResources().getString(R.string.toast_was) + Constants.SPACE
+                        + getBaseContext().getResources().getString(R.string.toast_updated);
+            }
 
-                String toastText = updatedPhotos.size() + Constants.SPACE + getBaseContext().getResources().getString(R.string.toast_photo);
+            notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), Constants.NOTIFICATION_CHANNEL)
+                    .setSmallIcon(R.drawable.ic_camera_black_24dp)
+                    .setContentTitle(getResources().getString(R.string.notify_upload_completed))
+                    .setContentText(updatedPhotosText)
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                    .setContentIntent(pendingIntent)
+                    .setAutoCancel(true);
 
-                if (updatedPhotos.size() > 1) {
-                    toastText = toastText + getBaseContext().getResources().getString(R.string.toast_s) + Constants.SPACE
-                            + getBaseContext().getResources().getString(R.string.toast_were) + Constants.SPACE
-                            + getBaseContext().getResources().getString(R.string.toast_updated)
-                            + getBaseContext().getResources().getString(R.string.toast_end_s);
+            if (!inBackground) {
+                if (updatedPhotos.isEmpty()) {
+                    Toast.makeText(getBaseContext(), R.string.toast_no_photos_updated, Toast.LENGTH_SHORT).show();
+                    onBackPressed();
                 } else {
-                    toastText = toastText + getBaseContext().getResources().getString(R.string.toast_was) + Constants.SPACE
-                            + getBaseContext().getResources().getString(R.string.toast_updated);
-                }
 
-                Toast.makeText(getBaseContext(), toastText, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getBaseContext(), updatedPhotosText, Toast.LENGTH_SHORT).show();
 
-                if (settings.getBoolean(Constants.PREF_KEY_ARCHIVE_NOTES, false)) {
-                    int listSize = flickrNotes.size();
-                    for (int i = listSize - 1; i >= 0; i--) {
-                        FlickrNote note = flickrNotes.get(i);
-                        if (note.isSelected()) {
-                            archive.addNote(note);
-                            notebook.removeFlickrNote(i);
+                    if (settings.getBoolean(Constants.PREF_KEY_ARCHIVE_NOTES, false)) {
+                        int listSize = flickrNotes.size();
+                        for (int i = listSize - 1; i >= 0; i--) {
+                            FlickrNote note = flickrNotes.get(i);
+                            if (note.isSelected()) {
+                                archive.addNote(note);
+                                notebook.removeFlickrNote(i);
+                            }
                         }
                     }
                 }
+            } else {
+                notificationManager.notify(Constants.NOTIFICATION_ID, notificationBuilder.build());
             }
 
             try {
@@ -427,5 +519,17 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity {
     }
 
 
+    private void createNotificationChannel(NotificationManager notificationManager) {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.notify_channel_name);
+            String description = getString(R.string.notify_channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(Constants.NOTIFICATION_CHANNEL, name, importance);
+            channel.setDescription(description);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
 }
 

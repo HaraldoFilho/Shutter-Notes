@@ -15,6 +15,7 @@
         android:importantForAutofill="no"
         android:inputType="text"
         android:textSize="@dimen/edit_text_size"
+        android:contentDescription="@string/dialog_edit_gear_title"
         tools:targetApi="o" />
 
 </LinearLayout>

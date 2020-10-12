@@ -128,7 +128,7 @@
     <string name="activity_title_flickr_photosets">Escolher álbum</string>
     <string name="alert_message_confirm_upload">Será feito o upload das informações das notas para o álbum selecionado. APÓS INICIADA ESTA OPERAÇÃO NÃO PODERÁ SER CANCELADA!</string>
     <string name="alert_title_confirm_upload">Confirmar o upload?</string>
-    <string name="activity_title_flickr_upload">Fotos atualizadas</string>
+    <string name="activity_title_flickr_upload">Upload para o Flickr</string>
     <string name="toast_account_connected">Conta conectada!</string>
     <string name="pref_overwrite_data_summ_off">Não sobrescrever dados existentes</string>
     <string name="pref_overwrite_data_summ_on">Sobrescrever dados existentes</string>
@@ -172,5 +172,9 @@
     <string name="text_photo">foto</string>
     <string name="text_s">s</string>
     <string name="text_photo_cl">Foto</string>
+    <string name="alert_title_run_background">Continuar em segundo plano</string>
+    <string name="alert_message_run_background">Você deseja continuar fazendo o upload em segundo plano? Você será notificado quando ele terminar</string>
+    <string name="notify_upload_completed">O upload terminou!</string>
+    <string name="notify_title">Fazendo upload para o Flickr…</string>
 
 </resources>

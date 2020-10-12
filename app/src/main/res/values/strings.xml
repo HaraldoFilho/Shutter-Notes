@@ -7,8 +7,8 @@
 
     <!--Application version-->
     <string name="version_name">version: </string>
-    <string name="version_number" translatable="false">0.2.17</string>
-    <string name="version_code" translatable="false">52</string>
+    <string name="version_number" translatable="false">0.3.0</string>
+    <string name="version_code" translatable="false">53</string>
 
     <!--Application information-->
     <string name="info_app_name" translatable="false">Shutter Notes</string>
@@ -80,7 +80,7 @@
     <string name="activity_title_about">About</string>
     <string name="activity_title_flickr_connect">Connect Flickr account</string>
     <string name="activity_title_flickr_photosets">Choose photoset</string>
-    <string name="activity_title_flickr_upload">Updated photos</string>
+    <string name="activity_title_flickr_upload">Upload to Flickr</string>
     <string name="activity_title_clock">Clock</string>
 
     <string name="action_send_feedback">Send feedback</string>
@@ -146,6 +146,7 @@
     <string name="alert_title_delete_all_items">Delete all?</string>
     <string name="alert_title_reset_preferences">Restore defaults?</string>
     <string name="alert_title_confirm_upload">Confirm upload?</string>
+    <string name="alert_title_run_background">Continue in background</string>
     <string name="alert_title_authenticate">Authentication needed!</string>
     <string name="alert_message_reset_preferences">All settings will be restored to the default values\n</string>
     <string name="alert_message_no_undone">This action can not be undone\n</string>
@@ -153,6 +154,7 @@
     <string name="alert_message_delete_all_notes">All notes will be permanently deleted\n</string>
     <string name="alert_message_restore_all_notes">All notes will be restored to its original location\n</string>
     <string name="alert_message_confirm_upload">The notes information will be uploaded to the selected photoset. AFTER STARTED THIS OPERATION WILL CAN NOT BE CANCELED!</string>
+    <string name="alert_message_run_background">Do you want to continue the upload in background? You will be notified when it is finished\n</string>
     <string name="alert_message_authenticate">You need to authenticate in your Flickr account to upload data. Do you want to try again?</string>
     <string name="alert_button_no">No</string>
     <string name="alert_button_yes">Yes</string>
@@ -180,6 +182,12 @@
     <string name="toast_updated">updated</string>
     <string name="toast_location_updated">Location updated!</string>
     <string name="toast_location_not_updated">Unable to update location</string>
+
+    <!-- Notification -->
+    <string name="notify_channel_name" translatable="false">Upload to Flickr Notification</string>
+    <string name="notify_channel_description" translatable="false">Shows the upload progress and re-open the app if clicked</string>
+    <string name="notify_upload_completed">Uploaded completed!</string>
+    <string name="notify_title">Uploading to Flickr…</string>
 
     <!--Help pages-->
     <string name="url_website" translatable="false">https://mohb.dev/Shutter-Notes/</string>

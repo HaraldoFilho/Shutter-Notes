@@ -79,6 +79,7 @@
             android:layout_margin="@dimen/fab_margin"
             android:clickable="true"
             android:focusable="true"
+            android:contentDescription="@string/action_add_gear"
             app:srcCompat="@drawable/ic_add_gear_white_24dp" />
 
     </RelativeLayout>
