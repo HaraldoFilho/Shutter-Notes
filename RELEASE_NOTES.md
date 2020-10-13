@@ -1,3 +1,6 @@
+#### **0.3.1**
+- Fixed text on notification when no photos were updated.
+
 #### **0.3.0**
 - Added a notification when data upload is being done on background.
 

@@ -135,7 +135,7 @@
     <string name="pref_title_overwrite_data">Sobrescrever dados</string>
     <string name="title_progress_photosets">Carregando álbuns…</string>
     <string name="title_progress_upload_data">Adicionando dados às fotos…</string>
-    <string name="toast_no_photos_updated">Nenhuma foto foi atualizada</string>
+    <string name="notify_no_photos_updated">Nenhuma foto foi atualizada</string>
     <string name="dialog_warning_button_ok">Ok, entendi</string>
     <string name="dialog_warning_title">Aviso importante!</string>
     <string name="dialog_warning_flickr_note_message">Antes de criar suas notas do Flickr, não esqueça de sincronizar os relógios da sua câmera e do seu smartphone</string>
@@ -163,12 +163,12 @@
     <string name="toast_location_updated">Localização atualizada!</string>
     <string name="toast_location_not_updated">Não foi possível atualizar a localização</string>
     <string name="action_update_location">Atualizar localização</string>
-    <string name="toast_photo">" foto"</string>
-    <string name="toast_s">s</string>
-    <string name="toast_was">" foi"</string>
-    <string name="toast_were">" foram"</string>
-    <string name="toast_updated">atualizada</string>
-    <string name="toast_end_s">s</string>
+    <string name="notify_photo">" foto"</string>
+    <string name="notify_s">s</string>
+    <string name="notify_was">" foi"</string>
+    <string name="notify_were">" foram"</string>
+    <string name="notify_updated">atualizada</string>
+    <string name="notify_end_s">s</string>
     <string name="text_photo">foto</string>
     <string name="text_s">s</string>
     <string name="text_photo_cl">Foto</string>

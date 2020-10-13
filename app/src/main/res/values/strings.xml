@@ -7,8 +7,8 @@
 
     <!--Application version-->
     <string name="version_name">version: </string>
-    <string name="version_number" translatable="false">0.3.0</string>
-    <string name="version_code" translatable="false">53</string>
+    <string name="version_number" translatable="false">0.3.1</string>
+    <string name="version_code" translatable="false">54</string>
 
     <!--Application information-->
     <string name="info_app_name" translatable="false">Shutter Notes</string>
@@ -173,13 +173,6 @@
     <string name="toast_wrong_code">Wrong code, try again</string>
     <string name="toast_account_connected">Account connected!</string>
     <string name="toast_unable_to_communicate">Unable to communicate with Flickr</string>
-    <string name="toast_no_photos_updated">No photos were updated</string>
-    <string name="toast_photo">photo</string>
-    <string name="toast_s">s</string>
-    <string name="toast_end_s" />
-    <string name="toast_was">was</string>
-    <string name="toast_were">were</string>
-    <string name="toast_updated">updated</string>
     <string name="toast_location_updated">Location updated!</string>
     <string name="toast_location_not_updated">Unable to update location</string>
 
@@ -188,6 +181,13 @@
     <string name="notify_channel_description" translatable="false">Shows the upload progress and re-open the app if clicked</string>
     <string name="notify_upload_completed">Uploaded completed!</string>
     <string name="notify_title">Uploading to Flickr…</string>
+    <string name="notify_no_photos_updated">No photos were updated</string>
+    <string name="notify_photo">photo</string>
+    <string name="notify_s">s</string>
+    <string name="notify_end_s" />
+    <string name="notify_was">was</string>
+    <string name="notify_were">were</string>
+    <string name="notify_updated">updated</string>
 
     <!--Help pages-->
     <string name="url_website" translatable="false">https://mohb.dev/Shutter-Notes/</string>

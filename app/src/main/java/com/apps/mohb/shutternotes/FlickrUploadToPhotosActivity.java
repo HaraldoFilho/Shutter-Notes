@@ -79,6 +79,7 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity impleme
     private NotificationManager notificationManager;
     private NotificationCompat.Builder notificationBuilder;
     private boolean inBackground;
+    private boolean uploadFinished;
     private int progress;
 
 
@@ -179,19 +180,24 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity impleme
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        inBackground = false;
+        notificationManager.cancel(Constants.NOTIFICATION_ID);
+
+        if (uploadFinished && updatedPhotos.isEmpty()) {
+            onBackPressed();
+        }
+
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         inBackground = true;
         if (progress > 0 && progress < selectedSetSize) {
             notificationManager.notify(Constants.NOTIFICATION_ID, notificationBuilder.build());
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        inBackground = false;
-        notificationManager.cancel(Constants.NOTIFICATION_ID);
     }
 
     @Override
@@ -227,6 +233,7 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity impleme
             super.onPreExecute();
 
             progressBar.setMax(selectedSetSize);
+            uploadFinished = false;
 
         }
 
@@ -299,16 +306,23 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity impleme
 
             photosListView.setAdapter(adapter);
 
-            String updatedPhotosText = updatedPhotos.size() + Constants.SPACE + getBaseContext().getResources().getString(R.string.toast_photo);
+            String updatedPhotosText;
 
-            if (updatedPhotos.size() > 1) {
-                updatedPhotosText = updatedPhotosText + getBaseContext().getResources().getString(R.string.toast_s) + Constants.SPACE
-                        + getBaseContext().getResources().getString(R.string.toast_were) + Constants.SPACE
-                        + getBaseContext().getResources().getString(R.string.toast_updated)
-                        + getBaseContext().getResources().getString(R.string.toast_end_s);
+            if (updatedPhotos.isEmpty()) {
+                updatedPhotosText = getResources().getString(R.string.notify_no_photos_updated);
+
             } else {
-                updatedPhotosText = updatedPhotosText + getBaseContext().getResources().getString(R.string.toast_was) + Constants.SPACE
-                        + getBaseContext().getResources().getString(R.string.toast_updated);
+                updatedPhotosText = updatedPhotos.size() + Constants.SPACE + getResources().getString(R.string.notify_photo);
+
+                if (updatedPhotos.size() > 1) {
+                    updatedPhotosText = updatedPhotosText + getResources().getString(R.string.notify_s) + Constants.SPACE
+                            + getResources().getString(R.string.notify_were) + Constants.SPACE
+                            + getResources().getString(R.string.notify_updated)
+                            + getResources().getString(R.string.notify_end_s);
+                } else {
+                    updatedPhotosText = updatedPhotosText + getResources().getString(R.string.notify_was) + Constants.SPACE
+                            + getResources().getString(R.string.notify_updated);
+                }
             }
 
             notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), Constants.NOTIFICATION_CHANNEL)
@@ -321,7 +335,7 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity impleme
 
             if (!inBackground) {
                 if (updatedPhotos.isEmpty()) {
-                    Toast.makeText(getBaseContext(), R.string.toast_no_photos_updated, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getBaseContext(), R.string.notify_no_photos_updated, Toast.LENGTH_SHORT).show();
                     onBackPressed();
                 } else {
 
@@ -348,6 +362,8 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity impleme
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            uploadFinished = true;
 
         }
 
