@@ -7,8 +7,8 @@
 
     <!--Application version-->
     <string name="version_name">version: </string>
-    <string name="version_number" translatable="false">0.3.1</string>
-    <string name="version_code" translatable="false">54</string>
+    <string name="version_number" translatable="false">0.4.0</string>
+    <string name="version_code" translatable="false">55</string>
 
     <!--Application information-->
     <string name="info_app_name" translatable="false">Shutter Notes</string>
@@ -177,8 +177,8 @@
     <string name="toast_location_not_updated">Unable to update location</string>
 
     <!-- Notification -->
-    <string name="notify_channel_name" translatable="false">Upload to Flickr Notification</string>
-    <string name="notify_channel_description" translatable="false">Shows the upload progress and re-open the app if clicked</string>
+    <string name="notify_channel_name">Upload to Flickr</string>
+    <string name="notify_channel_description">Shows the upload progress and re-open the app if clicked</string>
     <string name="notify_upload_completed">Uploaded completed!</string>
     <string name="notify_title">Uploading to Flickr…</string>
     <string name="notify_no_photos_updated">No photos were updated</string>
@@ -213,10 +213,16 @@
     <string name="pref_group_general_settings">GENERAL SETTINGS</string>
 
     <!-- Font Size -->
-    <string name="pref_key_font_size" translatable="false">FONT_SIZE</string>The location
-    information will be uploaded to Flickr
+    <string name="pref_key_font_size" translatable="false">FONT_SIZE</string>The location information will be uploaded to Flickr
     <string name="pref_title_font_size">Font size</string>
     <string name="pref_def_font_size" translatable="false">2</string>
+
+    <!-- Notification sound -->
+    <string name="pref_key_notif_sound" translatable="false">NOTIF_SOUND</string>
+    <string name="pref_title_notif_sound">Notification sound</string>
+    <string name="pref_def_notif_sound" translatable="false">0</string>
+    <string name="pref_def_notif_sound_title">Silent</string>
+
 
     <!-- FLICKR NOTES group -->'
     <string name="pref_group_flickr_notes_settings_key" translatable="false">FLICKR_NOTES_KEY</string>

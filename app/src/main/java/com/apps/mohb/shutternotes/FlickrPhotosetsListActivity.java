@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrPhotosetsListActivity.java
- *  Last modified : 10/8/20 6:00 PM
+ *  Last modified : 10/14/20 10:12 AM
  *
  *  -----------------------------------------------------------
  */
@@ -16,7 +16,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.fragment.app.DialogFragment;
@@ -76,7 +75,6 @@ public class FlickrPhotosetsListActivity extends BackgroundTaskActivity implemen
             listFooter.setClickable(false);
 
             progressSpinnerView = findViewById(R.id.progressSpinnerView);
-            ProgressBar progressSpinner = findViewById(R.id.progressSpinner);
 
             callerActivity = getIntent().getIntExtra(Constants.KEY_CALLER_ACTIVITY, Constants.ACTIVITY_FLICKR_NOTES);
 

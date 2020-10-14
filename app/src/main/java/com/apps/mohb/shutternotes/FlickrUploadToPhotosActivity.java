@@ -5,19 +5,19 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrUploadToPhotosActivity.java
- *  Last modified : 10/12/20 5:37 PM
+ *  Last modified : 10/14/20 10:12 AM
  *
  *  -----------------------------------------------------------
  */
 
 package com.apps.mohb.shutternotes;
 
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
@@ -158,8 +158,6 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity impleme
 
         notificationManager = getSystemService(NotificationManager.class);
 
-        createNotificationChannel(notificationManager);
-
         Intent intent = new Intent(this, ReturnToForegroundActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_NO_CREATE);
@@ -183,7 +181,7 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity impleme
     protected void onResume() {
         super.onResume();
         inBackground = false;
-        notificationManager.cancel(Constants.NOTIFICATION_ID);
+        notificationManager.cancel(Constants.NOTIFICATION_SILENT_ID);
 
         if (uploadFinished && updatedPhotos.isEmpty()) {
             onBackPressed();
@@ -196,7 +194,7 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity impleme
         super.onPause();
         inBackground = true;
         if (progress > 0 && progress < selectedSetSize) {
-            notificationManager.notify(Constants.NOTIFICATION_ID, notificationBuilder.build());
+            notificationManager.notify(Constants.NOTIFICATION_SILENT_ID, notificationBuilder.build());
         }
     }
 
@@ -262,7 +260,7 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity impleme
                         if (inBackground) {
                             notificationBuilder.setProgress(selectedSetSize, progress, false);
                             notificationBuilder.setContentText(progressText);
-                            notificationManager.notify(Constants.NOTIFICATION_ID, notificationBuilder.build());
+                            notificationManager.notify(Constants.NOTIFICATION_SILENT_ID, notificationBuilder.build());
                         }
 
                         progressRatio.setText(progressText);
@@ -292,7 +290,7 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity impleme
         protected void onPostExecute() {
             super.onPostExecute();
 
-            notificationManager.cancel(Constants.NOTIFICATION_ID);
+            notificationManager.cancel(Constants.NOTIFICATION_SILENT_ID);
 
             Intent intent = new Intent(getBaseContext(), ReturnToForegroundActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -325,6 +323,10 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity impleme
                 }
             }
 
+            RingtoneManager ringtoneManager = new RingtoneManager(getBaseContext());
+            ringtoneManager.getCursor();
+            Uri notificationSound = ringtoneManager.getRingtoneUri(11);
+
             notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), Constants.NOTIFICATION_CHANNEL)
                     .setSmallIcon(R.drawable.ic_camera_black_24dp)
                     .setContentTitle(getResources().getString(R.string.notify_upload_completed))
@@ -353,7 +355,7 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity impleme
                     }
                 }
             } else {
-                notificationManager.notify(Constants.NOTIFICATION_ID, notificationBuilder.build());
+                notificationManager.notify(Constants.NOTIFICATION_SOUND_ID, notificationBuilder.build());
             }
 
             try {
@@ -534,18 +536,5 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity impleme
 
     }
 
-
-    private void createNotificationChannel(NotificationManager notificationManager) {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.notify_channel_name);
-            String description = getString(R.string.notify_channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(Constants.NOTIFICATION_CHANNEL, name, importance);
-            channel.setDescription(description);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
 }
 

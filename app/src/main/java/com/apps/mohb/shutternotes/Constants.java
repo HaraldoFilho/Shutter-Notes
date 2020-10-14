@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : Constants.java
- *  Last modified : 10/12/20 12:31 PM
+ *  Last modified : 10/14/20 8:59 AM
  *
  *  -----------------------------------------------------------
  */
@@ -87,7 +87,8 @@ public class Constants {
 
     // Notifications
     public static final String NOTIFICATION_CHANNEL = "0";
-    public static final int NOTIFICATION_ID = 0;
+    public static final int NOTIFICATION_SILENT_ID = 0;
+    public static final int NOTIFICATION_SOUND_ID = 1;
 
     // Feedback and question
     public static final int QUESTION_ARRAY_SIZE = 1;
@@ -154,6 +155,9 @@ public class Constants {
     public static final float FONT_SIZE_LARGE_LARGE = 30;
 
     public static final double FULL_SCREEN_TEXT_LINE_SPACING = 1.25;
+
+    public static final String PREF_KEY_NOTIF_SOUND = "NOTIF_SOUND";
+    public static final String PREF_DEF_NOTIF_SOUND = "0";
 
     public static final String PREF_KEY_WHAT_SHOW = "WHAT_SHOW";
     public static final String PREF_SHOW_TITLE = "1";

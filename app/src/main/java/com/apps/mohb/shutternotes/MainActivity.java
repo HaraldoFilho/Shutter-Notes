@@ -5,13 +5,15 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : MainActivity.java
- *  Last modified : 10/11/20 3:13 PM
+ *  Last modified : 10/14/20 10:12 AM
  *
  *  -----------------------------------------------------------
  */
 
 package com.apps.mohb.shutternotes;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -67,6 +69,16 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(view.getContext(), FlickrNoteActivity.class);
             startActivity(intent);
         });
+
+        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+
+        CharSequence name = getString(R.string.notify_channel_name);
+        String description = getString(R.string.notify_channel_description);
+        int importance = NotificationManager.IMPORTANCE_DEFAULT;
+        NotificationChannel channel;
+        channel = new NotificationChannel(Constants.NOTIFICATION_CHANNEL, name, importance);
+        channel.setDescription(description);
+        notificationManager.createNotificationChannel(channel);
 
     }
 

@@ -1,3 +1,7 @@
+#### **0.4.0**
+- Added settings item to change notification sound.
+- Changed minSdk to 26.
+
 #### **0.3.1**
 - Fixed text on notification when no photos were updated.
 

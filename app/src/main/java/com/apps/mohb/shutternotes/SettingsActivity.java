@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : SettingsActivity.java
- *  Last modified : 10/11/20 3:13 PM
+ *  Last modified : 10/14/20 10:12 AM
  *
  *  -----------------------------------------------------------
  */
@@ -13,10 +13,10 @@
 package com.apps.mohb.shutternotes;
 
 
-import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -25,8 +25,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
+import androidx.preference.PreferenceScreen;
+import androidx.preference.SwitchPreferenceCompat;
 
 import com.apps.mohb.shutternotes.fragments.dialogs.PreferencesResetAlertFragment;
 
@@ -104,10 +107,11 @@ public class SettingsActivity extends AppCompatActivity implements
         setupActionBar();
 
         // Create settings fragment which actually contain the settings screen
+        GeneralPreferenceFragment preferenceFragment = new GeneralPreferenceFragment();
         getSupportFragmentManager().beginTransaction()
-                .replace(android.R.id.content, new GeneralPreferenceFragment())
+                .replace(android.R.id.content, preferenceFragment)
                 .commit();
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        PreferenceManager.getDefaultSharedPreferences(this);
 
     }
 
@@ -164,13 +168,127 @@ public class SettingsActivity extends AppCompatActivity implements
      * This fragment shows general preferences only. It is used when the
      * activity is showing a two-pane settings UI.
      */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class GeneralPreferenceFragment extends PreferenceFragmentCompat {
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-            addPreferencesFromResource(R.xml.preferences);
             setHasOptionsMenu(true);
+
+            Context context = getPreferenceManager().getContext();
+            PreferenceScreen preferenceScreen = getPreferenceManager().createPreferenceScreen(context);
+
+            // Font size
+            ListPreference fontSizePreference = new ListPreference(context);
+            fontSizePreference.setKey(getString(R.string.pref_key_font_size));
+            fontSizePreference.setTitle(R.string.pref_title_font_size);
+            fontSizePreference.setDefaultValue(getString(R.string.pref_def_font_size));
+            fontSizePreference.setEntries(R.array.pref_font_size_titles);
+            fontSizePreference.setEntryValues(R.array.pref_font_size_entry_values);
+            fontSizePreference.setNegativeButtonText(null);
+            fontSizePreference.setPositiveButtonText(null);
+
+            // GENERAL SETTINGS
+            PreferenceCategory generalSettingsCategory = new PreferenceCategory(context);
+            generalSettingsCategory.setKey(getString(R.string.pref_group_general_settings_key));
+            generalSettingsCategory.setTitle(R.string.pref_group_general_settings);
+            preferenceScreen.addPreference(generalSettingsCategory);
+            generalSettingsCategory.addPreference(fontSizePreference);
+
+            // Notification sound
+            Preference notificationSoundPreference = new Preference(context);
+            notificationSoundPreference.setTitle(R.string.pref_title_notif_sound);
+            notificationSoundPreference.setOnPreferenceClickListener(preference -> {
+                Intent intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
+                intent.putExtra(Settings.EXTRA_APP_PACKAGE, requireActivity().getPackageName());
+                intent.putExtra(Settings.EXTRA_CHANNEL_ID, Constants.NOTIFICATION_CHANNEL);
+                startActivity(intent);
+                return true;
+            });
+
+            generalSettingsCategory.addPreference(notificationSoundPreference);
+
+            // What to show on Fullscreen
+            ListPreference whatShowPreference = new ListPreference(context);
+            whatShowPreference.setKey(getString(R.string.pref_key_what_show));
+            whatShowPreference.setTitle(R.string.pref_title_what_show);
+            whatShowPreference.setDefaultValue(getString(R.string.pref_def_what_show));
+            whatShowPreference.setEntries(R.array.pref_what_show_titles);
+            whatShowPreference.setEntryValues(R.array.pref_what_show_entry_values);
+            whatShowPreference.setNegativeButtonText(null);
+            whatShowPreference.setPositiveButtonText(null);
+
+            // Map zoom level
+            ListPreference mapZoomLevelPreference = new ListPreference(context);
+            mapZoomLevelPreference.setKey(getString(R.string.pref_key_map_zoom_level));
+            mapZoomLevelPreference.setTitle(R.string.pref_title_map_zoom_level);
+            mapZoomLevelPreference.setDefaultValue(getString(R.string.pref_def_map_zoom_level));
+            mapZoomLevelPreference.setEntries(R.array.pref_map_zoom_level_titles);
+            mapZoomLevelPreference.setEntryValues(R.array.pref_map_zoom_level_entry_values);
+            mapZoomLevelPreference.setNegativeButtonText(null);
+            mapZoomLevelPreference.setPositiveButtonText(null);
+
+            // FLICKR NOTES
+            PreferenceCategory flickrNotesCategory = new PreferenceCategory(context);
+            flickrNotesCategory.setKey(getString(R.string.pref_group_flickr_notes_settings_key));
+            flickrNotesCategory.setTitle(R.string.pref_group_flickr_notes);
+            preferenceScreen.addPreference(flickrNotesCategory);
+            flickrNotesCategory.addPreference(whatShowPreference);
+            flickrNotesCategory.addPreference(mapZoomLevelPreference);
+
+            // Archive notes
+            SwitchPreferenceCompat archiveNotesPreference = new SwitchPreferenceCompat(context);
+            archiveNotesPreference.setKey(getString(R.string.pref_key_archive_notes));
+            archiveNotesPreference.setTitle(getString(R.string.pref_title_archive_notes));
+            archiveNotesPreference.setSummaryOn(R.string.pref_archive_notes_summ_on);
+            archiveNotesPreference.setSummaryOff(R.string.pref_archive_notes_summ_off);
+            archiveNotesPreference.setDefaultValue(Boolean.valueOf(getString(R.string.pref_def_archive_notes)));
+
+            // Overwrite data
+            SwitchPreferenceCompat overwriteDataPreference = new SwitchPreferenceCompat(context);
+            overwriteDataPreference.setKey(getString(R.string.pref_key_overwrite_data));
+            overwriteDataPreference.setTitle(getString(R.string.pref_title_overwrite_data));
+            overwriteDataPreference.setSummaryOn(R.string.pref_overwrite_data_summ_on);
+            overwriteDataPreference.setSummaryOff(R.string.pref_overwrite_data_summ_off);
+            overwriteDataPreference.setDefaultValue(Boolean.valueOf(getString(R.string.pref_def_overwrite_data)));
+
+            // Upload location
+            SwitchPreferenceCompat uploadLocationPreference = new SwitchPreferenceCompat(context);
+            uploadLocationPreference.setKey(getString(R.string.pref_key_upload_location));
+            uploadLocationPreference.setTitle(getString(R.string.pref_title_upload_location));
+            uploadLocationPreference.setSummaryOn(R.string.pref_upload_location_summ_on);
+            uploadLocationPreference.setSummaryOff(R.string.pref_upload_location_summ_off);
+            uploadLocationPreference.setDefaultValue(Boolean.valueOf(getString(R.string.pref_def_upload_location)));
+
+            // Upload tags
+            SwitchPreferenceCompat uploadTagsPreference = new SwitchPreferenceCompat(context);
+            uploadTagsPreference.setKey(getString(R.string.pref_key_upload_tags));
+            uploadTagsPreference.setTitle(getString(R.string.pref_title_upload_tags));
+            uploadTagsPreference.setSummaryOn(R.string.pref_upload_tags_summ_on);
+            uploadTagsPreference.setSummaryOff(R.string.pref_upload_tags_summ_off);
+            uploadTagsPreference.setDefaultValue(Boolean.valueOf(getString(R.string.pref_def_upload_tags)));
+
+            // Overwrite tags
+            ListPreference overwriteTagsPreference = new ListPreference(context);
+            overwriteTagsPreference.setKey(getString(R.string.pref_key_overwrite_tags));
+            overwriteTagsPreference.setTitle(R.string.pref_title_overwrite_tags);
+            overwriteTagsPreference.setDefaultValue(getString(R.string.pref_def_overwrite_tags));
+            overwriteTagsPreference.setEntries(R.array.pref_overwrite_tags_titles);
+            overwriteTagsPreference.setEntryValues(R.array.pref_overwrite_tags_entry_values);
+            overwriteTagsPreference.setNegativeButtonText(null);
+            overwriteTagsPreference.setPositiveButtonText(null);
+
+            // UPLOAD
+            PreferenceCategory uploadCategory = new PreferenceCategory(context);
+            uploadCategory.setKey(getString(R.string.pref_group_flickr_upload_settings_key));
+            uploadCategory.setTitle(R.string.pref_group_flickr_upload);
+            preferenceScreen.addPreference(uploadCategory);
+            uploadCategory.addPreference(archiveNotesPreference);
+            uploadCategory.addPreference(overwriteDataPreference);
+            uploadCategory.addPreference(uploadLocationPreference);
+            uploadCategory.addPreference(uploadTagsPreference);
+            uploadCategory.addPreference(overwriteTagsPreference);
+
+            setPreferenceScreen(preferenceScreen);
 
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
             // to their values. When their values change, their summaries are
@@ -181,7 +299,6 @@ public class SettingsActivity extends AppCompatActivity implements
             bindPreferenceSummaryToValue(Objects.requireNonNull(findPreference(Constants.PREF_KEY_MAP_ZOOM_LEVEL)));
             bindPreferenceSummaryToValue(Objects.requireNonNull(findPreference(Constants.PREF_KEY_OVERWRITE_TAGS)));
         }
-
     }
 
 
@@ -191,8 +308,6 @@ public class SettingsActivity extends AppCompatActivity implements
     public void onAlertDialogPositiveClick(DialogFragment dialog) {
         // Clear settings on memory
         PreferenceManager.getDefaultSharedPreferences(this).edit().clear().apply();
-        // Set defaults on memory
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         // Update settings screen with the default values
         getSupportFragmentManager()
