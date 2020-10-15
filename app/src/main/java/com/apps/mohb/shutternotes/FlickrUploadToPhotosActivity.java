@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrUploadToPhotosActivity.java
- *  Last modified : 10/14/20 10:12 AM
+ *  Last modified : 10/15/20 7:30 AM
  *
  *  -----------------------------------------------------------
  */
@@ -18,6 +18,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
@@ -180,8 +181,15 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity impleme
     @Override
     protected void onResume() {
         super.onResume();
+
         inBackground = false;
-        notificationManager.cancel(Constants.NOTIFICATION_SILENT_ID);
+
+        try {
+            notificationManager.cancel(Constants.NOTIFICATION_SILENT_ID);
+            notificationManager.cancel(Constants.NOTIFICATION_SOUND_ID);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         if (uploadFinished && updatedPhotos.isEmpty()) {
             onBackPressed();
@@ -248,11 +256,9 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity impleme
                     Collection<Photo> photos = flickr.getPhotosetsInterface()
                             .getPhotos(selectedSetId, Constants.PHOTOSET_PER_PAGE, page);
                     for (Photo photo : photos) {
+
                         progress++;
                         final int p = progress;
-                        runOnUiThread(() -> {
-                            progressBar.setProgress(p, true);
-                        });
 
                         String progressText = getBaseContext().getResources().getString(R.string.text_photo_cl)
                                 + Constants.SPACE + progress + Constants.SLASH + selectedSetSize;
@@ -263,7 +269,10 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity impleme
                             notificationManager.notify(Constants.NOTIFICATION_SILENT_ID, notificationBuilder.build());
                         }
 
-                        progressRatio.setText(progressText);
+                        runOnUiThread(() -> {
+                            progressBar.setProgress(p, true);
+                            progressRatio.setText(progressText);
+                        });
 
                         String photoId = photo.getId();
                         for (int i = 0; i < selectedNotes.size(); i++) {
@@ -324,16 +333,27 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity impleme
             }
 
             RingtoneManager ringtoneManager = new RingtoneManager(getBaseContext());
+            ringtoneManager.setType(RingtoneManager.TYPE_NOTIFICATION);
             ringtoneManager.getCursor();
-            Uri notificationSound = ringtoneManager.getRingtoneUri(11);
 
-            notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), Constants.NOTIFICATION_CHANNEL)
-                    .setSmallIcon(R.drawable.ic_camera_black_24dp)
+            int ringtonePosition = Integer.parseInt(Objects.requireNonNull(settings.getString(Constants.PREF_KEY_NOTIF_SOUND, Constants.PREF_DEF_NOTIF_SOUND)));
+
+            notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), Constants.NOTIFICATION_CHANNEL);
+            notificationBuilder.setSmallIcon(R.drawable.ic_camera_black_24dp)
                     .setContentTitle(getResources().getString(R.string.notify_upload_completed))
                     .setContentText(updatedPhotosText)
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                     .setContentIntent(pendingIntent)
                     .setAutoCancel(true);
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                if (ringtonePosition == Constants.PREF_NOTIF_SOUND_SILENT) {
+                    notificationBuilder.setNotificationSilent();
+                } else {
+                    Uri notificationSound = ringtoneManager.getRingtoneUri(ringtonePosition - 1);
+                    notificationBuilder.setSound(notificationSound);
+                }
+            }
 
             if (!inBackground) {
                 if (updatedPhotos.isEmpty()) {

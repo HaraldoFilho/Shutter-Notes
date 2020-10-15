@@ -4,10 +4,10 @@ android {
     compileSdkVersion 30
     defaultConfig {
         applicationId "com.apps.mohb.shutternotes"
-        minSdkVersion 26
+        minSdkVersion 24
         targetSdkVersion 30
-        versionCode 55
-        versionName "0.4.0"
+        versionCode 56
+        versionName "0.4.1"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         vectorDrawables.useSupportLibrary = true
     }

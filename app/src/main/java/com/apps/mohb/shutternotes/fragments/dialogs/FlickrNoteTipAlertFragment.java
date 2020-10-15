@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrNoteTipAlertFragment.java
- *  Last modified : 10/12/20 5:38 PM
+ *  Last modified : 10/14/20 10:12 AM
  *
  *  -----------------------------------------------------------
  */

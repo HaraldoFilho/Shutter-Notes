@@ -1,3 +1,7 @@
+#### **0.4.1**
+- Changed minSdk back to 24.
+- Added prefernce list on settings to change notification sound on sdk version 24 and 25.
+
 #### **0.4.0**
 - Added settings item to change notification sound.
 - Changed minSdk to 26.

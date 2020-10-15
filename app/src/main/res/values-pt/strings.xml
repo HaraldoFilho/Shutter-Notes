@@ -177,7 +177,7 @@
     <string name="notify_upload_completed">O upload terminou!</string>
     <string name="notify_title">Fazendo upload para o Flickr…</string>
     <string name="pref_title_notif_sound">Som da notificação</string>
-    <string name="pref_def_notif_sound_title">Silencioso</string>
+    <string name="pref_notif_sound_silent_title">Silencioso</string>
     <string name="notify_channel_description">Mostra o progresso do upload and reabre o aplicativo se clicado</string>
     <string name="notify_channel_name">Upload para o Flickr</string>
 

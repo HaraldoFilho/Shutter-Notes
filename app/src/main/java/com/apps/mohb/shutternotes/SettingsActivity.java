@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : SettingsActivity.java
- *  Last modified : 10/14/20 10:12 AM
+ *  Last modified : 10/15/20 7:30 AM
  *
  *  -----------------------------------------------------------
  */
@@ -15,6 +15,8 @@ package com.apps.mohb.shutternotes;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.RingtoneManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.Menu;
@@ -184,8 +186,6 @@ public class SettingsActivity extends AppCompatActivity implements
             fontSizePreference.setDefaultValue(getString(R.string.pref_def_font_size));
             fontSizePreference.setEntries(R.array.pref_font_size_titles);
             fontSizePreference.setEntryValues(R.array.pref_font_size_entry_values);
-            fontSizePreference.setNegativeButtonText(null);
-            fontSizePreference.setPositiveButtonText(null);
 
             // GENERAL SETTINGS
             PreferenceCategory generalSettingsCategory = new PreferenceCategory(context);
@@ -195,17 +195,49 @@ public class SettingsActivity extends AppCompatActivity implements
             generalSettingsCategory.addPreference(fontSizePreference);
 
             // Notification sound
-            Preference notificationSoundPreference = new Preference(context);
-            notificationSoundPreference.setTitle(R.string.pref_title_notif_sound);
-            notificationSoundPreference.setOnPreferenceClickListener(preference -> {
-                Intent intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
-                intent.putExtra(Settings.EXTRA_APP_PACKAGE, requireActivity().getPackageName());
-                intent.putExtra(Settings.EXTRA_CHANNEL_ID, Constants.NOTIFICATION_CHANNEL);
-                startActivity(intent);
-                return true;
-            });
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-            generalSettingsCategory.addPreference(notificationSoundPreference);
+                Preference notificationSoundPreference = new Preference(context);
+                notificationSoundPreference.setTitle(R.string.pref_title_notif_sound);
+                notificationSoundPreference.setOnPreferenceClickListener(preference -> {
+                    Intent intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
+                    intent.putExtra(Settings.EXTRA_APP_PACKAGE, requireActivity().getPackageName());
+                    intent.putExtra(Settings.EXTRA_CHANNEL_ID, Constants.NOTIFICATION_CHANNEL);
+                    startActivity(intent);
+                    return true;
+                });
+
+                generalSettingsCategory.addPreference(notificationSoundPreference);
+
+            } else {
+
+                ListPreference notificationSoundListPreference = new ListPreference(context);
+                notificationSoundListPreference.setKey(getString(R.string.pref_key_notif_sound));
+                notificationSoundListPreference.setTitle(R.string.pref_title_notif_sound);
+                notificationSoundListPreference.setDefaultValue(getString(R.string.pref_notif_sound_silent_value));
+
+                RingtoneManager ringtoneManager = new RingtoneManager(context);
+                ringtoneManager.setType(RingtoneManager.TYPE_NOTIFICATION);
+
+                int ringtonesNumber = ringtoneManager.getCursor().getCount() + 1;
+
+                CharSequence[] ringtonesTitles = new CharSequence[ringtonesNumber];
+                CharSequence[] ringtonesValues = new CharSequence[ringtonesNumber];
+
+                ringtonesTitles[Constants.PREF_NOTIF_SOUND_SILENT] = getString(R.string.pref_notif_sound_silent_title);
+                ringtonesValues[Constants.PREF_NOTIF_SOUND_SILENT] = getString(R.string.pref_notif_sound_silent_value);
+
+                for (int i = Constants.PREF_NOTIF_SOUND_SILENT; i < ringtonesNumber - 1; i++) {
+                    ringtonesTitles[i + 1] = ringtoneManager.getRingtone(i).getTitle(context);
+                    ringtonesValues[i + 1] = String.valueOf(i + 1);
+                }
+
+                notificationSoundListPreference.setEntries(ringtonesTitles);
+                notificationSoundListPreference.setEntryValues(ringtonesValues);
+
+                generalSettingsCategory.addPreference(notificationSoundListPreference);
+
+            }
 
             // What to show on Fullscreen
             ListPreference whatShowPreference = new ListPreference(context);
@@ -214,8 +246,6 @@ public class SettingsActivity extends AppCompatActivity implements
             whatShowPreference.setDefaultValue(getString(R.string.pref_def_what_show));
             whatShowPreference.setEntries(R.array.pref_what_show_titles);
             whatShowPreference.setEntryValues(R.array.pref_what_show_entry_values);
-            whatShowPreference.setNegativeButtonText(null);
-            whatShowPreference.setPositiveButtonText(null);
 
             // Map zoom level
             ListPreference mapZoomLevelPreference = new ListPreference(context);
@@ -224,8 +254,6 @@ public class SettingsActivity extends AppCompatActivity implements
             mapZoomLevelPreference.setDefaultValue(getString(R.string.pref_def_map_zoom_level));
             mapZoomLevelPreference.setEntries(R.array.pref_map_zoom_level_titles);
             mapZoomLevelPreference.setEntryValues(R.array.pref_map_zoom_level_entry_values);
-            mapZoomLevelPreference.setNegativeButtonText(null);
-            mapZoomLevelPreference.setPositiveButtonText(null);
 
             // FLICKR NOTES
             PreferenceCategory flickrNotesCategory = new PreferenceCategory(context);
@@ -274,8 +302,6 @@ public class SettingsActivity extends AppCompatActivity implements
             overwriteTagsPreference.setDefaultValue(getString(R.string.pref_def_overwrite_tags));
             overwriteTagsPreference.setEntries(R.array.pref_overwrite_tags_titles);
             overwriteTagsPreference.setEntryValues(R.array.pref_overwrite_tags_entry_values);
-            overwriteTagsPreference.setNegativeButtonText(null);
-            overwriteTagsPreference.setPositiveButtonText(null);
 
             // UPLOAD
             PreferenceCategory uploadCategory = new PreferenceCategory(context);
@@ -294,6 +320,9 @@ public class SettingsActivity extends AppCompatActivity implements
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                bindPreferenceSummaryToValue(Objects.requireNonNull(findPreference(Constants.PREF_KEY_NOTIF_SOUND)));
+            }
             bindPreferenceSummaryToValue(Objects.requireNonNull(findPreference(Constants.PREF_KEY_FONT_SIZE)));
             bindPreferenceSummaryToValue(Objects.requireNonNull(findPreference(Constants.PREF_KEY_WHAT_SHOW)));
             bindPreferenceSummaryToValue(Objects.requireNonNull(findPreference(Constants.PREF_KEY_MAP_ZOOM_LEVEL)));

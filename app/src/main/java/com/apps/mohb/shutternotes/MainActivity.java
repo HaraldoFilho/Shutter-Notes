@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : MainActivity.java
- *  Last modified : 10/14/20 10:12 AM
+ *  Last modified : 10/14/20 6:09 PM
  *
  *  -----------------------------------------------------------
  */
@@ -15,6 +15,7 @@ package com.apps.mohb.shutternotes;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Button;
@@ -70,15 +71,16 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
         });
 
-        NotificationManager notificationManager = getSystemService(NotificationManager.class);
-
-        CharSequence name = getString(R.string.notify_channel_name);
-        String description = getString(R.string.notify_channel_description);
-        int importance = NotificationManager.IMPORTANCE_DEFAULT;
-        NotificationChannel channel;
-        channel = new NotificationChannel(Constants.NOTIFICATION_CHANNEL, name, importance);
-        channel.setDescription(description);
-        notificationManager.createNotificationChannel(channel);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            CharSequence name = getString(R.string.notify_channel_name);
+            String description = getString(R.string.notify_channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel;
+            channel = new NotificationChannel(Constants.NOTIFICATION_CHANNEL, name, importance);
+            channel.setDescription(description);
+            notificationManager.createNotificationChannel(channel);
+        }
 
     }
 

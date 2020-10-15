@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : Constants.java
- *  Last modified : 10/14/20 8:59 AM
+ *  Last modified : 10/14/20 7:59 PM
  *
  *  -----------------------------------------------------------
  */
@@ -158,6 +158,7 @@ public class Constants {
 
     public static final String PREF_KEY_NOTIF_SOUND = "NOTIF_SOUND";
     public static final String PREF_DEF_NOTIF_SOUND = "0";
+    public static final int PREF_NOTIF_SOUND_SILENT = 0;
 
     public static final String PREF_KEY_WHAT_SHOW = "WHAT_SHOW";
     public static final String PREF_SHOW_TITLE = "1";
