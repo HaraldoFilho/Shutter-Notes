@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FlickrUploadToPhotosActivity.java
- *  Last modified : 10/15/20 7:30 AM
+ *  Last modified : 10/17/20 7:41 PM
  *
  *  -----------------------------------------------------------
  */
@@ -16,7 +16,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -332,12 +331,6 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity impleme
                 }
             }
 
-            RingtoneManager ringtoneManager = new RingtoneManager(getBaseContext());
-            ringtoneManager.setType(RingtoneManager.TYPE_NOTIFICATION);
-            ringtoneManager.getCursor();
-
-            int ringtonePosition = Integer.parseInt(Objects.requireNonNull(settings.getString(Constants.PREF_KEY_NOTIF_SOUND, Constants.PREF_DEF_NOTIF_SOUND)));
-
             notificationBuilder = new NotificationCompat.Builder(getApplicationContext(), Constants.NOTIFICATION_CHANNEL);
             notificationBuilder.setSmallIcon(R.drawable.ic_camera_black_24dp)
                     .setContentTitle(getResources().getString(R.string.notify_upload_completed))
@@ -347,12 +340,8 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity impleme
                     .setAutoCancel(true);
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                if (ringtonePosition == Constants.PREF_NOTIF_SOUND_SILENT) {
-                    notificationBuilder.setNotificationSilent();
-                } else {
-                    Uri notificationSound = ringtoneManager.getRingtoneUri(ringtonePosition - 1);
-                    notificationBuilder.setSound(notificationSound);
-                }
+                Uri notificationSound = Uri.parse(Objects.requireNonNull(settings.getString(Constants.PREF_KEY_NOTIF_SOUND, Constants.PREF_DEF_NOTIF_SOUND)));
+                notificationBuilder.setSound(notificationSound);
             }
 
             if (!inBackground) {
@@ -374,6 +363,7 @@ public class FlickrUploadToPhotosActivity extends BackgroundTaskActivity impleme
                         }
                     }
                 }
+
             } else {
                 notificationManager.notify(Constants.NOTIFICATION_SOUND_ID, notificationBuilder.build());
             }

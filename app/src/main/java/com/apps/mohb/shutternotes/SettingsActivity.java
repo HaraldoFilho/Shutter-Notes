@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : SettingsActivity.java
- *  Last modified : 10/15/20 7:30 AM
+ *  Last modified : 10/17/20 7:41 PM
  *
  *  -----------------------------------------------------------
  */
@@ -15,7 +15,9 @@ package com.apps.mohb.shutternotes;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -56,7 +58,7 @@ public class SettingsActivity extends AppCompatActivity implements
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
      */
-    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = (preference, value) -> {
+    private static final Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = (preference, value) -> {
         String stringValue = value.toString();
 
         if (preference instanceof ListPreference) {
@@ -140,26 +142,17 @@ public class SettingsActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        switch (id) {
-
-            case android.R.id.home:
-                onBackPressed();
-                break;
-
+        if (id == android.R.id.home) {
+            onBackPressed();
+        } else if (id == R.id.action_defaults) {
             // Reset to defaults
-            case R.id.action_defaults:
-                DialogFragment alertDialog = new PreferencesResetAlertFragment();
-                alertDialog.show(getSupportFragmentManager(), "PreferencesResetAlertFragment");
-                break;
-
+            DialogFragment alertDialog = new PreferencesResetAlertFragment();
+            alertDialog.show(getSupportFragmentManager(), "PreferencesResetAlertFragment");
+        } else if (id == R.id.action_help) {
             // Help
-            case R.id.action_help: {
-                Intent intent = new Intent(this, HelpActivity.class);
-                intent.putExtra(Constants.KEY_URL, getString(R.string.url_help_settings));
-                startActivity(intent);
-                break;
-            }
-
+            Intent intent = new Intent(this, HelpActivity.class);
+            intent.putExtra(Constants.KEY_URL, getString(R.string.url_help_settings));
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
@@ -204,38 +197,42 @@ public class SettingsActivity extends AppCompatActivity implements
                     intent.putExtra(Settings.EXTRA_APP_PACKAGE, requireActivity().getPackageName());
                     intent.putExtra(Settings.EXTRA_CHANNEL_ID, Constants.NOTIFICATION_CHANNEL);
                     startActivity(intent);
-                    return true;
+                    return false;
                 });
 
                 generalSettingsCategory.addPreference(notificationSoundPreference);
 
             } else {
 
-                ListPreference notificationSoundListPreference = new ListPreference(context);
-                notificationSoundListPreference.setKey(getString(R.string.pref_key_notif_sound));
-                notificationSoundListPreference.setTitle(R.string.pref_title_notif_sound);
-                notificationSoundListPreference.setDefaultValue(getString(R.string.pref_notif_sound_silent_value));
+                Preference notificationSoundPreference = new Preference(context);
+                notificationSoundPreference.setTitle(R.string.pref_title_notif_sound);
+                notificationSoundPreference.setOnPreferenceClickListener(preference -> {
 
-                RingtoneManager ringtoneManager = new RingtoneManager(context);
-                ringtoneManager.setType(RingtoneManager.TYPE_NOTIFICATION);
+                    Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
+                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_NOTIFICATION);
+                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
+                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true);
+                    intent.putExtra(RingtoneManager.EXTRA_RINGTONE_DEFAULT_URI, Settings.System.DEFAULT_NOTIFICATION_URI);
 
-                int ringtonesNumber = ringtoneManager.getCursor().getCount() + 1;
+                    String existingValue = getRingtonePreferenceValue(getContext()); // TODO
+                    if (existingValue != null) {
+                        if (existingValue.length() == 0) {
+                            // Select "Silent"
+                            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, (Uri) null);
+                        } else {
+                            intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, Uri.parse(existingValue));
+                        }
+                    } else {
+                        // No ringtone has been selected, set to the default
+                        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_EXISTING_URI, Settings.System.DEFAULT_NOTIFICATION_URI);
+                    }
 
-                CharSequence[] ringtonesTitles = new CharSequence[ringtonesNumber];
-                CharSequence[] ringtonesValues = new CharSequence[ringtonesNumber];
+                    getActivity().startActivityForResult(intent, Constants.REQUEST_CODE_RINGTONE);
+                    return false;
 
-                ringtonesTitles[Constants.PREF_NOTIF_SOUND_SILENT] = getString(R.string.pref_notif_sound_silent_title);
-                ringtonesValues[Constants.PREF_NOTIF_SOUND_SILENT] = getString(R.string.pref_notif_sound_silent_value);
+                });
 
-                for (int i = Constants.PREF_NOTIF_SOUND_SILENT; i < ringtonesNumber - 1; i++) {
-                    ringtonesTitles[i + 1] = ringtoneManager.getRingtone(i).getTitle(context);
-                    ringtonesValues[i + 1] = String.valueOf(i + 1);
-                }
-
-                notificationSoundListPreference.setEntries(ringtonesTitles);
-                notificationSoundListPreference.setEntryValues(ringtonesValues);
-
-                generalSettingsCategory.addPreference(notificationSoundListPreference);
+                generalSettingsCategory.addPreference(notificationSoundPreference);
 
             }
 
@@ -320,16 +317,38 @@ public class SettingsActivity extends AppCompatActivity implements
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                bindPreferenceSummaryToValue(Objects.requireNonNull(findPreference(Constants.PREF_KEY_NOTIF_SOUND)));
-            }
             bindPreferenceSummaryToValue(Objects.requireNonNull(findPreference(Constants.PREF_KEY_FONT_SIZE)));
             bindPreferenceSummaryToValue(Objects.requireNonNull(findPreference(Constants.PREF_KEY_WHAT_SHOW)));
             bindPreferenceSummaryToValue(Objects.requireNonNull(findPreference(Constants.PREF_KEY_MAP_ZOOM_LEVEL)));
             bindPreferenceSummaryToValue(Objects.requireNonNull(findPreference(Constants.PREF_KEY_OVERWRITE_TAGS)));
         }
+
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Constants.REQUEST_CODE_RINGTONE && data != null) {
+            Uri ringtone = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+            if (ringtone != null) {
+                setRingtonPreferenceValue(ringtone.toString(), this); // TODO
+            } else {
+                // "Silent" was selected
+                setRingtonPreferenceValue("", this); // TODO
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    private static void setRingtonPreferenceValue(String toString, Context context) {
+        SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        defaultSharedPreferences.edit().putString(Constants.PREF_KEY_NOTIF_SOUND, toString).apply();
+    }
+
+    private static String getRingtonePreferenceValue(Context context) {
+        SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return defaultSharedPreferences.getString(Constants.PREF_KEY_NOTIF_SOUND, Constants.PREF_DEF_NOTIF_SOUND);
+    }
 
     // RESET TO DEFAULTS DIALOG
 

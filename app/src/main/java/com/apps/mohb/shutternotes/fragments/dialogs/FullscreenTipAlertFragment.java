@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : FullscreenTipAlertFragment.java
- *  Last modified : 10/14/20 10:12 AM
+ *  Last modified : 10/15/20 7:30 AM
  *
  *  -----------------------------------------------------------
  */

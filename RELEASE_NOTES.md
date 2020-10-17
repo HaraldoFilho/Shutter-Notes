@@ -1,3 +1,6 @@
+#### **0.4.2**
+- Re-done ringtone picker for versions older than Android X
+
 #### **0.4.1**
 - Changed minSdk back to 24.
 - Added prefernce list on settings to change notification sound on sdk version 24 and 25.

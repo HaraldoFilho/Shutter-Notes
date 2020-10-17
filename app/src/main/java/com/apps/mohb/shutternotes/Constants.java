@@ -5,7 +5,7 @@
  *  Developer     : Haraldo Albergaria Filho, a.k.a. mohb apps
  *
  *  File          : Constants.java
- *  Last modified : 10/14/20 7:59 PM
+ *  Last modified : 10/17/20 7:30 PM
  *
  *  -----------------------------------------------------------
  */
@@ -179,6 +179,8 @@ public class Constants {
     public static final String PREF_KEY_UPLOAD_TAGS = "UPLOAD_TAGS";
     public static final String PREF_KEY_OVERWRITE_DATA = "OVERWRITE_DATA";
     public static final String PREF_KEY_ARCHIVE_NOTES = "ARCHIVE_NOTES";
+
+    public static final int REQUEST_CODE_RINGTONE = 1;
 
     // Log tags
     public static final String LOG_DEBUG_TAG = "DEBUG_NOTES";
